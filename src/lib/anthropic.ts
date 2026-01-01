@@ -1,27 +1,27 @@
-import { createAnthropic } from "@ai-sdk/anthropic";
+import Anthropic from "@anthropic-ai/sdk";
 
 /**
- * Anthropic クライアントの初期化
- * Vercel AI SDK の Anthropic プロバイダーを使用
+ * Anthropic クライアント
  */
-export const anthropic = createAnthropic({
+export const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 /**
  * モデル ID
- * Extended Thinking は generateObject の providerOptions で設定
  */
 export const MODEL_ID = "claude-opus-4-20250514" as const;
 
 /**
  * リトライ設定
  */
-export const retryConfig: {
-  readonly maxRetries: number;
-  readonly initialDelayMs: number;
-  readonly maxDelayMs: number;
-} = {
+type RetryConfig = {
+  maxRetries: number;
+  initialDelayMs: number;
+  maxDelayMs: number;
+};
+
+export const retryConfig: RetryConfig = {
   maxRetries: 3,
   initialDelayMs: 1000,
   maxDelayMs: 10000,
@@ -30,7 +30,10 @@ export const retryConfig: {
 /**
  * Exponential backoff でリトライ
  */
-export async function withRetry<T>(fn: () => Promise<T>, config = retryConfig): Promise<T> {
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  config: RetryConfig = retryConfig
+): Promise<T> {
   let lastError: Error | undefined;
   let delay = config.initialDelayMs;
 
@@ -44,7 +47,6 @@ export async function withRetry<T>(fn: () => Promise<T>, config = retryConfig): 
         break;
       }
 
-      // Wait before retry with exponential backoff
       await new Promise((resolve) => setTimeout(resolve, delay));
       delay = Math.min(delay * 2, config.maxDelayMs);
     }

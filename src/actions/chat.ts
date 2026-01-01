@@ -1,43 +1,31 @@
 "use server";
 
-import { generateText, Output } from "ai";
-import { z } from "zod";
+import type { ContentBlock } from "@anthropic-ai/sdk/resources/messages";
 import { anthropic, withRetry, MODEL_ID } from "@/lib/anthropic";
 import { getQuestionSystemPrompt, getOutputSystemPrompt } from "@/lib/prompts";
 import type { HorensoType, AIMessage, ChatMessage, StructuredOutput } from "@/types";
 
 /**
- * AI レスポンスのスキーマ（質問生成用）
+ * レスポンスからテキストを抽出
  */
-const questionResponseSchema = z.object({
-  intro: z.string().describe("短い励まし・相槌（例：いいね！、なるほど〜）"),
-  questions: z
-    .array(
-      z.object({
-        id: z.string().describe("質問のユニークID"),
-        content: z.string().describe("質問文"),
-        options: z
-          .array(
-            z.object({
-              id: z.string().describe("選択肢のユニークID"),
-              label: z.string().describe("選択肢のラベル"),
-            })
-          )
-          .describe("選択肢（2〜4個）"),
-        multiSelect: z.boolean().describe("複数選択可能かどうか"),
-        customInputPlaceholder: z.string().optional().describe("カスタム入力欄のプレースホルダー"),
-      })
-    )
-    .describe("質問リスト（1〜2個）"),
-  ready: z.boolean().describe("十分な情報が集まったかどうか"),
-});
+function extractText(content: ContentBlock[]): string {
+  const textBlock = content.find((block) => block.type === "text");
+  return textBlock?.type === "text" ? textBlock.text : "";
+}
 
 /**
- * 構造化出力のスキーマ
+ * JSON をパース（コードブロックにも対応）
  */
-const outputResponseSchema = z.object({
-  content: z.string().describe("Markdown形式の出力"),
-});
+function parseJSON<T>(text: string): T {
+  // ```json ... ``` を除去
+  const cleaned = text
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+
+  return JSON.parse(cleaned) as T;
+}
 
 /**
  * チャット履歴をプロンプト用のテキストに変換
@@ -66,14 +54,48 @@ function formatChatHistory(messages: ChatMessage[]): string {
     .join("\n\n");
 }
 
+/** 質問生成のレスポンス型 */
+type QuestionResponse = {
+  intro: string;
+  questions: {
+    id: string;
+    content: string;
+    options: { id: string; label: string }[];
+    multiSelect: boolean;
+    customInputPlaceholder?: string;
+  }[];
+  ready: boolean;
+};
+
+/** JSON 出力の指示 */
+const JSON_INSTRUCTION = `
+必ず以下の JSON 形式で出力してください（他のテキストは不要）:
+{
+  "intro": "短い励まし・相槌（例：いいね！、なるほど〜）",
+  "questions": [
+    {
+      "id": "q1",
+      "content": "質問文",
+      "options": [
+        { "id": "opt1", "label": "選択肢1" },
+        { "id": "opt2", "label": "選択肢2" }
+      ],
+      "multiSelect": false,
+      "customInputPlaceholder": "自由入力のプレースホルダー（任意）"
+    }
+  ],
+  "ready": false
+}
+`;
+
 /**
- * 初期入力から最初の質問を生成
+ * 初期入力から最初の質問を生成（Extended Thinking 有効）
  */
 export async function generateFirstQuestion(
   type: HorensoType,
   initialInput: { topic: string; recipient: string; detail: string }
 ): Promise<AIMessage> {
-  const systemPrompt = getQuestionSystemPrompt(type);
+  const systemPrompt = getQuestionSystemPrompt(type) + JSON_INSTRUCTION;
 
   const userPrompt = `ユーザーの初期入力:
 - 何を伝えたい: ${initialInput.topic}
@@ -83,25 +105,19 @@ export async function generateFirstQuestion(
 この情報を元に、より詳しく整理するための質問を生成してください。`;
 
   const result = await withRetry(async () => {
-    const { output } = await generateText({
-      model: anthropic(MODEL_ID),
-      output: Output.object({ schema: questionResponseSchema }),
-      system: systemPrompt,
-      prompt: userPrompt,
-      // Extended Thinking を有効化（初回質問生成）
-      providerOptions: {
-        anthropic: {
-          thinking: {
-            type: "enabled",
-            budgetTokens: 5000,
-          },
-        },
+    const response = await anthropic.messages.create({
+      model: MODEL_ID,
+      max_tokens: 16000,
+      thinking: {
+        type: "enabled",
+        budget_tokens: 5000,
       },
+      system: systemPrompt,
+      messages: [{ role: "user", content: userPrompt }],
     });
-    if (!output) {
-      throw new Error("No output from AI");
-    }
-    return output;
+
+    const text = extractText(response.content);
+    return parseJSON<QuestionResponse>(text);
   });
 
   return {
@@ -115,13 +131,13 @@ export async function generateFirstQuestion(
 }
 
 /**
- * 対話履歴から次の質問を生成（または完了判定）
+ * 対話履歴から次の質問を生成（速度重視で Extended Thinking なし）
  */
 export async function generateNextQuestion(
   type: HorensoType,
   messages: ChatMessage[]
 ): Promise<{ message: AIMessage; ready: boolean }> {
-  const systemPrompt = getQuestionSystemPrompt(type);
+  const systemPrompt = getQuestionSystemPrompt(type) + JSON_INSTRUCTION;
   const chatHistory = formatChatHistory(messages);
 
   const userPrompt = `これまでの対話:
@@ -132,17 +148,15 @@ ${chatHistory}
 2. まだ必要な情報があれば、追加の質問を生成する`;
 
   const result = await withRetry(async () => {
-    const { output } = await generateText({
-      model: anthropic(MODEL_ID),
-      output: Output.object({ schema: questionResponseSchema }),
+    const response = await anthropic.messages.create({
+      model: MODEL_ID,
+      max_tokens: 8000,
       system: systemPrompt,
-      prompt: userPrompt,
-      // 対話中は Extended Thinking を使わない（速度重視）
+      messages: [{ role: "user", content: userPrompt }],
     });
-    if (!output) {
-      throw new Error("No output from AI");
-    }
-    return output;
+
+    const text = extractText(response.content);
+    return parseJSON<QuestionResponse>(text);
   });
 
   return {
@@ -158,14 +172,27 @@ ${chatHistory}
   };
 }
 
+/** Markdown 出力の指示 */
+const MARKDOWN_INSTRUCTION = `
+必ず以下の JSON 形式で出力してください（他のテキストは不要）:
+{
+  "content": "Markdown形式の出力内容"
+}
+`;
+
+/** 出力レスポンス型 */
+type OutputResponse = {
+  content: string;
+};
+
 /**
- * 対話履歴から構造化された出力を生成
+ * 対話履歴から構造化された出力を生成（Extended Thinking 有効）
  */
 export async function generateOutput(
   type: HorensoType,
   messages: ChatMessage[]
 ): Promise<StructuredOutput> {
-  const systemPrompt = getOutputSystemPrompt(type);
+  const systemPrompt = getOutputSystemPrompt(type) + MARKDOWN_INSTRUCTION;
   const chatHistory = formatChatHistory(messages);
 
   const userPrompt = `これまでの対話:
@@ -174,25 +201,19 @@ ${chatHistory}
 この対話で集まった情報を元に、構造化された文章を生成してください。`;
 
   const result = await withRetry(async () => {
-    const { output } = await generateText({
-      model: anthropic(MODEL_ID),
-      output: Output.object({ schema: outputResponseSchema }),
-      system: systemPrompt,
-      prompt: userPrompt,
-      // Extended Thinking を有効化（最終出力生成）
-      providerOptions: {
-        anthropic: {
-          thinking: {
-            type: "enabled",
-            budgetTokens: 8000,
-          },
-        },
+    const response = await anthropic.messages.create({
+      model: MODEL_ID,
+      max_tokens: 16000,
+      thinking: {
+        type: "enabled",
+        budget_tokens: 8000,
       },
+      system: systemPrompt,
+      messages: [{ role: "user", content: userPrompt }],
     });
-    if (!output) {
-      throw new Error("No output from AI");
-    }
-    return output;
+
+    const text = extractText(response.content);
+    return parseJSON<OutputResponse>(text);
   });
 
   return {
@@ -209,7 +230,7 @@ export async function regenerateOutput(
   previousOutput: StructuredOutput,
   feedback: string
 ): Promise<StructuredOutput> {
-  const systemPrompt = getOutputSystemPrompt(type);
+  const systemPrompt = getOutputSystemPrompt(type) + MARKDOWN_INSTRUCTION;
   const chatHistory = formatChatHistory(messages);
 
   const userPrompt = `これまでの対話:
@@ -224,16 +245,15 @@ ${feedback}
 フィードバックを反映して、改善された文章を生成してください。`;
 
   const result = await withRetry(async () => {
-    const { output } = await generateText({
-      model: anthropic(MODEL_ID),
-      output: Output.object({ schema: outputResponseSchema }),
+    const response = await anthropic.messages.create({
+      model: MODEL_ID,
+      max_tokens: 16000,
       system: systemPrompt,
-      prompt: userPrompt,
+      messages: [{ role: "user", content: userPrompt }],
     });
-    if (!output) {
-      throw new Error("No output from AI");
-    }
-    return output;
+
+    const text = extractText(response.content);
+    return parseJSON<OutputResponse>(text);
   });
 
   return {
