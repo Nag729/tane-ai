@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { StreamingOutputCard } from "./StreamingOutputCard";
 
 const meta = {
-  title: "Components/StreamingOutputCard",
   component: StreamingOutputCard,
   parameters: {
     layout: "padded",

@@ -23,7 +23,6 @@ const sampleOutput: StructuredOutput = {
 };
 
 const meta = {
-  title: "Components/OutputCard",
   component: OutputCard,
   parameters: {
     layout: "centered",

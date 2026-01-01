@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Chip } from "./Chip";
 
 const meta = {
-  title: "UI/Chip",
   component: Chip,
   parameters: {
     layout: "centered",

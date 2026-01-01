@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ThinkingPanel } from "./ThinkingPanel";
 
 const meta: Meta<typeof ThinkingPanel> = {
-  title: "Components/ThinkingPanel",
   component: ThinkingPanel,
   parameters: {
     layout: "padded",

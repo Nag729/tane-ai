@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { UserMessageBubble } from "./UserMessageBubble";
 
 const meta = {
-  title: "Components/UserMessageBubble",
   component: UserMessageBubble,
   parameters: {
     layout: "centered",

@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/Card";
-import { StreamingText } from "@/components/StreamingText";
+import { StreamingText } from "@/components/projects/StreamingText";
 
 export type StreamingOutputCardProps = {
   /** 出力内容 */

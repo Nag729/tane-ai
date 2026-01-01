@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { FeedbackForm } from "./FeedbackForm";
 
 const meta = {
-  title: "Components/FeedbackForm",
   component: FeedbackForm,
   parameters: {
     layout: "centered",

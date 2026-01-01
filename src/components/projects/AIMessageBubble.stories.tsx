@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { AIMessageBubble } from "./AIMessageBubble";
 
 const meta = {
-  title: "Components/AIMessageBubble",
   component: AIMessageBubble,
   parameters: {
     layout: "padded",

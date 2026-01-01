@@ -4,7 +4,6 @@ import { QuestionCard } from "./QuestionCard";
 import type { Question } from "@/types";
 
 const meta = {
-  title: "Components/QuestionCard",
   component: QuestionCard,
   parameters: {
     layout: "padded",

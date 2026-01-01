@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { StreamingText } from "./StreamingText";
 
 const meta: Meta<typeof StreamingText> = {
-  title: "Components/StreamingText",
   component: StreamingText,
   parameters: {
     layout: "padded",

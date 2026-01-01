@@ -1,4 +1,4 @@
-import { QuestionCard } from "@/components/QuestionCard";
+import { QuestionCard } from "@/components/pages/chat/QuestionCard";
 import { Button } from "@/components/ui/Button";
 import type { AIMessage } from "@/types";
 

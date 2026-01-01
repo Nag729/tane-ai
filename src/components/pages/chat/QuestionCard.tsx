@@ -1,4 +1,4 @@
-import { ChoiceChips } from "@/components/ChoiceChips";
+import { ChoiceChips } from "@/components/projects/ChoiceChips";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import type { Question } from "@/types";

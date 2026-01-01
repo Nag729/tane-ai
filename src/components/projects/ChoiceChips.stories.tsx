@@ -11,7 +11,6 @@ const sampleOptions: QuestionOption[] = [
 ];
 
 const meta = {
-  title: "Components/ChoiceChips",
   component: ChoiceChips,
   parameters: {
     layout: "centered",

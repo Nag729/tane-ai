@@ -3,7 +3,6 @@ import { ChatFooter } from "./ChatFooter";
 import type { AIMessage } from "@/types";
 
 const meta = {
-  title: "Components/ChatFooter",
   component: ChatFooter,
   parameters: {
     layout: "fullscreen",

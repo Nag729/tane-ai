@@ -1,5 +1,5 @@
-import { AIMessageBubble } from "@/components/AIMessageBubble";
-import { UserMessageBubble } from "@/components/UserMessageBubble";
+import { AIMessageBubble } from "@/components/projects/AIMessageBubble";
+import { UserMessageBubble } from "@/components/projects/UserMessageBubble";
 import type { ChatMessage } from "@/types";
 
 export type ChatHistoryProps = {

@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { InitialInputForm } from "./InitialInputForm";
 
 const meta = {
-  title: "Components/InitialInputForm",
   component: InitialInputForm,
   parameters: {
     layout: "centered",

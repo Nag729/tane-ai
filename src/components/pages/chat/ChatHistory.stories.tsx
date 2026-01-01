@@ -3,7 +3,6 @@ import { ChatHistory } from "./ChatHistory";
 import type { ChatMessage } from "@/types";
 
 const meta = {
-  title: "Components/ChatHistory",
   component: ChatHistory,
   parameters: {
     layout: "padded",

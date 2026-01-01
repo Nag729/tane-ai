@@ -4,7 +4,6 @@ import { TypeSelector } from "./TypeSelector";
 import type { HorensoType } from "@/types";
 
 const meta = {
-  title: "Components/TypeSelector",
   component: TypeSelector,
   parameters: {
     layout: "centered",

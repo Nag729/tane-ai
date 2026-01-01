@@ -3,7 +3,6 @@ import { useState } from "react";
 import { CardButton } from "./CardButton";
 
 const meta = {
-  title: "UI/CardButton",
   component: CardButton,
   parameters: {
     layout: "centered",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { TypeSelector } from "@/components/TypeSelector";
+import { TypeSelector } from "@/components/pages/home/TypeSelector";
 import { Card } from "@/components/ui/Card";
 import type { HorensoType } from "@/types";
 
