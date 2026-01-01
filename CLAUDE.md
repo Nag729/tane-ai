@@ -100,10 +100,10 @@ describe("ComponentName", () => {
 
 ### フォント
 
-丸ゴシック（M PLUS Rounded 1c）を使用:
+丸ゴシック（Kosugi Maru）を使用:
 
 ```css
-font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", sans-serif;
+font-family: "Kosugi Maru", "Hiragino Maru Gothic ProN", sans-serif;
 ```
 
 ## Storybook ルール
