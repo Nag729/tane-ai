@@ -35,7 +35,7 @@ export const LongMessage: Story = {
 
 export const Streaming: Story = {
   args: {
-    content: "考え中...",
+    content: "思考中...",
     isStreaming: true,
   },
 };

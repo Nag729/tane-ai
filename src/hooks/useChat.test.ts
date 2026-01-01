@@ -119,9 +119,7 @@ describe("useChat", () => {
   // When: レンダリングする
   // Then: 初期状態が正しい
   it("should have correct initial state", () => {
-    const { result } = renderHook(() =>
-      useChat({ type: "report", onComplete: mockOnComplete })
-    );
+    const { result } = renderHook(() => useChat({ type: "report", onComplete: mockOnComplete }));
 
     expect(result.current.messages).toEqual([]);
     expect(result.current.currentAIMessage).toBeUndefined();
@@ -157,9 +155,7 @@ describe("useChat", () => {
 
     global.fetch = mockFetchSSE(mockResponse);
 
-    const { result } = renderHook(() =>
-      useChat({ type: "report", onComplete: mockOnComplete })
-    );
+    const { result } = renderHook(() => useChat({ type: "report", onComplete: mockOnComplete }));
 
     await act(async () => {
       await result.current.submitInitialInput({
@@ -226,9 +222,7 @@ describe("useChat", () => {
       return Promise.resolve({ ok: true, body: stream });
     });
 
-    const { result } = renderHook(() =>
-      useChat({ type: "consult", onComplete: mockOnComplete })
-    );
+    const { result } = renderHook(() => useChat({ type: "consult", onComplete: mockOnComplete }));
 
     // 初期入力
     await act(async () => {
@@ -245,9 +239,7 @@ describe("useChat", () => {
 
     // 回答を送信
     await act(async () => {
-      await result.current.submitAnswer([
-        { questionId: "q1", selectedOptionIds: ["opt1"] },
-      ]);
+      await result.current.submitAnswer([{ questionId: "q1", selectedOptionIds: ["opt1"] }]);
     });
 
     await waitFor(() => {
@@ -291,9 +283,7 @@ describe("useChat", () => {
       return Promise.resolve({ ok: true, body: stream });
     });
 
-    const { result } = renderHook(() =>
-      useChat({ type: "report", onComplete: mockOnComplete })
-    );
+    const { result } = renderHook(() => useChat({ type: "report", onComplete: mockOnComplete }));
 
     // 初期入力（ready: true を返す）
     await act(async () => {
@@ -327,9 +317,7 @@ describe("useChat", () => {
   it("should handle API errors", async () => {
     global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
 
-    const { result } = renderHook(() =>
-      useChat({ type: "report", onComplete: mockOnComplete })
-    );
+    const { result } = renderHook(() => useChat({ type: "report", onComplete: mockOnComplete }));
 
     await act(async () => {
       await result.current.submitInitialInput({
@@ -350,15 +338,11 @@ describe("useChat", () => {
   // When: ストリームを処理する
   // Then: エラー状態が設定される
   it("should handle SSE error events", async () => {
-    const errorResponse = createSSEResponse([
-      { type: "error", error: "API エラー" },
-    ]);
+    const errorResponse = createSSEResponse([{ type: "error", error: "API エラー" }]);
 
     global.fetch = mockFetchSSE(errorResponse);
 
-    const { result } = renderHook(() =>
-      useChat({ type: "report", onComplete: mockOnComplete })
-    );
+    const { result } = renderHook(() => useChat({ type: "report", onComplete: mockOnComplete }));
 
     await act(async () => {
       await result.current.submitInitialInput({
@@ -421,9 +405,7 @@ describe("useChat.getAnswerDisplay", () => {
       return Promise.resolve({ ok: true, body: stream });
     });
 
-    const { result } = renderHook(() =>
-      useChat({ type: "report", onComplete: vi.fn() })
-    );
+    const { result } = renderHook(() => useChat({ type: "report", onComplete: vi.fn() }));
 
     await act(async () => {
       await result.current.submitInitialInput({
@@ -438,9 +420,7 @@ describe("useChat.getAnswerDisplay", () => {
     });
 
     await act(async () => {
-      await result.current.submitAnswer([
-        { questionId: "q1", selectedOptionIds: ["opt1"] },
-      ]);
+      await result.current.submitAnswer([{ questionId: "q1", selectedOptionIds: ["opt1"] }]);
     });
 
     await waitFor(() => {

@@ -1,5 +1,5 @@
 /* 遊び心のある丸ゴシックフォント - @import は最初に！ */
-@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap");
 
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
@@ -7,7 +7,7 @@
 body {
   background: #fafaf9; /* stone-50 */
   color: #1c1917; /* stone-900 */
-  font-family: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'Yu Gothic', sans-serif;
+  font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
 }
 
 /* クリック可能な要素に cursor: pointer を設定 */

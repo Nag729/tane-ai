@@ -65,7 +65,7 @@ describe("ThinkingPanel", () => {
   // When: レンダリングする
   // Then: カーソルが表示される
   it("should show cursor when thinking", () => {
-    render(<ThinkingPanel isThinking={true} content="考え中" />);
+    render(<ThinkingPanel isThinking={true} content="思考中" />);
     expect(screen.getByText("▊")).toBeInTheDocument();
   });
 });

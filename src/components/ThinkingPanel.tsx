@@ -15,11 +15,7 @@ type ThinkingPanelProps = {
  * Extended Thinking の内容を表示する折りたたみ可能なパネル
  * Claude Desktop風のUI
  */
-export function ThinkingPanel({
-  isThinking,
-  content,
-  title = "思考中...",
-}: ThinkingPanelProps) {
+export function ThinkingPanel({ isThinking, content, title = "思考中..." }: ThinkingPanelProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   // 思考中でなく、内容もない場合は表示しない

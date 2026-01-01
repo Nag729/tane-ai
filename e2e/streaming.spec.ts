@@ -157,7 +157,7 @@ test.describe("ストリーミング表示", () => {
     await expect(page.locator("text=これはモックされたレスポンスです")).toBeVisible();
   });
 
-  test("質問生成中は「考え中」が表示される", async ({ page }) => {
+  test("質問生成中は「思考中...」が表示される", async ({ page }) => {
     // 遅延させたモックを設定
     await page.route("**/api/chat/question", async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -176,8 +176,8 @@ test.describe("ストリーミング表示", () => {
     await page.locator("textarea").nth(2).fill("テスト");
     await page.click('button:has-text("これで始める")');
 
-    // 「考え中...」が表示される
-    await expect(page.locator("text=考え中...")).toBeVisible();
+    // 「思考中...」が表示される
+    await expect(page.locator("text=思考中...")).toBeVisible();
   });
 });
 

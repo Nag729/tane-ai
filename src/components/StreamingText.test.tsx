@@ -56,9 +56,7 @@ describe("StreamingText", () => {
   // When: レンダリングする
   // Then: クラス名が適用される
   it("should apply custom className", () => {
-    const { container } = render(
-      <StreamingText content="テスト" className="custom-class" />
-    );
+    const { container } = render(<StreamingText content="テスト" className="custom-class" />);
     expect(container.firstChild).toHaveClass("custom-class");
   });
 });

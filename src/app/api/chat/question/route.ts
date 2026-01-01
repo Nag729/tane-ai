@@ -114,9 +114,7 @@ ${JSON.stringify(messages, null, 2)}
         controller.close();
       } catch (error) {
         controller.enqueue(
-          encoder.encode(
-            `data: ${JSON.stringify({ type: "error", error: String(error) })}\n\n`
-          )
+          encoder.encode(`data: ${JSON.stringify({ type: "error", error: String(error) })}\n\n`)
         );
         controller.close();
       }

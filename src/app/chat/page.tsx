@@ -49,6 +49,12 @@ function ChatPageContent() {
     buildQuestionAnswers,
   } = useChatAnswers();
 
+  // チャットエリアの自動スクロール
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chat.messages, chat.thinkingContent, chat.streamingOutput, chat.isLoading]);
+
   // 無効なパラメータの場合はトップへリダイレクト
   useEffect(() => {
     if (!isValidParams) {
@@ -98,12 +104,6 @@ function ChatPageContent() {
 
   const canSubmit =
     chat.hasQuestions && chat.currentAIMessage && checkAllAnswered(chat.currentAIMessage.questions);
-
-  // チャットエリアの自動スクロール
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat.messages, chat.thinkingContent, chat.streamingOutput, chat.isLoading]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -202,7 +202,7 @@ function ChatPageContent() {
               </Button>
             )}
 
-            {chat.isLoading && <p className="text-center text-stone-500">考え中...</p>}
+            {chat.isLoading && <p className="text-center text-stone-500">思考中...</p>}
           </div>
         </footer>
       )}

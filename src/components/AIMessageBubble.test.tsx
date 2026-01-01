@@ -23,7 +23,7 @@ describe("AIMessageBubble", () => {
   // When: レンダリングする
   // Then: ストリーミングインジケータが表示される
   it("should show streaming indicator when streaming", () => {
-    render(<AIMessageBubble content="考え中..." isStreaming />);
+    render(<AIMessageBubble content="思考中..." isStreaming />);
     expect(screen.getByTestId("streaming-indicator")).toBeInTheDocument();
   });
 
