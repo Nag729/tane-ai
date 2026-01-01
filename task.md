@@ -13,33 +13,33 @@
 - [x] 環境変数設定（.env.example）
 - [ ] CI でテスト実行設定（GitHub Actions）
 
-## Phase 2: 基盤コンポーネント
+## Phase 2: 基盤コンポーネント ✅
 
 各コンポーネントは TDD で実装: テスト → 実装 → リファクタ
 
-### 2-1. Button
+### 2-1. Button ✅
 
-- [ ] Button.test.tsx: クリックイベント発火、disabled 状態、バリアント表示
-- [ ] Button.tsx 実装
-- [ ] リファクタ / スタイル調整
+- [x] Button.test.tsx: クリックイベント発火、disabled 状態、バリアント表示
+- [x] Button.tsx 実装
+- [x] Button.stories.tsx
 
-### 2-2. Card
+### 2-2. Card ✅
 
-- [ ] Card.test.tsx: children レンダリング、className 適用
-- [ ] Card.tsx 実装
-- [ ] リファクタ / スタイル調整
+- [x] Card.test.tsx: children レンダリング、className 適用
+- [x] Card.tsx 実装
+- [x] Card.stories.tsx
 
-### 2-3. Input / Textarea
+### 2-3. Input / Textarea ✅
 
-- [ ] Input.test.tsx: 値の変更、placeholder 表示、エラー状態
-- [ ] Input.tsx / Textarea.tsx 実装
-- [ ] リファクタ / スタイル調整
+- [x] Input.test.tsx: 値の変更、placeholder 表示、エラー状態
+- [x] Input.tsx / Textarea.tsx 実装
+- [x] Input.stories.tsx
 
-### 2-4. Chip（選択肢チップ）
+### 2-4. Chip（選択肢チップ）✅
 
-- [ ] Chip.test.tsx: 選択状態、複数選択、クリックイベント
-- [ ] Chip.tsx 実装
-- [ ] リファクタ / スタイル調整
+- [x] Chip.test.tsx: 選択状態、複数選択、クリックイベント
+- [x] Chip.tsx 実装
+- [x] Chip.stories.tsx
 
 ## Phase 3: 画面実装
 
