@@ -8,20 +8,32 @@ type FieldConfig = {
   placeholder: string;
 };
 
+type InitialInputData = {
+  topic: string;
+  recipient: string;
+  detail: string;
+};
+
 type InitialInputFormProps = {
   fields: {
     topic: FieldConfig;
     recipient: FieldConfig;
     detail: FieldConfig;
   };
-  onSubmit: (data: { topic: string; recipient: string; detail: string }) => void;
+  onSubmit: (data: InitialInputData) => void;
   isLoading?: boolean;
+  defaultValues?: InitialInputData;
 };
 
-export function InitialInputForm({ fields, onSubmit, isLoading = false }: InitialInputFormProps) {
-  const [topic, setTopic] = useState("");
-  const [recipient, setRecipient] = useState("");
-  const [detail, setDetail] = useState("");
+export function InitialInputForm({
+  fields,
+  onSubmit,
+  isLoading = false,
+  defaultValues,
+}: InitialInputFormProps) {
+  const [topic, setTopic] = useState(defaultValues?.topic ?? "");
+  const [recipient, setRecipient] = useState(defaultValues?.recipient ?? "");
+  const [detail, setDetail] = useState(defaultValues?.detail ?? "");
   const firstInputRef = useRef<HTMLTextAreaElement>(null);
 
   const isValid = topic.trim() && recipient.trim() && detail.trim();

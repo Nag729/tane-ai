@@ -6,27 +6,9 @@ import { OutputCard } from "@/components/OutputCard";
 import { FeedbackForm } from "@/components/FeedbackForm";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import type { HorensoType, StructuredOutput } from "@/types";
-
-// モックの出力データ（Phase 5 で API に置き換え）
-const mockOutput: StructuredOutput = {
-  content: `## 📊 報告：プロジェクトの進捗状況
-
-### 結論
-現在、予定より **1週間遅れ** で進行中です。
-
-### 詳細
-- デザインフェーズは完了
-- 開発フェーズで技術的な課題が発生
-- チームで解決策を検討中
-
-### 次のアクション
-1. 来週月曜までに代替案を3つ提示
-2. 水曜のMTGで最終決定
-
----
-*何かご質問があればお気軽にどうぞ！*`,
-};
+import { loadChatData, clearChatData } from "@/hooks";
+import { regenerateOutput } from "@/actions/chat";
+import type { HorensoType, StructuredOutput, ChatMessage } from "@/types";
 
 function ResultPageContent() {
   const searchParams = useSearchParams();
@@ -35,8 +17,20 @@ function ResultPageContent() {
   const type = searchParams.get("type") as HorensoType | null;
   const isValidParams = !!type;
 
-  const [output, setOutput] = useState<StructuredOutput>(mockOutput);
+  const [output, setOutput] = useState<StructuredOutput | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // sessionStorage からデータを読み込み
+  useEffect(() => {
+    const chatData = loadChatData();
+    if (chatData?.output) {
+      setOutput(chatData.output);
+      setMessages(chatData.messages);
+    }
+    setIsLoaded(true);
+  }, []);
 
   // 無効なパラメータの場合はトップへリダイレクト
   useEffect(() => {
@@ -45,23 +39,33 @@ function ResultPageContent() {
     }
   }, [isValidParams, router]);
 
-  if (!isValidParams) {
+  // データがない場合はトップへリダイレクト
+  useEffect(() => {
+    if (isLoaded && !output) {
+      router.replace("/");
+    }
+  }, [isLoaded, output, router]);
+
+  if (!isValidParams || !output) {
     return null;
   }
 
   const handleRegenerate = async (feedback: string) => {
-    setIsRegenerating(true);
+    if (!type) return;
 
-    // モック：フィードバックを反映した風の出力（Phase 5 で API に置き換え）
-    setTimeout(() => {
-      setOutput({
-        content: mockOutput.content + `\n\n### 📝 追記\n${feedback}を反映しました。`,
-      });
+    setIsRegenerating(true);
+    try {
+      const newOutput = await regenerateOutput(type, messages, output, feedback);
+      setOutput(newOutput);
+    } catch (error) {
+      console.error("Failed to regenerate output:", error);
+    } finally {
       setIsRegenerating(false);
-    }, 1500);
+    }
   };
 
   const handleStartOver = () => {
+    clearChatData();
     router.push("/");
   };
 

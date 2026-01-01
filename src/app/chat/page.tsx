@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
 import { AIMessageBubble } from "@/components/AIMessageBubble";
 import { UserMessageBubble } from "@/components/UserMessageBubble";
 import { ChoiceChips } from "@/components/ChoiceChips";
@@ -9,9 +9,10 @@ import { InitialInputForm } from "@/components/InitialInputForm";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
-import { useChatAnswers, useMockChat } from "@/hooks";
+import { useChatAnswers, useChat } from "@/hooks";
 import { typeConfig } from "@/constants";
-import type { HorensoType } from "@/types";
+import { isDebugMode, getRandomTestData } from "@/debug/testData";
+import type { HorensoType, ChatMessage } from "@/types";
 
 function ChatPageContent() {
   const searchParams = useSearchParams();
@@ -21,11 +22,18 @@ function ChatPageContent() {
   const isValidParams = !!type;
   const config = type ? typeConfig[type] : null;
 
+  // デバッグモード時のテストデータ（初回レンダリング時のみ生成）
+  const debugDefaultValues = useMemo(
+    () => (isDebugMode() && type ? getRandomTestData(type) : undefined),
+    [type]
+  );
+
   // 初期入力完了フラグ
   const [initialInputSubmitted, setInitialInputSubmitted] = useState(false);
 
   // チャットフロー
-  const chat = useMockChat({
+  const chat = useChat({
+    type: type || "report",
     onComplete: () => router.push(`/result?type=${type}`),
   });
 
@@ -51,28 +59,36 @@ function ChatPageContent() {
   }
 
   // 初期入力送信
-  const handleInitialSubmit = (data: { topic: string; recipient: string; detail: string }) => {
-    const initialText = `${data.topic}を${data.recipient}に${config.label}したい。${data.detail}`;
-    chat.submitInitialInput(config.label, initialText);
+  const handleInitialSubmit = async (data: {
+    topic: string;
+    recipient: string;
+    detail: string;
+  }) => {
     setInitialInputSubmitted(true);
+    await chat.submitInitialInput(data);
   };
 
   // 回答送信
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!chat.currentAIMessage) return;
     const questionAnswers = buildQuestionAnswers(chat.currentAIMessage.questions);
-    chat.submitAnswer(questionAnswers);
+    await chat.submitAnswer(questionAnswers);
     resetAnswers();
+  };
+
+  // 整理完了
+  const handleComplete = async () => {
+    await chat.completeAndGenerate();
   };
 
   // Enter キーで送信
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    const canSubmit =
+    const canSubmitAnswer =
       chat.hasQuestions &&
       chat.currentAIMessage &&
       checkAllAnswered(chat.currentAIMessage.questions);
 
-    if (e.key === "Enter" && !e.shiftKey && canSubmit) {
+    if (e.key === "Enter" && !e.shiftKey && canSubmitAnswer) {
       e.preventDefault();
       handleSubmit();
     }
@@ -98,13 +114,24 @@ function ChatPageContent() {
       <main className="flex-1 overflow-y-auto p-4 pb-48">
         <div className="max-w-2xl mx-auto space-y-4">
           {!initialInputSubmitted ? (
-            <InitialInputForm fields={config.fields} onSubmit={handleInitialSubmit} />
-          ) : (
-            <ChatHistory
-              messages={chat.messages}
-              getAnswerDisplay={chat.getAnswerDisplay}
-              isStreaming={chat.isStreaming}
+            <InitialInputForm
+              fields={config.fields}
+              onSubmit={handleInitialSubmit}
+              defaultValues={debugDefaultValues}
             />
+          ) : (
+            <>
+              <ChatHistory
+                messages={chat.messages}
+                getAnswerDisplay={chat.getAnswerDisplay}
+                isLoading={chat.isLoading}
+              />
+              {chat.error && (
+                <Card className="bg-red-50 border-red-200">
+                  <p className="text-red-600">{chat.error}</p>
+                </Card>
+              )}
+            </>
           )}
         </div>
       </main>
@@ -113,7 +140,14 @@ function ChatPageContent() {
       {initialInputSubmitted && (
         <footer className="bg-white border-t border-stone-200 p-4 fixed bottom-0 left-0 right-0">
           <div className="max-w-2xl mx-auto space-y-3">
-            {!chat.isStreaming &&
+            {/* 整理完了ボタン（AI が ready と判断したら表示） */}
+            {chat.isReady && !chat.isLoading && (
+              <Button onClick={handleComplete} className="w-full bg-green-600 hover:bg-green-700">
+                ✨ 整理完了！結果を見る
+              </Button>
+            )}
+
+            {!chat.isLoading &&
               chat.hasQuestions &&
               chat.currentAIMessage?.questions.map((q) => (
                 <Card key={q.id} className="space-y-2">
@@ -137,11 +171,13 @@ function ChatPageContent() {
                 </Card>
               ))}
 
-            {canSubmit && (
+            {canSubmit && !chat.isLoading && (
               <Button onClick={handleSubmit} className="w-full">
                 次へ →
               </Button>
             )}
+
+            {chat.isLoading && <p className="text-center text-stone-500">考え中...</p>}
           </div>
         </footer>
       )}
@@ -151,12 +187,12 @@ function ChatPageContent() {
 
 // チャット履歴コンポーネント
 type ChatHistoryProps = {
-  messages: ReturnType<typeof useMockChat>["messages"];
-  getAnswerDisplay: ReturnType<typeof useMockChat>["getAnswerDisplay"];
-  isStreaming: boolean;
+  messages: ChatMessage[];
+  getAnswerDisplay: (chatMessage: ChatMessage) => string;
+  isLoading: boolean;
 };
 
-function ChatHistory({ messages, getAnswerDisplay, isStreaming }: ChatHistoryProps) {
+function ChatHistory({ messages, getAnswerDisplay, isLoading }: ChatHistoryProps) {
   return (
     <>
       {messages.map((msg, index) => (
@@ -171,7 +207,7 @@ function ChatHistory({ messages, getAnswerDisplay, isStreaming }: ChatHistoryPro
         </div>
       ))}
 
-      {isStreaming && <AIMessageBubble content="..." isStreaming={true} />}
+      {isLoading && <AIMessageBubble content="..." isStreaming={true} />}
     </>
   );
 }

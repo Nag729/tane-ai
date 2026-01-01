@@ -1,2 +1,2 @@
 export { useChatAnswers } from "./useChatAnswers";
-export { useMockChat } from "./useMockChat";
+export { useChat, loadChatData, clearChatData } from "./useChat";

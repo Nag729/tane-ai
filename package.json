@@ -17,11 +17,14 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.2",
+    "ai": "^6.0.5",
     "next": "16.1.1",
     "nextjs-toploader": "^3.9.17",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-markdown": "^10.1.0"
+    "react-markdown": "^10.1.0",
+    "zod": "^4.3.4"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.3",
