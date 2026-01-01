@@ -72,7 +72,9 @@ describe("chatApi", () => {
       global.fetch = mockFetch;
       mockReadSSEStream.mockResolvedValue(mockQuestionResponse);
 
-      const messages = [{ role: "ai" as const, message: { id: "1", intro: "test", questions: [] } }];
+      const messages = [
+        { role: "ai" as const, message: { id: "1", intro: "test", questions: [] } },
+      ];
       await fetchNextQuestion("contact", messages);
 
       expect(mockFetch).toHaveBeenCalledWith("/api/chat/question", {
@@ -92,7 +94,9 @@ describe("chatApi", () => {
       global.fetch = mockFetch;
       mockReadTextSSEStream.mockResolvedValue("出力テキスト");
 
-      const messages = [{ role: "ai" as const, message: { id: "1", intro: "test", questions: [] } }];
+      const messages = [
+        { role: "ai" as const, message: { id: "1", intro: "test", questions: [] } },
+      ];
       await fetchOutput("consult", messages);
 
       expect(mockFetch).toHaveBeenCalledWith("/api/chat/output", {

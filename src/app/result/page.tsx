@@ -57,7 +57,9 @@ function ResultPageContent() {
           body: JSON.stringify({ type, messages, previousOutput: output, feedback }),
         });
 
-        const fullText = await readTextSSEStream(response, { onTextAccumulated: setStreamingContent });
+        const fullText = await readTextSSEStream(response, {
+          onTextAccumulated: setStreamingContent,
+        });
         setOutput({ content: fullText });
         setStreamingContent("");
       } catch (error) {

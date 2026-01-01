@@ -45,7 +45,9 @@ describe("ChatHistory", () => {
   // Then: getAnswerDisplay の結果が表示される
   it("should render user messages using getAnswerDisplay", () => {
     const getAnswerDisplay = vi.fn().mockReturnValue("テスト回答");
-    render(<ChatHistory messages={mockMessages} getAnswerDisplay={getAnswerDisplay} isLoading={false} />);
+    render(
+      <ChatHistory messages={mockMessages} getAnswerDisplay={getAnswerDisplay} isLoading={false} />
+    );
     expect(screen.getByText("テスト回答")).toBeInTheDocument();
     expect(getAnswerDisplay).toHaveBeenCalled();
   });
@@ -70,7 +72,9 @@ describe("ChatHistory", () => {
   // When: レンダリングする
   // Then: 何も表示されない
   it("should render nothing when messages is empty", () => {
-    const { container } = render(<ChatHistory messages={[]} getAnswerDisplay={() => ""} isLoading={false} />);
+    const { container } = render(
+      <ChatHistory messages={[]} getAnswerDisplay={() => ""} isLoading={false} />
+    );
     expect(container.textContent).toBe("");
   });
 });

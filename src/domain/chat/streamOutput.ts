@@ -83,7 +83,10 @@ export type OutputStreamCallbacks = {
   onBlockStop: () => void;
 };
 
-export async function streamOutput(req: OutputRequest, callbacks: OutputStreamCallbacks): Promise<void> {
+export async function streamOutput(
+  req: OutputRequest,
+  callbacks: OutputStreamCallbacks
+): Promise<void> {
   const systemPrompt =
     getOutputSystemPrompt(req.type) +
     "\n\n# 出力形式\nMarkdown形式で直接出力してください（JSONラッパー不要）。";

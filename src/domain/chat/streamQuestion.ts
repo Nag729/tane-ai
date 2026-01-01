@@ -42,7 +42,11 @@ ${JSON.stringify(messages, null, 2)}
 }
 
 function cleanJsonResponse(text: string): string {
-  return text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
+  return text
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
 }
 
 export type QuestionStreamCallbacks = {

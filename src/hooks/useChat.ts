@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { fetchInitialQuestion, fetchNextQuestion, fetchOutput, QuestionResponse } from "@/lib/chatApi";
+import {
+  fetchInitialQuestion,
+  fetchNextQuestion,
+  fetchOutput,
+  QuestionResponse,
+} from "@/lib/chatApi";
 import { saveChatData } from "@/lib/chatStorage";
 import { useThinking } from "./useThinking";
 import type { HorensoType, AIMessage, ChatMessage, QuestionAnswer } from "@/types";
@@ -23,8 +28,13 @@ function buildAnswerDisplayText(chatMessage: ChatMessage, allMessages: ChatMessa
     .map((a) => {
       const question = allQuestions.find((q) => q.id === a.questionId);
       if (!question) return null;
-      const labels = a.selectedOptionIds.map((id) => question.options.find((o) => o.id === id)?.label).filter(Boolean);
-      const parts = [...(labels.length > 0 ? [labels.join("、")] : []), ...(a.customInput ? [a.customInput] : [])];
+      const labels = a.selectedOptionIds
+        .map((id) => question.options.find((o) => o.id === id)?.label)
+        .filter(Boolean);
+      const parts = [
+        ...(labels.length > 0 ? [labels.join("、")] : []),
+        ...(a.customInput ? [a.customInput] : []),
+      ];
       return parts.length > 0 ? parts.join(" + ") : null;
     })
     .filter(Boolean);
@@ -53,7 +63,11 @@ export function useChat({ type, onComplete }: UseChatOptions) {
       setError(null);
       thinking.resetThinking();
       try {
-        const result = await fetchInitialQuestion(type, initialInput, thinking.createThinkingCallbacks());
+        const result = await fetchInitialQuestion(
+          type,
+          initialInput,
+          thinking.createThinkingCallbacks()
+        );
         const aiMessage = createAIMessage(result);
         setMessages([{ role: "ai", message: aiMessage }]);
         setCurrentAIMessage(aiMessage);

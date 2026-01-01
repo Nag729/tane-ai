@@ -56,7 +56,12 @@ describe("ChatFooter", () => {
   // Then: QuestionCard が表示される
   it("should show questions when hasQuestions is true", () => {
     render(
-      <ChatFooter {...defaultProps} hasQuestions={true} currentAIMessage={mockAIMessage} answers={{ "q-1": { selectedIds: [], customInput: "" } }} />
+      <ChatFooter
+        {...defaultProps}
+        hasQuestions={true}
+        currentAIMessage={mockAIMessage}
+        answers={{ "q-1": { selectedIds: [], customInput: "" } }}
+      />
     );
     expect(screen.getByText("どちらを選びますか？")).toBeInTheDocument();
     expect(screen.getByText("選択肢A")).toBeInTheDocument();

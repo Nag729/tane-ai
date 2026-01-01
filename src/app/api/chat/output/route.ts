@@ -18,13 +18,16 @@ export async function POST(request: Request) {
       };
 
       try {
-        await streamOutput({ type, messages, previousOutput, feedback }, {
-          onThinkingStart: () => send({ type: "thinking_start" }),
-          onThinking: (text) => send({ type: "thinking", text }),
-          onTextStart: () => send({ type: "text_start" }),
-          onText: (text) => send({ type: "text", text }),
-          onBlockStop: () => send({ type: "block_stop" }),
-        });
+        await streamOutput(
+          { type, messages, previousOutput, feedback },
+          {
+            onThinkingStart: () => send({ type: "thinking_start" }),
+            onThinking: (text) => send({ type: "thinking", text }),
+            onTextStart: () => send({ type: "text_start" }),
+            onText: (text) => send({ type: "text", text }),
+            onBlockStop: () => send({ type: "block_stop" }),
+          }
+        );
 
         send({ type: "done" });
         controller.close();

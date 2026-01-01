@@ -33,8 +33,14 @@ function ChatPageContent() {
     onComplete: () => router.push(`/result?type=${type}`),
   });
 
-  const { answers, handleOptionChange, handleCustomInputChange, checkAllAnswered, resetAnswers, buildQuestionAnswers } =
-    useChatAnswers();
+  const {
+    answers,
+    handleOptionChange,
+    handleCustomInputChange,
+    checkAllAnswered,
+    resetAnswers,
+    buildQuestionAnswers,
+  } = useChatAnswers();
 
   // 自動スクロール
   useEffect(() => {
@@ -48,7 +54,11 @@ function ChatPageContent() {
 
   if (!type || !config) return null;
 
-  const handleInitialSubmit = async (data: { topic: string; recipient: string; detail: string }) => {
+  const handleInitialSubmit = async (data: {
+    topic: string;
+    recipient: string;
+    detail: string;
+  }) => {
     setInitialInputSubmitted(true);
     await chat.submitInitialInput(data);
   };
@@ -60,7 +70,10 @@ function ChatPageContent() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    const canSubmitNow = chat.hasQuestions && chat.currentAIMessage && checkAllAnswered(chat.currentAIMessage.questions);
+    const canSubmitNow =
+      chat.hasQuestions &&
+      chat.currentAIMessage &&
+      checkAllAnswered(chat.currentAIMessage.questions);
     if (e.key === "Enter" && !e.shiftKey && canSubmitNow) {
       e.preventDefault();
       handleSubmit();
@@ -78,7 +91,11 @@ function ChatPageContent() {
       <main className="flex-1 overflow-y-auto p-4 pb-48">
         <div className="max-w-2xl mx-auto space-y-4">
           {!initialInputSubmitted ? (
-            <InitialInputForm fields={config.fields} onSubmit={handleInitialSubmit} defaultValues={debugDefaultValues} />
+            <InitialInputForm
+              fields={config.fields}
+              onSubmit={handleInitialSubmit}
+              defaultValues={debugDefaultValues}
+            />
           ) : (
             <>
               <ChatHistory
