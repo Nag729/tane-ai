@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { generateFirstQuestion, generateNextQuestion, generateOutput } from "@/actions/chat";
 import type {
   HorensoType,
   AIMessage,
@@ -41,30 +40,79 @@ export function clearChatData() {
   sessionStorage.removeItem(STORAGE_KEY);
 }
 
+/** SSE ストリームを読み取るユーティリティ */
+async function readSSEStream<T>(
+  response: Response,
+  onProgress?: () => void,
+  onText?: (text: string) => void
+): Promise<T> {
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error("No response body");
+
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let result: T | undefined;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n\n");
+    buffer = lines.pop() || "";
+
+    for (const line of lines) {
+      if (line.startsWith("data: ")) {
+        const data = JSON.parse(line.slice(6));
+
+        if (data.type === "progress") {
+          onProgress?.();
+        } else if (data.type === "text") {
+          onText?.(data.text);
+        } else if (data.type === "complete") {
+          result = data.data as T;
+        } else if (data.type === "done") {
+          // ストリーム完了
+        } else if (data.type === "error") {
+          throw new Error(data.error);
+        }
+      }
+    }
+  }
+
+  if (result === undefined) {
+    throw new Error("No result received");
+  }
+  return result;
+}
+
+type QuestionResponse = {
+  intro: string;
+  questions: {
+    id: string;
+    content: string;
+    options: { id: string; label: string }[];
+    multiSelect: boolean;
+    customInputPlaceholder?: string;
+  }[];
+  ready: boolean;
+};
+
 type UseChatReturn = {
-  /** チャットメッセージ履歴 */
   messages: ChatMessage[];
-  /** 現在表示中の AI メッセージ */
   currentAIMessage: AIMessage | undefined;
-  /** ローディング中か */
   isLoading: boolean;
-  /** 質問があるか */
   hasQuestions: boolean;
-  /** 整理完了可能か（AI が十分な情報と判断） */
   isReady: boolean;
-  /** エラーメッセージ */
   error: string | null;
-  /** 初期入力を送信 */
+  streamingOutput: string;
   submitInitialInput: (initialInput: {
     topic: string;
     recipient: string;
     detail: string;
   }) => Promise<void>;
-  /** 回答を送信 */
   submitAnswer: (questionAnswers: QuestionAnswer[], customInput?: string) => Promise<void>;
-  /** 出力を生成して完了 */
   completeAndGenerate: () => Promise<void>;
-  /** 回答のテキスト表示を取得 */
   getAnswerDisplay: (chatMessage: ChatMessage) => string;
 };
 
@@ -73,31 +121,40 @@ type UseChatOptions = {
   onComplete: () => void;
 };
 
-/**
- * Claude API を使ったチャットフローを管理するフック
- */
 export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentAIMessage, setCurrentAIMessage] = useState<AIMessage | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [streamingOutput, setStreamingOutput] = useState("");
 
   const hasQuestions = (currentAIMessage?.questions?.length ?? 0) > 0;
 
-  // 初期入力を送信
   const submitInitialInput = useCallback(
     async (initialInput: { topic: string; recipient: string; detail: string }) => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const aiMessage = await generateFirstQuestion(type, initialInput);
+        const response = await fetch("/api/chat/question", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type, initialInput }),
+        });
 
-        // AI の最初のメッセージを追加
+        const result = await readSSEStream<QuestionResponse>(response);
+
+        const aiMessage: AIMessage = {
+          id: `msg-${Date.now()}`,
+          intro: result.intro,
+          questions: result.questions,
+        };
+
         const newMessages: ChatMessage[] = [{ role: "ai", message: aiMessage }];
         setMessages(newMessages);
         setCurrentAIMessage(aiMessage);
+        setIsReady(result.ready);
       } catch (err) {
         setError("エラーが発生しました。もう一度お試しください。");
         console.error("Failed to generate first question:", err);
@@ -108,7 +165,6 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
     [type]
   );
 
-  // 回答を送信
   const submitAnswer = useCallback(
     async (questionAnswers: QuestionAnswer[], customInput?: string) => {
       if (!currentAIMessage) return;
@@ -116,7 +172,6 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
       setIsLoading(true);
       setError(null);
 
-      // ユーザーの回答をメッセージに追加
       const userMessage: ChatMessage = {
         role: "user",
         answer: {
@@ -130,15 +185,23 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
       setMessages(updatedMessages);
 
       try {
-        const result = await generateNextQuestion(type, updatedMessages);
+        const response = await fetch("/api/chat/question", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type, messages: updatedMessages }),
+        });
 
-        // AI のメッセージを追加
-        const newMessages: ChatMessage[] = [
-          ...updatedMessages,
-          { role: "ai", message: result.message },
-        ];
+        const result = await readSSEStream<QuestionResponse>(response);
+
+        const aiMessage: AIMessage = {
+          id: `msg-${Date.now()}`,
+          intro: result.intro,
+          questions: result.questions,
+        };
+
+        const newMessages: ChatMessage[] = [...updatedMessages, { role: "ai", message: aiMessage }];
         setMessages(newMessages);
-        setCurrentAIMessage(result.message);
+        setCurrentAIMessage(aiMessage);
         setIsReady(result.ready);
       } catch (err) {
         setError("エラーが発生しました。もう一度お試しください。");
@@ -150,17 +213,50 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
     [currentAIMessage, messages, type]
   );
 
-  // 出力を生成して完了
   const completeAndGenerate = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+    setStreamingOutput("");
 
     try {
-      const output = await generateOutput(type, messages);
+      const response = await fetch("/api/chat/output", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, messages }),
+      });
 
-      // データを sessionStorage に保存
+      // ストリーミングでテキストを受け取る
+      let fullText = "";
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No response body");
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const data = JSON.parse(line.slice(6));
+
+            if (data.type === "text") {
+              fullText += data.text;
+              setStreamingOutput(fullText);
+            } else if (data.type === "error") {
+              throw new Error(data.error);
+            }
+          }
+        }
+      }
+
+      const output: StructuredOutput = { content: fullText };
       saveChatData({ type, messages, output });
-
       onComplete();
     } catch (err) {
       setError("出力の生成に失敗しました。もう一度お試しください。");
@@ -170,7 +266,6 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
     }
   }, [type, messages, onComplete]);
 
-  // 回答のテキスト表示を取得
   const getAnswerDisplay = useCallback(
     (chatMessage: ChatMessage): string => {
       if (chatMessage.role !== "user") return "";
@@ -178,7 +273,6 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
 
       const lines: string[] = [];
 
-      // 全メッセージから質問を探す
       const allQuestions = messages
         .filter((m): m is ChatMessage & { role: "ai" } => m.role === "ai")
         .flatMap((m) => m.message.questions);
@@ -219,6 +313,7 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
       hasQuestions,
       isReady,
       error,
+      streamingOutput,
       submitInitialInput,
       submitAnswer,
       completeAndGenerate,
@@ -231,6 +326,7 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
       hasQuestions,
       isReady,
       error,
+      streamingOutput,
       submitInitialInput,
       submitAnswer,
       completeAndGenerate,

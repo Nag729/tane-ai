@@ -2,6 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect, useMemo } from "react";
+import ReactMarkdown from "react-markdown";
 import { AIMessageBubble } from "@/components/AIMessageBubble";
 import { UserMessageBubble } from "@/components/UserMessageBubble";
 import { ChoiceChips } from "@/components/ChoiceChips";
@@ -177,7 +178,21 @@ function ChatPageContent() {
               </Button>
             )}
 
-            {chat.isLoading && <p className="text-center text-stone-500">考え中...</p>}
+            {chat.isLoading && !chat.streamingOutput && (
+              <p className="text-center text-stone-500">考え中...</p>
+            )}
+
+            {/* 出力生成中のストリーミング表示 */}
+            {chat.streamingOutput && (
+              <Card className="space-y-2">
+                <h3 className="text-sm font-medium text-stone-600">📝 出力を生成中...</h3>
+                <div className="bg-stone-50 rounded-lg p-3 max-h-64 overflow-y-auto">
+                  <div className="prose prose-stone prose-sm max-w-none">
+                    <ReactMarkdown>{chat.streamingOutput}</ReactMarkdown>
+                  </div>
+                </div>
+              </Card>
+            )}
           </div>
         </footer>
       )}

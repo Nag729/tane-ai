@@ -2,12 +2,12 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import { OutputCard } from "@/components/OutputCard";
 import { FeedbackForm } from "@/components/FeedbackForm";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { loadChatData, clearChatData } from "@/hooks";
-import { regenerateOutput } from "@/actions/chat";
 import type { HorensoType, StructuredOutput, ChatMessage } from "@/types";
 
 function ResultPageContent() {
@@ -20,6 +20,7 @@ function ResultPageContent() {
   const [output, setOutput] = useState<StructuredOutput | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [streamingContent, setStreamingContent] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
 
   // sessionStorage からデータを読み込み
@@ -54,9 +55,51 @@ function ResultPageContent() {
     if (!type) return;
 
     setIsRegenerating(true);
+    setStreamingContent("");
+
     try {
-      const newOutput = await regenerateOutput(type, messages, output, feedback);
-      setOutput(newOutput);
+      const response = await fetch("/api/chat/output", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type,
+          messages,
+          previousOutput: output,
+          feedback,
+        }),
+      });
+
+      let fullText = "";
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No response body");
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const data = JSON.parse(line.slice(6));
+
+            if (data.type === "text") {
+              fullText += data.text;
+              setStreamingContent(fullText);
+            } else if (data.type === "error") {
+              throw new Error(data.error);
+            }
+          }
+        }
+      }
+
+      setOutput({ content: fullText });
+      setStreamingContent("");
     } catch (error) {
       console.error("Failed to regenerate output:", error);
     } finally {
@@ -69,6 +112,9 @@ function ResultPageContent() {
     router.push("/");
   };
 
+  // ストリーミング中は途中経過を表示
+  const displayContent = streamingContent || output.content;
+
   return (
     <div className="min-h-screen p-4">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -80,7 +126,18 @@ function ResultPageContent() {
         </Card>
 
         {/* 出力カード */}
-        <OutputCard output={output} />
+        {isRegenerating && streamingContent ? (
+          <Card className="space-y-4">
+            <h2 className="text-lg font-medium text-stone-800">📋 再生成中...</h2>
+            <div className="bg-stone-50 rounded-xl p-4 min-h-32">
+              <div className="prose prose-stone prose-sm max-w-none">
+                <ReactMarkdown>{streamingContent}</ReactMarkdown>
+              </div>
+            </div>
+          </Card>
+        ) : (
+          <OutputCard output={{ content: displayContent }} />
+        )}
 
         {/* フィードバックフォーム */}
         <Card>
