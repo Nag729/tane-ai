@@ -2,14 +2,15 @@
 
 > TDD（テスト駆動開発）で進める: Red → Green → Refactor
 
-## Phase 1: プロジェクトセットアップ
+## Phase 1: プロジェクトセットアップ ✅
 
-- [ ] Next.js + TypeScript プロジェクト作成
-- [ ] Tailwind CSS セットアップ
-- [ ] Vitest + React Testing Library セットアップ
-- [ ] ESLint / Prettier 設定
-- [ ] 基本ディレクトリ構成作成
-- [ ] 環境変数設定（.env.local）
+- [x] Next.js + TypeScript プロジェクト作成
+- [x] Tailwind CSS セットアップ
+- [x] Vitest + React Testing Library セットアップ
+- [x] Storybook セットアップ
+- [x] ESLint / Prettier 設定
+- [x] 基本ディレクトリ構成作成
+- [x] 環境変数設定（.env.example）
 - [ ] CI でテスト実行設定（GitHub Actions）
 
 ## Phase 2: 基盤コンポーネント
