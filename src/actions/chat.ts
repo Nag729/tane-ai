@@ -29,26 +29,54 @@ function parseJSON<T>(text: string): T {
 
 /**
  * チャット履歴をプロンプト用のテキストに変換
+ * 選択肢のラベルを含めて、AIが回答内容を理解できるようにする
  */
 function formatChatHistory(messages: ChatMessage[]): string {
+  // 全てのAIメッセージから質問を収集（ID → ラベルのマッピング用）
+  const questionMap = new Map<string, { content: string; options: Map<string, string> }>();
+
+  messages.forEach((msg) => {
+    if (msg.role === "ai") {
+      msg.message.questions.forEach((q) => {
+        const optionMap = new Map<string, string>();
+        q.options.forEach((opt) => optionMap.set(opt.id, opt.label));
+        questionMap.set(q.id, { content: q.content, options: optionMap });
+      });
+    }
+  });
+
   return messages
     .map((msg) => {
       if (msg.role === "ai") {
         const intro = msg.message.intro || "";
-        const questions = msg.message.questions.map((q) => `質問: ${q.content}`).join("\n");
+        const questions = msg.message.questions
+          .map((q) => {
+            const options = q.options.map((o) => o.label).join(" / ");
+            return `質問: ${q.content}\n  選択肢: [${options}]`;
+          })
+          .join("\n");
         return `AI: ${intro}\n${questions}`;
       } else {
         const answers = msg.answer.answers
           .map((a) => {
-            const selected = a.selectedOptionIds.join(", ");
+            const question = questionMap.get(a.questionId);
+            if (!question) return "";
+
+            // 選択肢IDをラベルに変換
+            const selectedLabels = a.selectedOptionIds
+              .map((id) => question.options.get(id) || id)
+              .join("、");
+
             const custom = a.customInput ? ` (補足: ${a.customInput})` : "";
-            return `回答: ${selected}${custom}`;
+            return `「${question.content}」への回答: ${selectedLabels}${custom}`;
           })
+          .filter(Boolean)
           .join("\n");
+
         const customInput = msg.answer.customInput
-          ? `\nユーザー入力: ${msg.answer.customInput}`
+          ? `\n自由入力: ${msg.answer.customInput}`
           : "";
-        return `ユーザー: ${answers}${customInput}`;
+        return `ユーザー:\n${answers}${customInput}`;
       }
     })
     .join("\n\n");
