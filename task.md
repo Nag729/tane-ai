@@ -84,7 +84,7 @@
 ### 5-2. Server Actions
 
 - [ ] actions/generateFirstQuestion.ts（Extended Thinking 使用）
-- [ ] actions/generateNextQuestion.ts
+- [ ] actions/generateNextQuestion.ts（Extended Thinking 使用）
 - [ ] actions/generateOutput.ts（Extended Thinking 使用）
 
 ### 5-3. ストリーミング
