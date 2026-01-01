@@ -11,6 +11,24 @@ const eslintConfig = defineConfig([
   ...nextTs,
   ...storybook.configs["flat/recommended"],
   prettier,
+  // 複雑度ルール（テスト・Storybook は除外）
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}", "**/*.stories.{ts,tsx}"],
+    rules: {
+      // 循環的複雑度（分岐の数）: 10 以下
+      complexity: ["warn", { max: 10 }],
+      // ネストの深さ: 4 以下
+      "max-depth": ["warn", { max: 4 }],
+      // 関数の行数: 50 行以下
+      "max-lines-per-function": [
+        "warn",
+        { max: 50, skipBlankLines: true, skipComments: true },
+      ],
+      // 関数の引数: 4 つ以下
+      "max-params": ["warn", { max: 4 }],
+    },
+  },
   // Storybook ルールの調整（@storybook/react の型インポートは許可）
   {
     files: ["**/*.stories.tsx"],
