@@ -10,7 +10,7 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="min-h-[300px] relative">
+      <div className="min-h-75 relative">
         <Story />
       </div>
     ),

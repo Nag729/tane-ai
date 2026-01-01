@@ -3,55 +3,53 @@ import { Button } from "@/components/ui/Button";
 import type { AIMessage } from "@/types";
 
 export type ChatFooterProps = {
-  /** AI が ready と判断したか */
   isReady: boolean;
-  /** ローディング中か */
   isLoading: boolean;
-  /** 質問があるか */
   hasQuestions: boolean;
-  /** 現在の AI メッセージ */
   currentAIMessage: AIMessage | undefined;
-  /** 回答状態 */
   answers: Record<string, { selectedIds: string[]; customInput: string }>;
-  /** 送信可能か */
   canSubmit: boolean;
-  /** 完了ボタンクリック時 */
   onComplete: () => void;
-  /** 送信ボタンクリック時 */
   onSubmit: () => void;
-  /** 選択肢変更時 */
   onOptionChange: (questionId: string, ids: string[]) => void;
-  /** カスタム入力変更時 */
   onCustomInputChange: (questionId: string, value: string) => void;
-  /** キー押下時 */
   onKeyDown: (e: React.KeyboardEvent) => void;
 };
 
-export function ChatFooter({
-  isReady,
-  isLoading,
-  hasQuestions,
-  currentAIMessage,
-  answers,
-  canSubmit,
-  onComplete,
-  onSubmit,
-  onOptionChange,
-  onCustomInputChange,
-  onKeyDown,
-}: ChatFooterProps) {
+function CompleteButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button onClick={onClick} className="w-full bg-green-600 hover:bg-green-700">
+      ✨ 整理完了！結果を見る
+    </Button>
+  );
+}
+
+function SubmitButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button onClick={onClick} className="w-full">
+      次へ →
+    </Button>
+  );
+}
+
+function LoadingIndicator() {
+  return <p className="text-center text-stone-500">思考中...</p>;
+}
+
+export function ChatFooter(props: ChatFooterProps) {
+  const { isReady, isLoading, hasQuestions, currentAIMessage, answers } = props;
+  const { canSubmit, onComplete, onSubmit, onOptionChange, onCustomInputChange, onKeyDown } = props;
+
+  const showComplete = isReady && !isLoading;
+  const showQuestions = !isReady && !isLoading && hasQuestions;
+  const showSubmit = !isReady && !isLoading && canSubmit;
+
   return (
     <footer className="bg-white border-t border-stone-200 p-4 fixed bottom-0 left-0 right-0">
       <div className="max-w-2xl mx-auto space-y-3">
-        {isReady && !isLoading && (
-          <Button onClick={onComplete} className="w-full bg-green-600 hover:bg-green-700">
-            ✨ 整理完了！結果を見る
-          </Button>
-        )}
+        {showComplete && <CompleteButton onClick={onComplete} />}
 
-        {!isReady &&
-          !isLoading &&
-          hasQuestions &&
+        {showQuestions &&
           currentAIMessage?.questions.map((q) => (
             <QuestionCard
               key={q.id}
@@ -64,13 +62,9 @@ export function ChatFooter({
             />
           ))}
 
-        {!isReady && canSubmit && !isLoading && (
-          <Button onClick={onSubmit} className="w-full">
-            次へ →
-          </Button>
-        )}
+        {showSubmit && <SubmitButton onClick={onSubmit} />}
 
-        {isLoading && <p className="text-center text-stone-500">思考中...</p>}
+        {isLoading && <LoadingIndicator />}
       </div>
     </footer>
   );
