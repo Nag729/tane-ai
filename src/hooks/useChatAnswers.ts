@@ -21,6 +21,7 @@ type UseChatAnswersReturn = {
 /**
  * チャットの回答入力状態を管理するフック
  */
+// eslint-disable-next-line max-lines-per-function
 export function useChatAnswers(): UseChatAnswersReturn {
   const [answers, setAnswers] = useState<Record<string, AnswerState>>({});
 

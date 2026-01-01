@@ -1,150 +1,49 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import type {
-  HorensoType,
-  AIMessage,
-  ChatMessage,
-  QuestionAnswer,
-  StructuredOutput,
-} from "@/types";
+import { fetchInitialQuestion, fetchNextQuestion, fetchOutput, QuestionResponse } from "@/lib/chatApi";
+import { saveChatData } from "@/lib/chatStorage";
+import { useThinking } from "./useThinking";
+import type { HorensoType, AIMessage, ChatMessage, QuestionAnswer } from "@/types";
 
-/** sessionStorage に保存するデータのキー */
-const STORAGE_KEY = "horenso-chat-data";
+export { saveChatData, loadChatData, clearChatData } from "@/lib/chatStorage";
 
-type ChatData = {
-  type: HorensoType;
-  messages: ChatMessage[];
-  output?: StructuredOutput;
-};
-
-/** sessionStorage にデータを保存 */
-function saveChatData(data: ChatData) {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+function createAIMessage(result: QuestionResponse): AIMessage {
+  return { id: `msg-${Date.now()}`, intro: result.intro, questions: result.questions };
 }
 
-/** sessionStorage からデータを読み込み */
-export function loadChatData(): ChatData | null {
-  if (typeof window === "undefined") return null;
-  const stored = sessionStorage.getItem(STORAGE_KEY);
-  if (!stored) return null;
-  try {
-    return JSON.parse(stored) as ChatData;
-  } catch {
-    return null;
-  }
+function buildAnswerDisplayText(chatMessage: ChatMessage, allMessages: ChatMessage[]): string {
+  if (chatMessage.role !== "user") return "";
+  const { answers: ans, customInput } = chatMessage.answer;
+  const allQuestions = allMessages
+    .filter((m): m is ChatMessage & { role: "ai" } => m.role === "ai")
+    .flatMap((m) => m.message.questions);
+
+  const lines = ans
+    .map((a) => {
+      const question = allQuestions.find((q) => q.id === a.questionId);
+      if (!question) return null;
+      const labels = a.selectedOptionIds.map((id) => question.options.find((o) => o.id === id)?.label).filter(Boolean);
+      const parts = [...(labels.length > 0 ? [labels.join("、")] : []), ...(a.customInput ? [a.customInput] : [])];
+      return parts.length > 0 ? parts.join(" + ") : null;
+    })
+    .filter(Boolean);
+
+  if (customInput) lines.push(customInput);
+  return lines.join("\n");
 }
 
-/** sessionStorage のデータをクリア */
-export function clearChatData() {
-  sessionStorage.removeItem(STORAGE_KEY);
-}
+type UseChatOptions = { type: HorensoType; onComplete: () => void };
 
-/** SSE ストリームのコールバック */
-type SSECallbacks = {
-  onProgress?: () => void;
-  onText?: (text: string) => void;
-  onThinkingStart?: () => void;
-  onThinking?: (text: string) => void;
-  onBlockStop?: () => void;
-};
-
-/** SSE ストリームを読み取るユーティリティ */
-async function readSSEStream<T>(response: Response, callbacks?: SSECallbacks): Promise<T> {
-  const reader = response.body?.getReader();
-  if (!reader) throw new Error("No response body");
-
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let result: T | undefined;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n\n");
-    buffer = lines.pop() || "";
-
-    for (const line of lines) {
-      if (line.startsWith("data: ")) {
-        const data = JSON.parse(line.slice(6));
-
-        if (data.type === "progress") {
-          callbacks?.onProgress?.();
-        } else if (data.type === "text") {
-          callbacks?.onText?.(data.text);
-        } else if (data.type === "thinking_start") {
-          callbacks?.onThinkingStart?.();
-        } else if (data.type === "thinking") {
-          callbacks?.onThinking?.(data.text);
-        } else if (data.type === "block_stop") {
-          callbacks?.onBlockStop?.();
-        } else if (data.type === "complete") {
-          result = data.data as T;
-        } else if (data.type === "done") {
-          // ストリーム完了
-        } else if (data.type === "error") {
-          throw new Error(data.error);
-        }
-      }
-    }
-  }
-
-  if (result === undefined) {
-    throw new Error("No result received");
-  }
-  return result;
-}
-
-type QuestionResponse = {
-  intro: string;
-  questions: {
-    id: string;
-    content: string;
-    options: { id: string; label: string }[];
-    multiSelect: boolean;
-    customInputPlaceholder?: string;
-  }[];
-  ready: boolean;
-};
-
-type UseChatReturn = {
-  messages: ChatMessage[];
-  currentAIMessage: AIMessage | undefined;
-  isLoading: boolean;
-  hasQuestions: boolean;
-  isReady: boolean;
-  error: string | null;
-  streamingOutput: string;
-  /** 思考中かどうか */
-  isThinking: boolean;
-  /** 思考内容（ストリーミング中は途中経過） */
-  thinkingContent: string;
-  submitInitialInput: (initialInput: {
-    topic: string;
-    recipient: string;
-    detail: string;
-  }) => Promise<void>;
-  submitAnswer: (questionAnswers: QuestionAnswer[], customInput?: string) => Promise<void>;
-  completeAndGenerate: () => Promise<void>;
-  getAnswerDisplay: (chatMessage: ChatMessage) => string;
-};
-
-type UseChatOptions = {
-  type: HorensoType;
-  onComplete: () => void;
-};
-
-export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
+// eslint-disable-next-line max-lines-per-function
+export function useChat({ type, onComplete }: UseChatOptions) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [currentAIMessage, setCurrentAIMessage] = useState<AIMessage | undefined>();
+  const [currentAIMessage, setCurrentAIMessage] = useState<AIMessage>();
   const [isLoading, setIsLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [streamingOutput, setStreamingOutput] = useState("");
-  const [isThinking, setIsThinking] = useState(false);
-  const [thinkingContent, setThinkingContent] = useState("");
+  const thinking = useThinking();
 
   const hasQuestions = (currentAIMessage?.questions?.length ?? 0) > 0;
 
@@ -152,37 +51,11 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
     async (initialInput: { topic: string; recipient: string; detail: string }) => {
       setIsLoading(true);
       setError(null);
-      setThinkingContent("");
-
+      thinking.resetThinking();
       try {
-        const response = await fetch("/api/chat/question", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type, initialInput }),
-        });
-
-        let thinkingText = "";
-        const result = await readSSEStream<QuestionResponse>(response, {
-          onThinkingStart: () => {
-            setIsThinking(true);
-          },
-          onThinking: (text) => {
-            thinkingText += text;
-            setThinkingContent(thinkingText);
-          },
-          onBlockStop: () => {
-            setIsThinking(false);
-          },
-        });
-
-        const aiMessage: AIMessage = {
-          id: `msg-${Date.now()}`,
-          intro: result.intro,
-          questions: result.questions,
-        };
-
-        const newMessages: ChatMessage[] = [{ role: "ai", message: aiMessage }];
-        setMessages(newMessages);
+        const result = await fetchInitialQuestion(type, initialInput, thinking.createThinkingCallbacks());
+        const aiMessage = createAIMessage(result);
+        setMessages([{ role: "ai", message: aiMessage }]);
         setCurrentAIMessage(aiMessage);
         setIsReady(result.ready);
       } catch (err) {
@@ -190,48 +63,27 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
         console.error("Failed to generate first question:", err);
       } finally {
         setIsLoading(false);
-        setIsThinking(false);
+        thinking.stopThinking();
       }
     },
-    [type]
+    [type, thinking]
   );
 
   const submitAnswer = useCallback(
     async (questionAnswers: QuestionAnswer[], customInput?: string) => {
       if (!currentAIMessage) return;
-
       setIsLoading(true);
       setError(null);
-
       const userMessage: ChatMessage = {
         role: "user",
-        answer: {
-          messageId: currentAIMessage.id,
-          answers: questionAnswers,
-          customInput,
-        },
+        answer: { messageId: currentAIMessage.id, answers: questionAnswers, customInput },
       };
-
       const updatedMessages = [...messages, userMessage];
       setMessages(updatedMessages);
-
       try {
-        const response = await fetch("/api/chat/question", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type, messages: updatedMessages }),
-        });
-
-        const result = await readSSEStream<QuestionResponse>(response);
-
-        const aiMessage: AIMessage = {
-          id: `msg-${Date.now()}`,
-          intro: result.intro,
-          questions: result.questions,
-        };
-
-        const newMessages: ChatMessage[] = [...updatedMessages, { role: "ai", message: aiMessage }];
-        setMessages(newMessages);
+        const result = await fetchNextQuestion(type, updatedMessages);
+        const aiMessage = createAIMessage(result);
+        setMessages([...updatedMessages, { role: "ai", message: aiMessage }]);
         setCurrentAIMessage(aiMessage);
         setIsReady(result.ready);
       } catch (err) {
@@ -248,101 +100,25 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
     setIsLoading(true);
     setError(null);
     setStreamingOutput("");
-    setThinkingContent("");
-
+    thinking.resetThinking();
     try {
-      const response = await fetch("/api/chat/output", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, messages }),
+      const fullText = await fetchOutput(type, messages, {
+        ...thinking.createThinkingCallbacks(),
+        onTextAccumulated: setStreamingOutput,
       });
-
-      // ストリーミングでテキストを受け取る
-      let fullText = "";
-      let thinkingText = "";
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error("No response body");
-
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = JSON.parse(line.slice(6));
-
-            if (data.type === "thinking_start") {
-              setIsThinking(true);
-            } else if (data.type === "thinking") {
-              thinkingText += data.text;
-              setThinkingContent(thinkingText);
-            } else if (data.type === "text") {
-              fullText += data.text;
-              setStreamingOutput(fullText);
-            } else if (data.type === "block_stop") {
-              setIsThinking(false);
-            } else if (data.type === "error") {
-              throw new Error(data.error);
-            }
-          }
-        }
-      }
-
-      const output: StructuredOutput = { content: fullText };
-      saveChatData({ type, messages, output });
+      saveChatData({ type, messages, output: { content: fullText } });
       onComplete();
     } catch (err) {
       setError("出力の生成に失敗しました。もう一度お試しください。");
       console.error("Failed to generate output:", err);
     } finally {
       setIsLoading(false);
-      setIsThinking(false);
+      thinking.stopThinking();
     }
-  }, [type, messages, onComplete]);
+  }, [type, messages, onComplete, thinking]);
 
   const getAnswerDisplay = useCallback(
-    (chatMessage: ChatMessage): string => {
-      if (chatMessage.role !== "user") return "";
-      const { answers: ans, customInput } = chatMessage.answer;
-
-      const lines: string[] = [];
-
-      const allQuestions = messages
-        .filter((m): m is ChatMessage & { role: "ai" } => m.role === "ai")
-        .flatMap((m) => m.message.questions);
-
-      ans.forEach((a) => {
-        const question = allQuestions.find((q) => q.id === a.questionId);
-        if (!question) return;
-
-        const parts: string[] = [];
-        const labels = a.selectedOptionIds
-          .map((id) => question.options.find((o) => o.id === id)?.label)
-          .filter(Boolean);
-        if (labels.length > 0) {
-          parts.push(labels.join("、"));
-        }
-        if (a.customInput) {
-          parts.push(a.customInput);
-        }
-        if (parts.length > 0) {
-          lines.push(parts.join(" + "));
-        }
-      });
-
-      if (customInput) {
-        lines.push(customInput);
-      }
-
-      return lines.join("\n");
-    },
+    (chatMessage: ChatMessage): string => buildAnswerDisplayText(chatMessage, messages),
     [messages]
   );
 
@@ -355,8 +131,8 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
       isReady,
       error,
       streamingOutput,
-      isThinking,
-      thinkingContent,
+      isThinking: thinking.isThinking,
+      thinkingContent: thinking.thinkingContent,
       submitInitialInput,
       submitAnswer,
       completeAndGenerate,
@@ -370,8 +146,8 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
       isReady,
       error,
       streamingOutput,
-      isThinking,
-      thinkingContent,
+      thinking.isThinking,
+      thinking.thinkingContent,
       submitInitialInput,
       submitAnswer,
       completeAndGenerate,
