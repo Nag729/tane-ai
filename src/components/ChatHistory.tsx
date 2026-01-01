@@ -25,7 +25,7 @@ export function ChatHistory({ messages, getAnswerDisplay, isLoading }: ChatHisto
           )}
         </div>
       ))}
-      {isLoading && <AIMessageBubble content="..." isStreaming={true} />}
+      {isLoading && <AIMessageBubble content="" isStreaming={true} />}
     </>
   );
 }

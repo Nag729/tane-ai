@@ -53,17 +53,17 @@ describe("ChatHistory", () => {
   // Given: isLoading が true
   // When: レンダリングする
   // Then: ストリーミングインジケータが表示される
-  it("should show loading indicator when isLoading is true", () => {
+  it("should show streaming indicator when isLoading is true", () => {
     render(<ChatHistory messages={[]} getAnswerDisplay={() => ""} isLoading={true} />);
-    expect(screen.getByText("...")).toBeInTheDocument();
+    expect(screen.getByTestId("streaming-indicator")).toBeInTheDocument();
   });
 
   // Given: isLoading が false
   // When: レンダリングする
   // Then: ストリーミングインジケータが表示されない
-  it("should not show loading indicator when isLoading is false", () => {
+  it("should not show streaming indicator when isLoading is false", () => {
     render(<ChatHistory messages={[]} getAnswerDisplay={() => ""} isLoading={false} />);
-    expect(screen.queryByText("...")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("streaming-indicator")).not.toBeInTheDocument();
   });
 
   // Given: メッセージが空
