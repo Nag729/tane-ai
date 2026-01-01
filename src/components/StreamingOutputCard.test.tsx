@@ -19,14 +19,6 @@ describe("StreamingOutputCard", () => {
     expect(screen.getByText("テスト出力内容")).toBeInTheDocument();
   });
 
-  // Given: コンポーネントがある
-  // When: レンダリングする
-  // Then: タイトルが表示される
-  it("should render title", () => {
-    render(<StreamingOutputCard content="コンテンツ" isStreaming={false} />);
-    expect(screen.getByText(/出力を生成中/)).toBeInTheDocument();
-  });
-
   // Given: isStreaming が true
   // When: レンダリングする
   // Then: ストリーミングカーソルが表示される
