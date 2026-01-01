@@ -46,7 +46,11 @@ export const Interactive: Story = {
   render: function InteractiveChip() {
     const [selected, setSelected] = useState(false);
     return (
-      <Chip label={selected ? "選択中" : "クリックして選択"} selected={selected} onClick={() => setSelected(!selected)} />
+      <Chip
+        label={selected ? "選択中" : "クリックして選択"}
+        selected={selected}
+        onClick={() => setSelected(!selected)}
+      />
     );
   },
 };

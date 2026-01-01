@@ -47,9 +47,7 @@ export function OutputCard({ output, format, onFormatChange }: OutputCardProps) 
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         ) : (
-          <pre className="whitespace-pre-wrap text-stone-800 font-sans text-sm">
-            {content}
-          </pre>
+          <pre className="whitespace-pre-wrap text-stone-800 font-sans text-sm">{content}</pre>
         )}
       </div>
 

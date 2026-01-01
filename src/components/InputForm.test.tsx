@@ -80,9 +80,6 @@ describe("InputForm", () => {
     render(<InputForm onSubmit={() => {}} />);
 
     const recipientInput = screen.getByLabelText(/相手/);
-    expect(recipientInput).toHaveAttribute(
-      "placeholder",
-      expect.stringContaining("技術")
-    );
+    expect(recipientInput).toHaveAttribute("placeholder", expect.stringContaining("技術"));
   });
 });

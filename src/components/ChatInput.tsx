@@ -40,11 +40,7 @@ export function ChatInput({
         disabled={disabled}
         className="flex-1"
       />
-      <Button
-        onClick={handleSubmit}
-        disabled={disabled || !value.trim()}
-        aria-label="送信"
-      >
+      <Button onClick={handleSubmit} disabled={disabled || !value.trim()} aria-label="送信">
         送信
       </Button>
     </div>

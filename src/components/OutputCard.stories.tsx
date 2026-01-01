@@ -76,13 +76,7 @@ export const PlaintextFormat: Story = {
 export const Interactive: Story = {
   render: function InteractiveOutputCard() {
     const [format, setFormat] = useState<"markdown" | "plaintext">("markdown");
-    return (
-      <OutputCard
-        output={sampleOutput}
-        format={format}
-        onFormatChange={setFormat}
-      />
-    );
+    return <OutputCard output={sampleOutput} format={format} onFormatChange={setFormat} />;
   },
 };
 

@@ -64,11 +64,7 @@ describe("OutputCard", () => {
     const handleFormatChange = vi.fn();
 
     render(
-      <OutputCard
-        output={mockOutput}
-        format="markdown"
-        onFormatChange={handleFormatChange}
-      />
+      <OutputCard output={mockOutput} format="markdown" onFormatChange={handleFormatChange} />
     );
 
     await user.click(screen.getByRole("button", { name: /プレーン/ }));

@@ -21,9 +21,7 @@ export function FeedbackForm({ onSubmit, isLoading = false }: FeedbackFormProps)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="text-sm font-medium text-stone-600">
-        💬 フィードバックで再生成
-      </div>
+      <div className="text-sm font-medium text-stone-600">💬 フィードバックで再生成</div>
       <Textarea
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}

@@ -106,13 +106,7 @@ describe("ChoiceChips", () => {
   // When: レンダリングする
   // Then: 選択状態が視覚的に分かる
   it("should show selected state visually", () => {
-    render(
-      <ChoiceChips
-        options={mockOptions}
-        selectedIds={["1"]}
-        onChange={() => {}}
-      />
-    );
+    render(<ChoiceChips options={mockOptions} selectedIds={["1"]} onChange={() => {}} />);
 
     const selectedChip = screen.getByText("選択肢A").closest("button");
     expect(selectedChip).toHaveClass("bg-emerald-500");

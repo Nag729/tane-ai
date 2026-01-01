@@ -41,7 +41,11 @@ describe("CardButton", () => {
     const user = userEvent.setup();
     const handleClick = vi.fn();
 
-    render(<CardButton onClick={handleClick} disabled>無効</CardButton>);
+    render(
+      <CardButton onClick={handleClick} disabled>
+        無効
+      </CardButton>
+    );
     await user.click(screen.getByRole("button"));
 
     expect(handleClick).not.toHaveBeenCalled();
