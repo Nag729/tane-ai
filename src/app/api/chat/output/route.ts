@@ -1,53 +1,5 @@
-import { anthropic, MODEL_ID } from "@/lib/anthropic";
-import { getOutputSystemPrompt } from "@/lib/prompts";
+import { streamOutput } from "@/domain/chat/streamOutput";
 import type { HorensoType, ChatMessage } from "@/types";
-
-/**
- * チャット履歴をプロンプト用のテキストに変換
- */
-function formatChatHistory(messages: ChatMessage[]): string {
-  const questionMap = new Map<string, { content: string; options: Map<string, string> }>();
-
-  messages.forEach((msg) => {
-    if (msg.role === "ai") {
-      msg.message.questions.forEach((q) => {
-        const optionMap = new Map<string, string>();
-        q.options.forEach((opt) => optionMap.set(opt.id, opt.label));
-        questionMap.set(q.id, { content: q.content, options: optionMap });
-      });
-    }
-  });
-
-  return messages
-    .map((msg) => {
-      if (msg.role === "ai") {
-        const intro = msg.message.intro || "";
-        const questions = msg.message.questions
-          .map((q) => {
-            const options = q.options.map((o) => o.label).join(" / ");
-            return `質問: ${q.content}\n  選択肢: [${options}]`;
-          })
-          .join("\n");
-        return `AI: ${intro}\n${questions}`;
-      } else {
-        const answers = msg.answer.answers
-          .map((a) => {
-            const question = questionMap.get(a.questionId);
-            if (!question) return "";
-            const selectedLabels = a.selectedOptionIds
-              .map((id) => question.options.get(id) || id)
-              .join("、");
-            const custom = a.customInput ? ` (補足: ${a.customInput})` : "";
-            return `「${question.content}」への回答: ${selectedLabels}${custom}`;
-          })
-          .filter(Boolean)
-          .join("\n");
-        const customInput = msg.answer.customInput ? `\n自由入力: ${msg.answer.customInput}` : "";
-        return `ユーザー:\n${answers}${customInput}`;
-      }
-    })
-    .join("\n\n");
-}
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -58,88 +10,26 @@ export async function POST(request: Request) {
     feedback?: string;
   };
 
-  const systemPrompt =
-    getOutputSystemPrompt(type) +
-    "\n\n# 出力形式\nMarkdown形式で直接出力してください（JSONラッパー不要）。";
-  const chatHistory = formatChatHistory(messages);
-
-  let userPrompt: string;
-  if (previousOutput && feedback) {
-    userPrompt = `これまでの対話:
-${chatHistory}
-
-前回の出力:
-${previousOutput.content}
-
-ユーザーからのフィードバック:
-${feedback}
-
-フィードバックを反映して、改善された文章を生成してください。`;
-  } else {
-    userPrompt = `これまでの対話:
-${chatHistory}
-
-この対話で集まった情報を元に、構造化された文章を生成してください。`;
-  }
-
-  const useThinking = !previousOutput; // 再生成時は Extended Thinking 不要
-
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
+      const send = (data: Record<string, unknown>) => {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+      };
+
       try {
-        const messageStream = anthropic.messages.stream({
-          model: MODEL_ID,
-          max_tokens: 16000,
-          ...(useThinking && {
-            thinking: {
-              type: "enabled" as const,
-              budget_tokens: 8000,
-            },
-          }),
-          system: systemPrompt,
-          messages: [{ role: "user", content: userPrompt }],
+        await streamOutput({ type, messages, previousOutput, feedback }, {
+          onThinkingStart: () => send({ type: "thinking_start" }),
+          onThinking: (text) => send({ type: "thinking", text }),
+          onTextStart: () => send({ type: "text_start" }),
+          onText: (text) => send({ type: "text", text }),
+          onBlockStop: () => send({ type: "block_stop" }),
         });
 
-        // ストリームを読み取り
-        for await (const event of messageStream) {
-          if (event.type === "content_block_start") {
-            if (event.content_block.type === "thinking") {
-              controller.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ type: "thinking_start" })}\n\n`)
-              );
-            } else if (event.content_block.type === "text") {
-              controller.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ type: "text_start" })}\n\n`)
-              );
-            }
-          } else if (event.type === "content_block_delta") {
-            if (event.delta.type === "thinking_delta") {
-              controller.enqueue(
-                encoder.encode(
-                  `data: ${JSON.stringify({ type: "thinking", text: event.delta.thinking })}\n\n`
-                )
-              );
-            } else if (event.delta.type === "text_delta") {
-              controller.enqueue(
-                encoder.encode(
-                  `data: ${JSON.stringify({ type: "text", text: event.delta.text })}\n\n`
-                )
-              );
-            }
-          } else if (event.type === "content_block_stop") {
-            controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ type: "block_stop" })}\n\n`)
-            );
-          }
-        }
-
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`));
+        send({ type: "done" });
         controller.close();
       } catch (error) {
-        controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: "error", error: String(error) })}\n\n`)
-        );
+        send({ type: "error", error: String(error) });
         controller.close();
       }
     },
