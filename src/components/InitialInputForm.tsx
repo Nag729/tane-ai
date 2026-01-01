@@ -18,11 +18,7 @@ type InitialInputFormProps = {
   isLoading?: boolean;
 };
 
-export function InitialInputForm({
-  fields,
-  onSubmit,
-  isLoading = false,
-}: InitialInputFormProps) {
+export function InitialInputForm({ fields, onSubmit, isLoading = false }: InitialInputFormProps) {
   const [topic, setTopic] = useState("");
   const [recipient, setRecipient] = useState("");
   const [detail, setDetail] = useState("");
@@ -51,9 +47,7 @@ export function InitialInputForm({
         <p className="text-stone-600 text-center text-sm">教えてね 📝</p>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-stone-700">
-            {fields.topic.label}
-          </label>
+          <label className="text-sm font-medium text-stone-700">{fields.topic.label}</label>
           <Textarea
             ref={firstInputRef}
             value={topic}
@@ -64,9 +58,7 @@ export function InitialInputForm({
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-stone-700">
-            {fields.recipient.label}
-          </label>
+          <label className="text-sm font-medium text-stone-700">{fields.recipient.label}</label>
           <Textarea
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
@@ -76,9 +68,7 @@ export function InitialInputForm({
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-stone-700">
-            {fields.detail.label}
-          </label>
+          <label className="text-sm font-medium text-stone-700">{fields.detail.label}</label>
           <Textarea
             value={detail}
             onChange={(e) => setDetail(e.target.value)}
@@ -87,11 +77,7 @@ export function InitialInputForm({
           />
         </div>
 
-        <Button
-          type="submit"
-          disabled={!isValid || isLoading}
-          className="w-full"
-        >
+        <Button type="submit" disabled={!isValid || isLoading} className="w-full">
           {isLoading ? "準備中..." : "これで始める 🚀"}
         </Button>
       </form>

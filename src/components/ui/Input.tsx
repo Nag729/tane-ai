@@ -1,8 +1,4 @@
-import {
-  forwardRef,
-  type InputHTMLAttributes,
-  type TextareaHTMLAttributes,
-} from "react";
+import { forwardRef, type InputHTMLAttributes, type TextareaHTMLAttributes } from "react";
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   error?: boolean;
@@ -21,10 +17,8 @@ const baseStyles = `
   placeholder:text-stone-400
 `;
 
-const normalStyles =
-  "border-stone-300 bg-white focus:border-emerald-500 focus:ring-emerald-100";
-const errorStyles =
-  "border-rose-400 bg-rose-50 focus:border-rose-400 focus:ring-rose-100";
+const normalStyles = "border-stone-300 bg-white focus:border-emerald-500 focus:ring-emerald-100";
+const errorStyles = "border-rose-400 bg-rose-50 focus:border-rose-400 focus:ring-rose-100";
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ error, className = "", ...props }, ref) => {

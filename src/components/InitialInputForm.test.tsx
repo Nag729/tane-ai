@@ -30,15 +30,9 @@ describe("InitialInputForm", () => {
     expect(screen.getByText("何を報告する？")).toBeInTheDocument();
     expect(screen.getByText("誰に？")).toBeInTheDocument();
     expect(screen.getByText("現状は？")).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText("例：新機能の開発進捗")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText("例：開発チームのリーダー山田さん")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText("例：予定より1週間遅れてる")
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例：新機能の開発進捗")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例：開発チームのリーダー山田さん")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例：予定より1週間遅れてる")).toBeInTheDocument();
   });
 
   it("should disable submit button when fields are empty", () => {
@@ -59,18 +53,9 @@ describe("InitialInputForm", () => {
     render(<InitialInputForm fields={defaultFields} onSubmit={onSubmit} />);
 
     // When
-    await user.type(
-      screen.getByPlaceholderText("例：新機能の開発進捗"),
-      "新機能"
-    );
-    await user.type(
-      screen.getByPlaceholderText("例：開発チームのリーダー山田さん"),
-      "山田さん"
-    );
-    await user.type(
-      screen.getByPlaceholderText("例：予定より1週間遅れてる"),
-      "順調"
-    );
+    await user.type(screen.getByPlaceholderText("例：新機能の開発進捗"), "新機能");
+    await user.type(screen.getByPlaceholderText("例：開発チームのリーダー山田さん"), "山田さん");
+    await user.type(screen.getByPlaceholderText("例：予定より1週間遅れてる"), "順調");
 
     // Then
     expect(screen.getByRole("button", { name: /始める/i })).toBeEnabled();
@@ -83,18 +68,12 @@ describe("InitialInputForm", () => {
     render(<InitialInputForm fields={defaultFields} onSubmit={onSubmit} />);
 
     // When
-    await user.type(
-      screen.getByPlaceholderText("例：新機能の開発進捗"),
-      "  新機能  "
-    );
+    await user.type(screen.getByPlaceholderText("例：新機能の開発進捗"), "  新機能  ");
     await user.type(
       screen.getByPlaceholderText("例：開発チームのリーダー山田さん"),
       "  山田さん  "
     );
-    await user.type(
-      screen.getByPlaceholderText("例：予定より1週間遅れてる"),
-      "  順調  "
-    );
+    await user.type(screen.getByPlaceholderText("例：予定より1週間遅れてる"), "  順調  ");
     await user.click(screen.getByRole("button", { name: /始める/i }));
 
     // Then
@@ -110,13 +89,7 @@ describe("InitialInputForm", () => {
     const onSubmit = vi.fn();
 
     // When
-    render(
-      <InitialInputForm
-        fields={defaultFields}
-        onSubmit={onSubmit}
-        isLoading={true}
-      />
-    );
+    render(<InitialInputForm fields={defaultFields} onSubmit={onSubmit} isLoading={true} />);
 
     // Then
     expect(screen.getByRole("button", { name: /準備中/i })).toBeDisabled();
@@ -129,18 +102,9 @@ describe("InitialInputForm", () => {
     render(<InitialInputForm fields={defaultFields} onSubmit={onSubmit} />);
 
     // When
-    await user.type(
-      screen.getByPlaceholderText("例：新機能の開発進捗"),
-      "   "
-    );
-    await user.type(
-      screen.getByPlaceholderText("例：開発チームのリーダー山田さん"),
-      "   "
-    );
-    await user.type(
-      screen.getByPlaceholderText("例：予定より1週間遅れてる"),
-      "   "
-    );
+    await user.type(screen.getByPlaceholderText("例：新機能の開発進捗"), "   ");
+    await user.type(screen.getByPlaceholderText("例：開発チームのリーダー山田さん"), "   ");
+    await user.type(screen.getByPlaceholderText("例：予定より1週間遅れてる"), "   ");
 
     // Then
     expect(screen.getByRole("button", { name: /始める/i })).toBeDisabled();

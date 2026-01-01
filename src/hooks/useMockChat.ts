@@ -72,57 +72,48 @@ type UseMockChatOptions = {
  * モックのチャットフローを管理するフック
  * Phase 5 で実際の API 連携に置き換え予定
  */
-export function useMockChat({
-  onComplete,
-}: UseMockChatOptions): UseMockChatReturn {
+export function useMockChat({ onComplete }: UseMockChatOptions): UseMockChatReturn {
   const [mockMessages, setMockMessages] = useState<AIMessage[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [isStreaming, setIsStreaming] = useState(false);
 
   const currentAIMessage = mockMessages[currentMessageIndex];
-  const isLastMessage =
-    mockMessages.length > 0 && currentMessageIndex >= mockMessages.length - 1;
+  const isLastMessage = mockMessages.length > 0 && currentMessageIndex >= mockMessages.length - 1;
   const hasQuestions = (currentAIMessage?.questions?.length ?? 0) > 0;
 
-  const submitInitialInput = useCallback(
-    (label: string, initialText: string) => {
-      const followUpMessages = createFollowUpMessages();
-      setMockMessages(followUpMessages);
+  const submitInitialInput = useCallback((label: string, initialText: string) => {
+    const followUpMessages = createFollowUpMessages();
+    setMockMessages(followUpMessages);
 
-      // AI の挨拶 + ユーザーの入力
-      setMessages([
-        {
-          role: "ai",
-          message: {
-            id: "m0",
-            intro: `${label}の整理、手伝うね！`,
-            questions: [],
-          },
+    // AI の挨拶 + ユーザーの入力
+    setMessages([
+      {
+        role: "ai",
+        message: {
+          id: "m0",
+          intro: `${label}の整理、手伝うね！`,
+          questions: [],
         },
-        {
-          role: "user",
-          answer: {
-            messageId: "m0",
-            answers: [],
-            customInput: initialText,
-          },
+      },
+      {
+        role: "user",
+        answer: {
+          messageId: "m0",
+          answers: [],
+          customInput: initialText,
         },
-      ]);
+      },
+    ]);
 
-      setIsStreaming(true);
+    setIsStreaming(true);
 
-      // 少し待ってから次の質問を表示
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          { role: "ai", message: followUpMessages[0] },
-        ]);
-        setIsStreaming(false);
-      }, 800);
-    },
-    []
-  );
+    // 少し待ってから次の質問を表示
+    setTimeout(() => {
+      setMessages((prev) => [...prev, { role: "ai", message: followUpMessages[0] }]);
+      setIsStreaming(false);
+    }, 800);
+  }, []);
 
   const submitAnswer = useCallback(
     (questionAnswers: QuestionAnswer[]) => {
@@ -149,10 +140,7 @@ export function useMockChat({
         setTimeout(() => {
           const nextIndex = currentMessageIndex + 1;
           setCurrentMessageIndex(nextIndex);
-          setMessages((prev) => [
-            ...prev,
-            { role: "ai", message: mockMessages[nextIndex] },
-          ]);
+          setMessages((prev) => [...prev, { role: "ai", message: mockMessages[nextIndex] }]);
           setIsStreaming(false);
         }, 600);
       }

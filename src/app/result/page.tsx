@@ -72,11 +72,8 @@ function ResultPageContent() {
     // モック：フィードバックを反映した風の出力（Phase 5 で API に置き換え）
     setTimeout(() => {
       setOutput({
-        markdown:
-          mockOutput.markdown +
-          `\n\n### 📝 追記\n${feedback}を反映しました。`,
-        plaintext:
-          mockOutput.plaintext + `\n\n■ 追記\n${feedback}を反映しました。`,
+        markdown: mockOutput.markdown + `\n\n### 📝 追記\n${feedback}を反映しました。`,
+        plaintext: mockOutput.plaintext + `\n\n■ 追記\n${feedback}を反映しました。`,
       });
       setIsRegenerating(false);
     }, 1500);
@@ -92,36 +89,21 @@ function ResultPageContent() {
         {/* ヘッダー */}
         <Card className="text-center">
           <p className="text-4xl mb-2">🎉</p>
-          <h1 className="text-2xl font-bold text-stone-800 mb-1">
-            整理完了！
-          </h1>
-          <p className="text-stone-600">
-            内容をコピーして使ってね
-          </p>
+          <h1 className="text-2xl font-bold text-stone-800 mb-1">整理完了！</h1>
+          <p className="text-stone-600">内容をコピーして使ってね</p>
         </Card>
 
         {/* 出力カード */}
-        <OutputCard
-          output={output}
-          format={format}
-          onFormatChange={setFormat}
-        />
+        <OutputCard output={output} format={format} onFormatChange={setFormat} />
 
         {/* フィードバックフォーム */}
         <Card>
-          <FeedbackForm
-            onSubmit={handleRegenerate}
-            isLoading={isRegenerating}
-          />
+          <FeedbackForm onSubmit={handleRegenerate} isLoading={isRegenerating} />
         </Card>
 
         {/* やり直しボタン */}
         <div className="text-center">
-          <Button
-            variant="secondary"
-            onClick={handleStartOver}
-            className="text-stone-500"
-          >
+          <Button variant="secondary" onClick={handleStartOver} className="text-stone-500">
             🔄 最初からやり直す
           </Button>
         </div>

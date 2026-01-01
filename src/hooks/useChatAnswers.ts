@@ -24,31 +24,25 @@ type UseChatAnswersReturn = {
 export function useChatAnswers(): UseChatAnswersReturn {
   const [answers, setAnswers] = useState<Record<string, AnswerState>>({});
 
-  const handleOptionChange = useCallback(
-    (questionId: string, selectedIds: string[]) => {
-      setAnswers((prev) => ({
-        ...prev,
-        [questionId]: {
-          selectedIds,
-          customInput: prev[questionId]?.customInput || "",
-        },
-      }));
-    },
-    []
-  );
+  const handleOptionChange = useCallback((questionId: string, selectedIds: string[]) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: {
+        selectedIds,
+        customInput: prev[questionId]?.customInput || "",
+      },
+    }));
+  }, []);
 
-  const handleCustomInputChange = useCallback(
-    (questionId: string, value: string) => {
-      setAnswers((prev) => ({
-        ...prev,
-        [questionId]: {
-          selectedIds: prev[questionId]?.selectedIds || [],
-          customInput: value,
-        },
-      }));
-    },
-    []
-  );
+  const handleCustomInputChange = useCallback((questionId: string, value: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: {
+        selectedIds: prev[questionId]?.selectedIds || [],
+        customInput: value,
+      },
+    }));
+  }, []);
 
   const hasValidAnswer = useCallback(
     (questionId: string) => {

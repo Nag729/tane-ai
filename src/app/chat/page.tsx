@@ -51,11 +51,7 @@ function ChatPageContent() {
   }
 
   // 初期入力送信
-  const handleInitialSubmit = (data: {
-    topic: string;
-    recipient: string;
-    detail: string;
-  }) => {
+  const handleInitialSubmit = (data: { topic: string; recipient: string; detail: string }) => {
     const initialText = `${data.topic}を${data.recipient}に${config.label}したい。${data.detail}`;
     chat.submitInitialInput(config.label, initialText);
     setInitialInputSubmitted(true);
@@ -83,24 +79,17 @@ function ChatPageContent() {
   };
 
   const canSubmit =
-    chat.hasQuestions &&
-    chat.currentAIMessage &&
-    checkAllAnswered(chat.currentAIMessage.questions);
+    chat.hasQuestions && chat.currentAIMessage && checkAllAnswered(chat.currentAIMessage.questions);
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* ヘッダー */}
       <header className="bg-white border-b border-stone-200 p-4 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <button
-            onClick={() => router.push("/")}
-            className="text-stone-500 hover:text-stone-700"
-          >
+          <button onClick={() => router.push("/")} className="text-stone-500 hover:text-stone-700">
             ← やめる
           </button>
-          <h1 className="font-bold text-stone-800">
-            🤖 {config.label}を整理中
-          </h1>
+          <h1 className="font-bold text-stone-800">🤖 {config.label}を整理中</h1>
           <div className="w-16" />
         </div>
       </header>
@@ -109,10 +98,7 @@ function ChatPageContent() {
       <main className="flex-1 overflow-y-auto p-4 pb-48">
         <div className="max-w-2xl mx-auto space-y-4">
           {!initialInputSubmitted ? (
-            <InitialInputForm
-              fields={config.fields}
-              onSubmit={handleInitialSubmit}
-            />
+            <InitialInputForm fields={config.fields} onSubmit={handleInitialSubmit} />
           ) : (
             <ChatHistory
               messages={chat.messages}
@@ -133,9 +119,7 @@ function ChatPageContent() {
                 <Card key={q.id} className="space-y-2">
                   <p className="text-stone-700 font-medium text-sm">
                     {q.content}
-                    {q.multiSelect && (
-                      <span className="text-stone-400 ml-2">（複数OK）</span>
-                    )}
+                    {q.multiSelect && <span className="text-stone-400 ml-2">（複数OK）</span>}
                   </p>
                   <ChoiceChips
                     options={q.options}
@@ -145,9 +129,7 @@ function ChatPageContent() {
                   />
                   <Input
                     value={answers[q.id]?.customInput || ""}
-                    onChange={(e) =>
-                      handleCustomInputChange(q.id, e.target.value)
-                    }
+                    onChange={(e) => handleCustomInputChange(q.id, e.target.value)}
                     placeholder={q.customInputPlaceholder || "自由に入力..."}
                     onKeyDown={handleKeyDown}
                     className="mt-2"
@@ -174,20 +156,14 @@ type ChatHistoryProps = {
   isStreaming: boolean;
 };
 
-function ChatHistory({
-  messages,
-  getAnswerDisplay,
-  isStreaming,
-}: ChatHistoryProps) {
+function ChatHistory({ messages, getAnswerDisplay, isStreaming }: ChatHistoryProps) {
   return (
     <>
       {messages.map((msg, index) => (
         <div key={index}>
           {msg.role === "ai" ? (
             <div className="space-y-3">
-              {msg.message.intro && (
-                <AIMessageBubble content={msg.message.intro} />
-              )}
+              {msg.message.intro && <AIMessageBubble content={msg.message.intro} />}
             </div>
           ) : (
             <UserMessageBubble content={getAnswerDisplay(msg)} />
