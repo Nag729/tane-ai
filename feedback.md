@@ -118,7 +118,7 @@
   - 配置場所: ヘッダー？空き状態？ローディング？
   - 画面遷移: Framer Motion でペーパーマリオ風アニメーション
 
-### InitialInputForm を自由記述方式に変更
+<!-- ### InitialInputForm を自由記述方式に変更
 
 - **対象**: `src/components/pages/home/InitialInputForm.tsx`
 - **方針**: 優秀なコーチとのメンタリングを再現する
@@ -137,4 +137,4 @@
 - **実装ステップ**:
   1. 3フィールド → 単一 Textarea に変更
   2. プロンプト調整（自由記述から必要情報を引き出す質問を生成）
-  3. （オプション）Web Speech API で音声入力対応
+  3. （オプション）Web Speech API で音声入力対応 -->
