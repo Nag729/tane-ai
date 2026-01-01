@@ -39,7 +39,7 @@ export function InitialInputForm({
   return (
     <Card>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <p className="text-stone-600 text-center text-sm">教えてね 📝</p>
+        <p className="text-stone-600 text-center text-sm">最初にざっくり教えてください 📝</p>
         <FormField
           ref={firstInputRef}
           label={fields.topic.label}

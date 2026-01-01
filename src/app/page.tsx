@@ -46,7 +46,7 @@ export default function Home() {
 
         {/* 種類選択 */}
         <div>
-          <p className="text-center text-stone-600 mb-4">何を整理する？</p>
+          <p className="text-center text-stone-600 mb-4">何を整理しますか？</p>
           <TypeSelector selected={selected} onSelect={handleSelect} />
         </div>
       </div>
