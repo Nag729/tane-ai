@@ -6,11 +6,11 @@ import { OutputCard } from "@/components/OutputCard";
 import { FeedbackForm } from "@/components/FeedbackForm";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import type { HorensoType, StructuredOutput, OutputFormat } from "@/types";
+import type { HorensoType, StructuredOutput } from "@/types";
 
 // モックの出力データ（Phase 5 で API に置き換え）
 const mockOutput: StructuredOutput = {
-  markdown: `## 📊 報告：プロジェクトの進捗状況
+  content: `## 📊 報告：プロジェクトの進捗状況
 
 ### 結論
 現在、予定より **1週間遅れ** で進行中です。
@@ -26,22 +26,6 @@ const mockOutput: StructuredOutput = {
 
 ---
 *何かご質問があればお気軽にどうぞ！*`,
-
-  plaintext: `【報告】プロジェクトの進捗状況
-
-■ 結論
-現在、予定より1週間遅れで進行中です。
-
-■ 詳細
-・デザインフェーズは完了
-・開発フェーズで技術的な課題が発生
-・チームで解決策を検討中
-
-■ 次のアクション
-1. 来週月曜までに代替案を3つ提示
-2. 水曜のMTGで最終決定
-
-何かご質問があればお気軽にどうぞ！`,
 };
 
 function ResultPageContent() {
@@ -52,7 +36,6 @@ function ResultPageContent() {
   const isValidParams = !!type;
 
   const [output, setOutput] = useState<StructuredOutput>(mockOutput);
-  const [format, setFormat] = useState<OutputFormat>("markdown");
   const [isRegenerating, setIsRegenerating] = useState(false);
 
   // 無効なパラメータの場合はトップへリダイレクト
@@ -72,8 +55,7 @@ function ResultPageContent() {
     // モック：フィードバックを反映した風の出力（Phase 5 で API に置き換え）
     setTimeout(() => {
       setOutput({
-        markdown: mockOutput.markdown + `\n\n### 📝 追記\n${feedback}を反映しました。`,
-        plaintext: mockOutput.plaintext + `\n\n■ 追記\n${feedback}を反映しました。`,
+        content: mockOutput.content + `\n\n### 📝 追記\n${feedback}を反映しました。`,
       });
       setIsRegenerating(false);
     }, 1500);
@@ -94,7 +76,7 @@ function ResultPageContent() {
         </Card>
 
         {/* 出力カード */}
-        <OutputCard output={output} format={format} onFormatChange={setFormat} />
+        <OutputCard output={output} />
 
         {/* フィードバックフォーム */}
         <Card>

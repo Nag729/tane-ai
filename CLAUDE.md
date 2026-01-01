@@ -121,12 +121,6 @@ export const Interactive: Story = {
 ```typescript
 // ほうれんそうの種類
 type HorensoType = "report" | "contact" | "consult";
-
-// 構造化出力（両フォーマットを保持）
-type StructuredOutput = {
-  markdown: string; // Slack, GitHub 向け
-  plaintext: string; // メール向け
-};
 ```
 
 ## コマンド

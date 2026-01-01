@@ -27,15 +27,15 @@
 
 ## Phase 3: Presentational Components ✅
 
-| コンポーネント    | テスト | 実装 | Storybook | 説明                         |
-| ----------------- | ------ | ---- | --------- | ---------------------------- |
-| TypeSelector      | ✅ 6   | ✅   | ✅        | 報告/連絡/相談の選択         |
-| InitialInputForm  | ✅ 6   | ✅   | ✅        | トピック・相手・詳細の入力   |
-| AIMessageBubble   | ✅ 4   | ✅   | ✅        | AI の質問表示                |
-| UserMessageBubble | ✅ 3   | ✅   | ✅        | ユーザーの回答表示           |
-| ChoiceChips       | ✅ 6   | ✅   | ✅        | 選択肢グループ（単一/複数）  |
-| OutputCard        | ✅ 5   | ✅   | ✅        | 構造化出力（Markdown/Plain） |
-| FeedbackForm      | ✅ 5   | ✅   | ✅        | 再生成用フィードバック       |
+| コンポーネント    | テスト | 実装 | Storybook | 説明                        |
+| ----------------- | ------ | ---- | --------- | --------------------------- |
+| TypeSelector      | ✅ 6   | ✅   | ✅        | 報告/連絡/相談の選択        |
+| InitialInputForm  | ✅ 6   | ✅   | ✅        | トピック・相手・詳細の入力  |
+| AIMessageBubble   | ✅ 4   | ✅   | ✅        | AI の質問表示               |
+| UserMessageBubble | ✅ 3   | ✅   | ✅        | ユーザーの回答表示          |
+| ChoiceChips       | ✅ 6   | ✅   | ✅        | 選択肢グループ（単一/複数） |
+| OutputCard        | ✅ 5   | ✅   | ✅        | 構造化出力（Markdown）      |
+| FeedbackForm      | ✅ 5   | ✅   | ✅        | 再生成用フィードバック      |
 
 **合計: 63 テスト ✅**
 

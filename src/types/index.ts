@@ -50,13 +50,7 @@ export type AnswerState = {
   customInput: string;
 };
 
-/** 構造化された出力 */
+/** 構造化された出力（Markdown形式） */
 export type StructuredOutput = {
-  /** Markdown形式（Slack, GitHub, Notion向け） */
-  readonly markdown: string;
-  /** プレーンテキスト形式（メール向け、Markdown構文なし） */
-  readonly plaintext: string;
+  readonly content: string;
 };
-
-/** 出力フォーマット */
-export type OutputFormat = "markdown" | "plaintext";
