@@ -2,11 +2,12 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect, useMemo } from "react";
-import ReactMarkdown from "react-markdown";
 import { AIMessageBubble } from "@/components/AIMessageBubble";
 import { UserMessageBubble } from "@/components/UserMessageBubble";
 import { ChoiceChips } from "@/components/ChoiceChips";
 import { InitialInputForm } from "@/components/InitialInputForm";
+import { ThinkingPanel } from "@/components/ThinkingPanel";
+import { StreamingText } from "@/components/StreamingText";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -178,7 +179,13 @@ function ChatPageContent() {
               </Button>
             )}
 
-            {chat.isLoading && !chat.streamingOutput && (
+            {/* 思考過程の表示 */}
+            <ThinkingPanel
+              isThinking={chat.isThinking}
+              content={chat.thinkingContent}
+            />
+
+            {chat.isLoading && !chat.streamingOutput && !chat.isThinking && (
               <p className="text-center text-stone-500">考え中...</p>
             )}
 
@@ -187,9 +194,10 @@ function ChatPageContent() {
               <Card className="space-y-2">
                 <h3 className="text-sm font-medium text-stone-600">📝 出力を生成中...</h3>
                 <div className="bg-stone-50 rounded-lg p-3 max-h-64 overflow-y-auto">
-                  <div className="prose prose-stone prose-sm max-w-none">
-                    <ReactMarkdown>{chat.streamingOutput}</ReactMarkdown>
-                  </div>
+                  <StreamingText
+                    content={chat.streamingOutput}
+                    isStreaming={chat.isLoading}
+                  />
                 </div>
               </Card>
             )}

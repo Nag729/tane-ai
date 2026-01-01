@@ -71,14 +71,33 @@ ${JSON.stringify(messages, null, 2)}
         // ストリーミング中のテキストを収集
         let fullText = "";
 
-        messageStream.on("text", (text) => {
-          fullText += text;
-          // プログレス表示用（オプション）
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "progress" })}\n\n`));
-        });
-
-        // 完了を待つ
-        await messageStream.finalMessage();
+        // ストリームを読み取り
+        for await (const event of messageStream) {
+          if (event.type === "content_block_start") {
+            if (event.content_block.type === "thinking") {
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: "thinking_start" })}\n\n`)
+              );
+            }
+          } else if (event.type === "content_block_delta") {
+            if (event.delta.type === "thinking_delta") {
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: "thinking", text: event.delta.thinking })}\n\n`
+                )
+              );
+            } else if (event.delta.type === "text_delta") {
+              fullText += event.delta.text;
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: "progress" })}\n\n`)
+              );
+            }
+          } else if (event.type === "content_block_stop") {
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify({ type: "block_stop" })}\n\n`)
+            );
+          }
+        }
 
         // JSON をクリーンアップしてパース
         const cleaned = fullText

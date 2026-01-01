@@ -101,12 +101,38 @@ ${chatHistory}
           messages: [{ role: "user", content: userPrompt }],
         });
 
-        // テキストをリアルタイムでストリーム
-        messageStream.on("text", (text) => {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "text", text })}\n\n`));
-        });
-
-        await messageStream.finalMessage();
+        // ストリームを読み取り
+        for await (const event of messageStream) {
+          if (event.type === "content_block_start") {
+            if (event.content_block.type === "thinking") {
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: "thinking_start" })}\n\n`)
+              );
+            } else if (event.content_block.type === "text") {
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: "text_start" })}\n\n`)
+              );
+            }
+          } else if (event.type === "content_block_delta") {
+            if (event.delta.type === "thinking_delta") {
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: "thinking", text: event.delta.thinking })}\n\n`
+                )
+              );
+            } else if (event.delta.type === "text_delta") {
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: "text", text: event.delta.text })}\n\n`
+                )
+              );
+            }
+          } else if (event.type === "content_block_stop") {
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify({ type: "block_stop" })}\n\n`)
+            );
+          }
+        }
 
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`));
         controller.close();

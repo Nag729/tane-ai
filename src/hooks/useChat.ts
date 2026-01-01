@@ -40,12 +40,17 @@ export function clearChatData() {
   sessionStorage.removeItem(STORAGE_KEY);
 }
 
+/** SSE ストリームのコールバック */
+type SSECallbacks = {
+  onProgress?: () => void;
+  onText?: (text: string) => void;
+  onThinkingStart?: () => void;
+  onThinking?: (text: string) => void;
+  onBlockStop?: () => void;
+};
+
 /** SSE ストリームを読み取るユーティリティ */
-async function readSSEStream<T>(
-  response: Response,
-  onProgress?: () => void,
-  onText?: (text: string) => void
-): Promise<T> {
+async function readSSEStream<T>(response: Response, callbacks?: SSECallbacks): Promise<T> {
   const reader = response.body?.getReader();
   if (!reader) throw new Error("No response body");
 
@@ -66,9 +71,15 @@ async function readSSEStream<T>(
         const data = JSON.parse(line.slice(6));
 
         if (data.type === "progress") {
-          onProgress?.();
+          callbacks?.onProgress?.();
         } else if (data.type === "text") {
-          onText?.(data.text);
+          callbacks?.onText?.(data.text);
+        } else if (data.type === "thinking_start") {
+          callbacks?.onThinkingStart?.();
+        } else if (data.type === "thinking") {
+          callbacks?.onThinking?.(data.text);
+        } else if (data.type === "block_stop") {
+          callbacks?.onBlockStop?.();
         } else if (data.type === "complete") {
           result = data.data as T;
         } else if (data.type === "done") {
@@ -106,6 +117,10 @@ type UseChatReturn = {
   isReady: boolean;
   error: string | null;
   streamingOutput: string;
+  /** 思考中かどうか */
+  isThinking: boolean;
+  /** 思考内容（ストリーミング中は途中経過） */
+  thinkingContent: string;
   submitInitialInput: (initialInput: {
     topic: string;
     recipient: string;
@@ -128,6 +143,8 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [streamingOutput, setStreamingOutput] = useState("");
+  const [isThinking, setIsThinking] = useState(false);
+  const [thinkingContent, setThinkingContent] = useState("");
 
   const hasQuestions = (currentAIMessage?.questions?.length ?? 0) > 0;
 
@@ -135,6 +152,7 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
     async (initialInput: { topic: string; recipient: string; detail: string }) => {
       setIsLoading(true);
       setError(null);
+      setThinkingContent("");
 
       try {
         const response = await fetch("/api/chat/question", {
@@ -143,7 +161,19 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
           body: JSON.stringify({ type, initialInput }),
         });
 
-        const result = await readSSEStream<QuestionResponse>(response);
+        let thinkingText = "";
+        const result = await readSSEStream<QuestionResponse>(response, {
+          onThinkingStart: () => {
+            setIsThinking(true);
+          },
+          onThinking: (text) => {
+            thinkingText += text;
+            setThinkingContent(thinkingText);
+          },
+          onBlockStop: () => {
+            setIsThinking(false);
+          },
+        });
 
         const aiMessage: AIMessage = {
           id: `msg-${Date.now()}`,
@@ -160,6 +190,7 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
         console.error("Failed to generate first question:", err);
       } finally {
         setIsLoading(false);
+        setIsThinking(false);
       }
     },
     [type]
@@ -217,6 +248,7 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
     setIsLoading(true);
     setError(null);
     setStreamingOutput("");
+    setThinkingContent("");
 
     try {
       const response = await fetch("/api/chat/output", {
@@ -227,6 +259,7 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
 
       // ストリーミングでテキストを受け取る
       let fullText = "";
+      let thinkingText = "";
       const reader = response.body?.getReader();
       if (!reader) throw new Error("No response body");
 
@@ -245,9 +278,16 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
           if (line.startsWith("data: ")) {
             const data = JSON.parse(line.slice(6));
 
-            if (data.type === "text") {
+            if (data.type === "thinking_start") {
+              setIsThinking(true);
+            } else if (data.type === "thinking") {
+              thinkingText += data.text;
+              setThinkingContent(thinkingText);
+            } else if (data.type === "text") {
               fullText += data.text;
               setStreamingOutput(fullText);
+            } else if (data.type === "block_stop") {
+              setIsThinking(false);
             } else if (data.type === "error") {
               throw new Error(data.error);
             }
@@ -263,6 +303,7 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
       console.error("Failed to generate output:", err);
     } finally {
       setIsLoading(false);
+      setIsThinking(false);
     }
   }, [type, messages, onComplete]);
 
@@ -314,6 +355,8 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
       isReady,
       error,
       streamingOutput,
+      isThinking,
+      thinkingContent,
       submitInitialInput,
       submitAnswer,
       completeAndGenerate,
@@ -327,6 +370,8 @@ export function useChat({ type, onComplete }: UseChatOptions): UseChatReturn {
       isReady,
       error,
       streamingOutput,
+      isThinking,
+      thinkingContent,
       submitInitialInput,
       submitAnswer,
       completeAndGenerate,
