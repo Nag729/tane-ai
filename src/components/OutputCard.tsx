@@ -1,9 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import type { StructuredOutput } from "@/types";
-
-type OutputFormat = "markdown" | "plaintext";
+import type { StructuredOutput, OutputFormat } from "@/types";
 
 type OutputCardProps = {
   output: StructuredOutput;

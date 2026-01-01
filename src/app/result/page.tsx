@@ -1,14 +1,12 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { OutputCard } from "@/components/OutputCard";
 import { FeedbackForm } from "@/components/FeedbackForm";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import type { HorensoType, StructuredOutput } from "@/types";
-
-type OutputFormat = "markdown" | "plaintext";
+import type { HorensoType, StructuredOutput, OutputFormat } from "@/types";
 
 // モックの出力データ（Phase 5 で API に置き換え）
 const mockOutput: StructuredOutput = {
@@ -51,14 +49,20 @@ function ResultPageContent() {
   const router = useRouter();
 
   const type = searchParams.get("type") as HorensoType | null;
+  const isValidParams = !!type;
 
   const [output, setOutput] = useState<StructuredOutput>(mockOutput);
   const [format, setFormat] = useState<OutputFormat>("markdown");
   const [isRegenerating, setIsRegenerating] = useState(false);
 
-  // パラメータ検証
-  if (!type) {
-    router.replace("/");
+  // 無効なパラメータの場合はトップへリダイレクト
+  useEffect(() => {
+    if (!isValidParams) {
+      router.replace("/");
+    }
+  }, [isValidParams, router]);
+
+  if (!isValidParams) {
     return null;
   }
 

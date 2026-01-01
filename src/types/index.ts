@@ -57,3 +57,6 @@ export type StructuredOutput = {
   /** プレーンテキスト形式（メール向け、Markdown構文なし） */
   readonly plaintext: string;
 };
+
+/** 出力フォーマット */
+export type OutputFormat = "markdown" | "plaintext";
