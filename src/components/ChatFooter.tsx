@@ -49,7 +49,8 @@ export function ChatFooter({
           </Button>
         )}
 
-        {!isLoading &&
+        {!isReady &&
+          !isLoading &&
           hasQuestions &&
           currentAIMessage?.questions.map((q) => (
             <QuestionCard
@@ -63,7 +64,7 @@ export function ChatFooter({
             />
           ))}
 
-        {canSubmit && !isLoading && (
+        {!isReady && canSubmit && !isLoading && (
           <Button onClick={onSubmit} className="w-full">
             次へ →
           </Button>

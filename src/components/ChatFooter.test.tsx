@@ -102,4 +102,30 @@ describe("ChatFooter", () => {
     await user.click(screen.getByText("次へ →"));
     expect(handleSubmit).toHaveBeenCalledTimes(1);
   });
+
+  // Given: isReady が true かつ hasQuestions が true
+  // When: レンダリングする
+  // Then: 質問は表示されない（完了ボタンのみ）
+  it("should not show questions when isReady is true", () => {
+    render(
+      <ChatFooter
+        {...defaultProps}
+        isReady={true}
+        hasQuestions={true}
+        currentAIMessage={mockAIMessage}
+        answers={{ "q-1": { selectedIds: [], customInput: "" } }}
+      />
+    );
+    expect(screen.queryByText("どちらを選びますか？")).not.toBeInTheDocument();
+    expect(screen.getByText(/整理完了！結果を見る/)).toBeInTheDocument();
+  });
+
+  // Given: isReady が true かつ canSubmit が true
+  // When: レンダリングする
+  // Then: 送信ボタンは表示されない（完了ボタンのみ）
+  it("should not show submit button when isReady is true", () => {
+    render(<ChatFooter {...defaultProps} isReady={true} canSubmit={true} />);
+    expect(screen.queryByText("次へ →")).not.toBeInTheDocument();
+    expect(screen.getByText(/整理完了！結果を見る/)).toBeInTheDocument();
+  });
 });

@@ -95,7 +95,8 @@ export const Loading: Story = {
   },
 };
 
-export const ReadyWithQuestions: Story = {
+/** isReady=true のとき、他のフラグに関わらず完了ボタンのみ表示される */
+export const ReadyIgnoresOtherFlags: Story = {
   args: {
     isReady: true,
     isLoading: false,
