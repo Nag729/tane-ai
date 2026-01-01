@@ -14,6 +14,7 @@ import { typeConfig } from "@/constants";
 import { isDebugMode, getRandomTestData } from "@/debug/testData";
 import type { HorensoType } from "@/types";
 
+// eslint-disable-next-line max-lines-per-function
 function ChatPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
