@@ -1,113 +1,286 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { AIMessageBubble } from "@/components/AIMessageBubble";
 import { ChoiceChips } from "@/components/ChoiceChips";
-import { ChatInput } from "@/components/ChatInput";
+import { InitialInputForm } from "@/components/InitialInputForm";
 import { Button } from "@/components/ui/Button";
-import type { HorensoType, AIQuestion, ChatMessage } from "@/types";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import type { HorensoType, AIMessage, ChatMessage, QuestionAnswer } from "@/types";
 
-// モックの質問データ（Phase 5 で API に置き換え）
-const mockQuestions: AIQuestion[] = [
+const typeConfig: Record<
+  HorensoType,
   {
-    id: "q1",
-    content:
-      "なるほど！まずは詳しく教えて 🤔\n\nこの内容は、どのくらい緊急性がありますか？",
-    options: [
-      { id: "urgent", label: "今すぐ対応が必要" },
-      { id: "soon", label: "今週中には" },
-      { id: "later", label: "急ぎではない" },
-    ],
-    multiSelect: false,
+    label: string;
+    fields: {
+      topic: { label: string; placeholder: string };
+      recipient: { label: string; placeholder: string };
+      detail: { label: string; placeholder: string };
+    };
+  }
+> = {
+  report: {
+    label: "報告",
+    fields: {
+      topic: {
+        label: "何を報告する？",
+        placeholder: "例：新機能の開発進捗",
+      },
+      recipient: {
+        label: "誰に？",
+        placeholder: "例：開発チームのリーダー山田さん",
+      },
+      detail: {
+        label: "現状は？",
+        placeholder: "例：予定より1週間遅れてる。原因はAPIの仕様変更",
+      },
+    },
   },
-  {
-    id: "q2",
-    content: "了解！次に、相手にどんなアクションを期待していますか？",
-    options: [
-      { id: "approve", label: "承認・決裁" },
-      { id: "feedback", label: "フィードバック" },
-      { id: "info", label: "情報共有のみ" },
-      { id: "help", label: "助けが欲しい" },
-    ],
-    multiSelect: true,
+  contact: {
+    label: "連絡",
+    fields: {
+      topic: {
+        label: "何を連絡する？",
+        placeholder: "例：来週のミーティング日程変更",
+      },
+      recipient: {
+        label: "誰に？",
+        placeholder: "例：プロジェクトメンバー全員",
+      },
+      detail: {
+        label: "伝えたい内容は？",
+        placeholder: "例：水曜14時から木曜10時に変更したい",
+      },
+    },
   },
+  consult: {
+    label: "相談",
+    fields: {
+      topic: {
+        label: "何を相談する？",
+        placeholder: "例：タスクの優先順位の付け方",
+      },
+      recipient: {
+        label: "誰に？",
+        placeholder: "例：チームリーダーの佐藤さん",
+      },
+      detail: {
+        label: "困っていることは？",
+        placeholder: "例：急ぎの依頼が重なって何から手をつけるべきかわからない",
+      },
+    },
+  },
+};
+
+// 励ましのリアクション
+const encouragements = [
+  "いいね！",
+  "なるほど〜",
+  "オッケー！",
+  "了解！",
+  "ふむふむ",
+  "わかった！",
+];
+
+const getRandomEncouragement = () =>
+  encouragements[Math.floor(Math.random() * encouragements.length)];
+
+// モックの会話フロー（Phase 5 で API に置き換え）
+const createFollowUpMessages = (): AIMessage[] => [
   {
-    id: "q3",
-    content:
-      "いい感じに情報が集まってきたね ✨\n\n最後に、何か補足しておきたいことはある？",
-    options: [
-      { id: "none", label: "特にない" },
-      { id: "risk", label: "リスクがある" },
-      { id: "alternative", label: "代替案がある" },
+    id: "m2",
+    intro: `${getRandomEncouragement()} もうちょっと教えて`,
+    questions: [
+      {
+        id: "q1",
+        content: "どのくらい急ぎ？",
+        options: [
+          { id: "urgent", label: "今すぐ！" },
+          { id: "soon", label: "今週中" },
+          { id: "later", label: "急ぎじゃない" },
+        ],
+        multiSelect: false,
+      },
+      {
+        id: "q2",
+        content: "相手に何をしてほしい？",
+        options: [
+          { id: "approve", label: "承認・決裁" },
+          { id: "feedback", label: "意見がほしい" },
+          { id: "info", label: "知っておいてほしいだけ" },
+        ],
+        multiSelect: true,
+        customInputPlaceholder: "他にあれば...",
+      },
     ],
-    multiSelect: false,
   },
 ];
+
+type AnswerState = {
+  selectedIds: string[];
+  customInput: string;
+};
 
 function ChatPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const type = searchParams.get("type") as HorensoType | null;
-  const purpose = searchParams.get("purpose");
-  const recipient = searchParams.get("recipient");
-  const background = searchParams.get("background");
 
-  // 初回メッセージを最初から設定
-  const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    { role: "ai", question: mockQuestions[0] },
-  ]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  // 初期入力完了フラグ
+  const [initialInputSubmitted, setInitialInputSubmitted] = useState(false);
+
+  // チャットの状態
+  const [mockMessages, setMockMessages] = useState<AIMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, AnswerState>>({});
   const [isStreaming, setIsStreaming] = useState(false);
   const [showCompleteButton, setShowCompleteButton] = useState(false);
 
-  const isValidParams = !!(type && purpose && recipient && background);
+  const isValidParams = !!type;
+  const config = type ? typeConfig[type] : null;
 
-  // パラメータ検証 - 無効な場合はリダイレクト
   useEffect(() => {
     if (!isValidParams) {
       router.replace("/");
     }
   }, [isValidParams, router]);
 
-  // 無効な場合は何も表示しない
-  if (!isValidParams) {
+  // スクロール
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  if (!isValidParams || !config) {
     return null;
   }
 
-  const currentQuestion = mockQuestions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex >= mockQuestions.length - 1;
+  // 初期入力送信
+  const handleInitialSubmit = (data: {
+    topic: string;
+    recipient: string;
+    detail: string;
+  }) => {
+    const initialText = `${data.topic}を${data.recipient}に${config.label}したい。${data.detail}`;
 
-  const handleAnswer = (customInput?: string) => {
-    if (selectedIds.length === 0 && !customInput) return;
+    // 初期メッセージを作成
+    const followUpMessages = createFollowUpMessages();
+    setMockMessages(followUpMessages);
 
-    // ユーザーの回答を追加
+    // AIの挨拶 + ユーザーの入力
+    setMessages([
+      {
+        role: "ai",
+        message: {
+          id: "m0",
+          intro: `${config.label}の整理、手伝うね！`,
+          questions: [],
+        },
+      },
+      {
+        role: "user",
+        answer: {
+          messageId: "m0",
+          answers: [],
+          customInput: initialText,
+        },
+      },
+    ]);
+
+    setInitialInputSubmitted(true);
+    setIsStreaming(true);
+
+    // 少し待ってから次の質問を表示
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        { role: "ai", message: followUpMessages[0] },
+      ]);
+      setIsStreaming(false);
+    }, 800);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey && canSubmit) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  // --- チャット部分のロジック ---
+  const currentAIMessage = mockMessages[currentMessageIndex];
+  const isLastMessage =
+    mockMessages.length > 0 && currentMessageIndex >= mockMessages.length - 1;
+  const hasQuestions = currentAIMessage?.questions?.length > 0;
+
+  const hasValidAnswer = (questionId: string) => {
+    const answer = answers[questionId];
+    if (!answer) return false;
+    return answer.selectedIds.length > 0 || answer.customInput.trim() !== "";
+  };
+
+  const allQuestionsAnswered =
+    !hasQuestions ||
+    currentAIMessage.questions.every((q) => hasValidAnswer(q.id));
+
+  const canSubmit = hasQuestions && allQuestionsAnswered;
+
+  const handleOptionChange = (questionId: string, selectedIds: string[]) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: {
+        selectedIds,
+        customInput: prev[questionId]?.customInput || "",
+      },
+    }));
+  };
+
+  const handleCustomInputChange = (questionId: string, value: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: {
+        selectedIds: prev[questionId]?.selectedIds || [],
+        customInput: value,
+      },
+    }));
+  };
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+
+    const questionAnswers: QuestionAnswer[] = currentAIMessage.questions
+      .filter((q) => hasValidAnswer(q.id))
+      .map((q) => ({
+        questionId: q.id,
+        selectedOptionIds: answers[q.id]?.selectedIds || [],
+        customInput: answers[q.id]?.customInput?.trim() || undefined,
+      }));
+
     const userAnswer: ChatMessage = {
       role: "user",
       answer: {
-        questionId: currentQuestion.id,
-        selectedOptionIds: selectedIds,
-        customInput: customInput,
+        messageId: currentAIMessage.id,
+        answers: questionAnswers,
       },
     };
 
     setMessages((prev) => [...prev, userAnswer]);
-    setSelectedIds([]);
+    setAnswers({});
 
-    if (isLastQuestion) {
-      // 最後の質問の場合、完了ボタンを表示
+    if (isLastMessage) {
       setShowCompleteButton(true);
     } else {
-      // 次の質問へ
       setIsStreaming(true);
       setTimeout(() => {
-        const nextIndex = currentQuestionIndex + 1;
-        setCurrentQuestionIndex(nextIndex);
+        const nextIndex = currentMessageIndex + 1;
+        setCurrentMessageIndex(nextIndex);
         setMessages((prev) => [
           ...prev,
-          { role: "ai", question: mockQuestions[nextIndex] },
+          { role: "ai", message: mockMessages[nextIndex] },
         ]);
         setIsStreaming(false);
       }, 600);
@@ -115,35 +288,41 @@ function ChatPageContent() {
   };
 
   const handleComplete = () => {
-    // 結果ページへ遷移
-    const params = new URLSearchParams({
-      type,
-      purpose,
-      recipient,
-      background,
-    });
-    router.push(`/result?${params.toString()}`);
+    router.push(`/result?type=${type}`);
   };
 
-  // ユーザーの回答を表示用に変換
-  const getAnswerDisplay = (answer: ChatMessage) => {
-    if (answer.role !== "user") return "";
-    const { selectedOptionIds, customInput } = answer.answer;
+  const getAnswerDisplay = (chatMessage: ChatMessage) => {
+    if (chatMessage.role !== "user") return "";
+    const { answers: ans, customInput } = chatMessage.answer;
 
-    const selectedLabels = selectedOptionIds
-      .map((id) => {
-        for (const q of mockQuestions) {
-          const opt = q.options.find((o) => o.id === id);
-          if (opt) return opt.label;
-        }
-        return id;
-      })
-      .join("、");
+    const lines: string[] = [];
+
+    ans.forEach((a) => {
+      const question = mockMessages
+        .flatMap((m) => m.questions)
+        .find((q) => q.id === a.questionId);
+      if (!question) return;
+
+      const parts: string[] = [];
+      const labels = a.selectedOptionIds
+        .map((id) => question.options.find((o) => o.id === id)?.label)
+        .filter(Boolean);
+      if (labels.length > 0) {
+        parts.push(labels.join("、"));
+      }
+      if (a.customInput) {
+        parts.push(a.customInput);
+      }
+      if (parts.length > 0) {
+        lines.push(parts.join(" + "));
+      }
+    });
 
     if (customInput) {
-      return selectedLabels ? `${selectedLabels}\n${customInput}` : customInput;
+      lines.push(customInput);
     }
-    return selectedLabels;
+
+    return lines.join("\n");
   };
 
   return (
@@ -152,77 +331,107 @@ function ChatPageContent() {
       <div className="bg-white border-b border-stone-200 p-4 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push("/")}
             className="text-stone-500 hover:text-stone-700"
           >
-            ← 戻る
+            ← やめる
           </button>
-          <h1 className="font-bold text-stone-800">🤖 AI と対話中</h1>
-          <div className="w-12" /> {/* スペーサー */}
+          <h1 className="font-bold text-stone-800">
+            🤖 {config.label}を整理中
+          </h1>
+          <div className="w-16" />
         </div>
       </div>
 
-      {/* チャットエリア */}
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* メインエリア */}
+      <div className="flex-1 overflow-y-auto p-4 pb-48">
         <div className="max-w-2xl mx-auto space-y-4">
-          {messages.map((message, index) => (
-            <div key={index}>
-              {message.role === "ai" ? (
-                <AIMessageBubble
-                  content={message.question.content}
-                  isStreaming={false}
-                />
-              ) : (
-                <div className="flex justify-end">
-                  <div className="bg-emerald-500 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs">
-                    <p className="whitespace-pre-wrap">
-                      {getAnswerDisplay(message)}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {isStreaming && (
-            <AIMessageBubble content="考え中..." isStreaming={true} />
-          )}
-        </div>
-      </div>
-
-      {/* 入力エリア */}
-      <div className="bg-white border-t border-stone-200 p-4 sticky bottom-0">
-        <div className="max-w-2xl mx-auto space-y-3">
-          {showCompleteButton ? (
-            <Button onClick={handleComplete} className="w-full">
-              整理完了 ✨
-            </Button>
+          {!initialInputSubmitted ? (
+            <InitialInputForm
+              fields={config.fields}
+              onSubmit={handleInitialSubmit}
+            />
           ) : (
+            /* チャット履歴 */
             <>
-              {currentQuestion && !isStreaming && (
-                <ChoiceChips
-                  options={currentQuestion.options}
-                  selectedIds={selectedIds}
-                  onChange={setSelectedIds}
-                  multiSelect={currentQuestion.multiSelect}
-                />
-              )}
+              {messages.map((msg, index) => (
+                <div key={index}>
+                  {msg.role === "ai" ? (
+                    <div className="space-y-3">
+                      {msg.message.intro && (
+                        <AIMessageBubble content={msg.message.intro} />
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex justify-end">
+                      <div className="bg-emerald-500 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs">
+                        <p className="whitespace-pre-wrap">
+                          {getAnswerDisplay(msg)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
 
-              <ChatInput
-                onSubmit={(value) => handleAnswer(value)}
-                placeholder="自由に入力することもできるよ..."
-                disabled={isStreaming}
-              />
-
-              {selectedIds.length > 0 && (
-                <Button onClick={() => handleAnswer()} className="w-full">
-                  この回答で進む →
-                </Button>
+              {isStreaming && (
+                <AIMessageBubble content="..." isStreaming={true} />
               )}
             </>
           )}
+
+          <div ref={chatEndRef} />
         </div>
       </div>
+
+      {/* 入力エリア（初期入力後のみ） */}
+      {initialInputSubmitted && (
+        <div className="bg-white border-t border-stone-200 p-4 fixed bottom-0 left-0 right-0">
+          <div className="max-w-2xl mx-auto space-y-3">
+            {showCompleteButton ? (
+              <Button onClick={handleComplete} className="w-full">
+                整理完了！結果を見る ✨
+              </Button>
+            ) : (
+              <>
+                {!isStreaming &&
+                  hasQuestions &&
+                  currentAIMessage.questions.map((q) => (
+                    <Card key={q.id} className="space-y-2">
+                      <p className="text-stone-700 font-medium text-sm">
+                        {q.content}
+                        {q.multiSelect && (
+                          <span className="text-stone-400 ml-2">（複数OK）</span>
+                        )}
+                      </p>
+                      <ChoiceChips
+                        options={q.options}
+                        selectedIds={answers[q.id]?.selectedIds || []}
+                        onChange={(ids) => handleOptionChange(q.id, ids)}
+                        multiSelect={q.multiSelect}
+                      />
+                      <Input
+                        value={answers[q.id]?.customInput || ""}
+                        onChange={(e) =>
+                          handleCustomInputChange(q.id, e.target.value)
+                        }
+                        placeholder={q.customInputPlaceholder || "自由に入力..."}
+                        onKeyDown={handleKeyDown}
+                        className="mt-2"
+                      />
+                    </Card>
+                  ))}
+
+                {canSubmit && (
+                  <Button onClick={handleSubmit} className="w-full">
+                    次へ →
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

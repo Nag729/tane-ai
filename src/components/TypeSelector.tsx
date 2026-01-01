@@ -7,9 +7,9 @@ type TypeSelectorProps = {
 };
 
 const typeOptions: { type: HorensoType; label: string; description: string }[] = [
-  { type: "report", label: "📋 報告", description: "結果や状況を伝える" },
-  { type: "contact", label: "📢 連絡", description: "情報を共有する" },
-  { type: "consult", label: "💭 相談", description: "意見やアドバイスを求める" },
+  { type: "report", label: "📋 報告", description: "結果や進捗を伝えたい" },
+  { type: "contact", label: "📢 連絡", description: "お知らせしたいことがある" },
+  { type: "consult", label: "💭 相談", description: "意見を聞きたい・助けてほしい" },
 ];
 
 export function TypeSelector({ selected, onSelect }: TypeSelectorProps) {

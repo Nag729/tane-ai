@@ -12,9 +12,8 @@ export default function Home() {
 
   const handleSelect = (type: HorensoType) => {
     setSelected(type);
-    // 少し遅延させてアニメーション効果
     setTimeout(() => {
-      router.push(`/input?type=${type}`);
+      router.push(`/chat?type=${type}`);
     }, 300);
   };
 
@@ -23,11 +22,15 @@ export default function Home() {
       <div className="w-full max-w-2xl">
         <Card className="text-center mb-8">
           <h1 className="text-3xl font-bold text-stone-800 mb-2">🥬 ほうれんそう AI</h1>
-          <p className="text-stone-600">報告・連絡・相談を AI と一緒に整理しよう</p>
+          <p className="text-stone-600">
+            上司・同僚・クライアントへの
+            <br />
+            報連相をAIが一緒に整理するよ
+          </p>
         </Card>
 
         <div className="mb-6">
-          <p className="text-center text-stone-600 mb-4">何をしたいですか？</p>
+          <p className="text-center text-stone-600 mb-4">何を整理したい？</p>
           <TypeSelector selected={selected} onSelect={handleSelect} />
         </div>
       </div>

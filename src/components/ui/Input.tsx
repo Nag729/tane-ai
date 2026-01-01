@@ -1,4 +1,8 @@
-import { type InputHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import {
+  forwardRef,
+  type InputHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from "react";
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   error?: boolean;
@@ -17,33 +21,43 @@ const baseStyles = `
   placeholder:text-stone-400
 `;
 
-const normalStyles = "border-stone-300 bg-white focus:border-emerald-500 focus:ring-emerald-100";
-const errorStyles = "border-rose-400 bg-rose-50 focus:border-rose-400 focus:ring-rose-100";
+const normalStyles =
+  "border-stone-300 bg-white focus:border-emerald-500 focus:ring-emerald-100";
+const errorStyles =
+  "border-rose-400 bg-rose-50 focus:border-rose-400 focus:ring-rose-100";
 
-export function Input({ error, className = "", ...props }: InputProps) {
-  return (
-    <input
-      className={`
-        ${baseStyles}
-        ${error ? errorStyles : normalStyles}
-        ${className}
-      `}
-      {...props}
-    />
-  );
-}
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ error, className = "", ...props }, ref) => {
+    return (
+      <input
+        ref={ref}
+        className={`
+          ${baseStyles}
+          ${error ? errorStyles : normalStyles}
+          ${className}
+        `}
+        {...props}
+      />
+    );
+  }
+);
+Input.displayName = "Input";
 
-export function Textarea({ error, className = "", rows = 4, ...props }: TextareaProps) {
-  return (
-    <textarea
-      className={`
-        ${baseStyles}
-        resize-none
-        ${error ? errorStyles : normalStyles}
-        ${className}
-      `}
-      rows={rows}
-      {...props}
-    />
-  );
-}
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ error, className = "", rows = 4, ...props }, ref) => {
+    return (
+      <textarea
+        ref={ref}
+        className={`
+          ${baseStyles}
+          resize-none
+          ${error ? errorStyles : normalStyles}
+          ${className}
+        `}
+        rows={rows}
+        {...props}
+      />
+    );
+  }
+);
+Textarea.displayName = "Textarea";
