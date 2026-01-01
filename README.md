@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ほうれんそうAI
 
-## Getting Started
+報告・連絡・相談を AI との対話で整理するツール。
 
-First, run the development server:
+## 概要
+
+- **報告**: 結論 → 詳細 → 次のアクション
+- **連絡**: 概要 → 対象者 → 期限・注意点
+- **相談**: 背景 → 現状 → 聞きたいこと → 選択肢
+
+AI が質問を通じて情報を整理し、構造化された文章を生成します。
+
+## 技術スタック
+
+| レイヤー               | 技術                                 |
+| ---------------------- | ------------------------------------ |
+| フレームワーク         | Next.js 15 (App Router) + TypeScript |
+| スタイリング           | Tailwind CSS v4                      |
+| AI                     | Claude API + Extended Thinking       |
+| テスト                 | Vitest + React Testing Library       |
+| E2E テスト             | Playwright                           |
+| コンポーネントカタログ | Storybook 10                         |
+
+## セットアップ
 
 ```bash
+# 依存関係インストール
+npm install
+
+# 環境変数設定
+cp .env.example .env.local
+# ANTHROPIC_API_KEY を設定
+
+# 開発サーバー起動
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 でアクセス
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## コマンド
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev          # 開発サーバー
+npm run build        # ビルド
+npm run storybook    # Storybook
+npm run test         # テスト（watch モード）
+npm run test:run     # テスト（1回実行）
+npm run test:e2e     # E2E テスト
+npm run lint         # ESLint
+```
 
-## Learn More
+## テスト
 
-To learn more about Next.js, take a look at the following resources:
+- **Unit テスト**: 170 テスト（28 ファイル）
+- **E2E テスト**: Playwright でストリーミング動作を検証
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Unit テスト
+npm run test:run
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# E2E テスト
+npm run test:e2e
+```
 
-## Deploy on Vercel
+## ドキュメント
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [task.md](./task.md) - 実装タスク一覧
+- [design.md](./design.md) - 設計ドキュメント
+- [CLAUDE.md](./CLAUDE.md) - コーディングルール

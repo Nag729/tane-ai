@@ -13,7 +13,6 @@
 - [x] 環境変数設定（.env.example）
 - [x] 型定義（src/types/index.ts）
 - [x] nextjs-toploader（ページ遷移インジケーター）
-- [ ] CI でテスト実行設定（GitHub Actions）
 
 ## Phase 2: 基盤コンポーネント ✅
 
@@ -75,6 +74,17 @@
   - useChat: チャットフロー管理
 - [x] 定数ファイル分離（typeConfig → constants/horenso.ts）
 - [x] ChatHistory コンポーネント抽出
+- [x] components フォルダ構成整理（ui/, pages/, projects/）
+- [x] FormField コンポーネント抽出（InitialInputForm のリファクタリング）
+- [x] ChatFooter サブコンポーネント抽出
+- [x] domain レイヤー導入
+  - domain/chat/streamQuestion.ts: 質問生成ロジック
+  - domain/chat/streamOutput.ts: 出力生成ロジック
+- [x] lib 分離
+  - lib/chatStorage.ts: セッションストレージ
+  - lib/chatApi.ts: API フェッチ関数
+- [x] hooks 分離
+  - hooks/useThinking.ts: 思考状態管理
 
 ## Phase 5: Claude API 連携 ✅
 
@@ -108,6 +118,13 @@
 
 - [x] useChat.test.ts: 11 テスト
 - [x] useChatAnswers.test.ts: 17 テスト
+- [x] useThinking.test.ts: 6 テスト
+- [x] chatStorage.test.ts: 5 テスト
+- [x] chatApi.test.ts: 5 テスト
+- [x] sse.test.ts: 8 テスト
+- [x] FormField.test.tsx: 7 テスト
+
+**テスト合計: 170 テスト（28 ファイル）**
 
 ## Phase 6: E2E テスト ✅
 

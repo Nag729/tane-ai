@@ -30,9 +30,24 @@ TDD（テスト駆動開発）で進める:
 ### ディレクトリ構成
 
 ```
-src/components/
-├── ui/           # 基盤コンポーネント（Button, Card, Input, Chip, CardButton）
-└── *.tsx         # 画面コンポーネント（TypeSelector, InputForm, etc.）
+src/
+├── app/              # Next.js App Router ページ
+│   ├── api/chat/     # API Routes（question, output）
+│   ├── chat/         # チャットページ
+│   └── result/       # 結果ページ
+├── components/
+│   ├── ui/           # 基盤コンポーネント（Button, Card, Input, Chip, CardButton, FormField）
+│   ├── pages/        # ページ固有コンポーネント
+│   │   ├── home/     # トップページ（TypeSelector, InitialInputForm）
+│   │   ├── chat/     # チャットページ（ChatHeader, ChatHistory, ChatFooter, etc.）
+│   │   └── result/   # 結果ページ（OutputCard, FeedbackForm, etc.）
+│   └── projects/     # 共有コンポーネント（ThinkingPanel, StreamingText, etc.）
+├── domain/           # ビジネスロジック
+│   └── chat/         # チャット関連（streamQuestion, streamOutput）
+├── hooks/            # カスタムフック（useChat, useChatAnswers, useThinking）
+├── lib/              # ユーティリティ（anthropic, prompts, sse, chatApi, chatStorage）
+├── constants/        # 定数定義
+└── types/            # 型定義
 ```
 
 ### ファイル命名
