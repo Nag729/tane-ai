@@ -6,11 +6,23 @@ type TypeSelectorProps = {
   onSelect: (type: HorensoType) => void;
 };
 
-const typeOptions: { type: HorensoType; label: string; description: string }[] = [
-  { type: "report", label: "📋 報告", description: "結果や進捗を伝えたい" },
-  { type: "contact", label: "📢 連絡", description: "お知らせしたいことがある" },
-  { type: "consult", label: "💭 相談", description: "意見を聞きたい・助けてほしい" },
-];
+const typeOptions = [
+  {
+    type: "report",
+    label: "📋 報告",
+    description: "一発で伝わる報告を作る",
+  },
+  {
+    type: "contact",
+    label: "📢 連絡",
+    description: "確実に届く連絡を作る",
+  },
+  {
+    type: "consult",
+    label: "💭 相談",
+    description: "すぐ答えがもらえる相談を作る",
+  },
+] as const satisfies readonly { type: HorensoType; label: string; description: string }[];
 
 export function TypeSelector({ selected, onSelect }: TypeSelectorProps) {
   return (
