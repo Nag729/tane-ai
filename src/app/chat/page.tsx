@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState, useEffect, useMemo } from "react";
+import { Suspense, useState, useEffect, useMemo, useRef } from "react";
 import { AIMessageBubble } from "@/components/AIMessageBubble";
 import { UserMessageBubble } from "@/components/UserMessageBubble";
 import { ChoiceChips } from "@/components/ChoiceChips";
@@ -99,6 +99,12 @@ function ChatPageContent() {
   const canSubmit =
     chat.hasQuestions && chat.currentAIMessage && checkAllAnswered(chat.currentAIMessage.questions);
 
+  // チャットエリアの自動スクロール
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chat.messages, chat.thinkingContent, chat.streamingOutput, chat.isLoading]);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* ヘッダー */}
@@ -126,13 +132,30 @@ function ChatPageContent() {
               <ChatHistory
                 messages={chat.messages}
                 getAnswerDisplay={chat.getAnswerDisplay}
-                isLoading={chat.isLoading}
+                isLoading={chat.isLoading && !chat.isThinking && !chat.streamingOutput}
               />
+
+              {/* 思考過程の表示 */}
+              <ThinkingPanel isThinking={chat.isThinking} content={chat.thinkingContent} />
+
+              {/* 出力生成中のストリーミング表示 */}
+              {chat.streamingOutput && (
+                <Card className="space-y-2">
+                  <h3 className="text-sm font-medium text-stone-600">📝 出力を生成中...</h3>
+                  <div className="bg-stone-50 rounded-lg p-3 max-h-96 overflow-y-auto">
+                    <StreamingText content={chat.streamingOutput} isStreaming={chat.isLoading} />
+                  </div>
+                </Card>
+              )}
+
               {chat.error && (
                 <Card className="bg-red-50 border-red-200">
                   <p className="text-red-600">{chat.error}</p>
                 </Card>
               )}
+
+              {/* 自動スクロール用のアンカー */}
+              <div ref={chatEndRef} />
             </>
           )}
         </div>
@@ -179,28 +202,7 @@ function ChatPageContent() {
               </Button>
             )}
 
-            {/* 思考過程の表示 */}
-            <ThinkingPanel
-              isThinking={chat.isThinking}
-              content={chat.thinkingContent}
-            />
-
-            {chat.isLoading && !chat.streamingOutput && !chat.isThinking && (
-              <p className="text-center text-stone-500">考え中...</p>
-            )}
-
-            {/* 出力生成中のストリーミング表示 */}
-            {chat.streamingOutput && (
-              <Card className="space-y-2">
-                <h3 className="text-sm font-medium text-stone-600">📝 出力を生成中...</h3>
-                <div className="bg-stone-50 rounded-lg p-3 max-h-64 overflow-y-auto">
-                  <StreamingText
-                    content={chat.streamingOutput}
-                    isStreaming={chat.isLoading}
-                  />
-                </div>
-              </Card>
-            )}
+            {chat.isLoading && <p className="text-center text-stone-500">考え中...</p>}
           </div>
         </footer>
       )}

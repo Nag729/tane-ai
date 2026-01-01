@@ -3,7 +3,7 @@ import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ほうれんそう AI",
+  title: "ほうれんそうAI",
   description: "報告・連絡・相談を AI と一緒に整理しよう",
 };
 

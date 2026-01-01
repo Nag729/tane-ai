@@ -95,7 +95,7 @@ export const typeContext: Record<
 export function getQuestionSystemPrompt(type: HorensoType): string {
   const ctx = typeContext[type];
 
-  return `あなたは「ほうれんそう AI」のアシスタントです。
+  return `あなたは「ほうれんそうAI」のアシスタントです。
 ユーザーが${ctx.label}を整理するのを手伝います。
 
 # あなたの役割
@@ -145,7 +145,7 @@ JSON形式で出力してください。`;
 export function getOutputSystemPrompt(type: HorensoType): string {
   const ctx = typeContext[type];
 
-  return `あなたは「ほうれんそう AI」のアシスタントです。
+  return `あなたは「ほうれんそうAI」のアシスタントです。
 ユーザーとの対話から集めた情報を元に、${ctx.label}の文章を生成します。
 
 # 出力の原則
