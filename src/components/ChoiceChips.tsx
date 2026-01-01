@@ -2,10 +2,10 @@ import { Chip } from "@/components/ui/Chip";
 import type { QuestionOption } from "@/types";
 
 type ChoiceChipsProps = {
-  options: QuestionOption[];
-  selectedIds: string[];
-  onChange: (selectedIds: string[]) => void;
-  multiSelect?: boolean;
+  readonly options: readonly QuestionOption[];
+  readonly selectedIds: readonly string[];
+  readonly onChange: (selectedIds: string[]) => void;
+  readonly multiSelect?: boolean;
 };
 
 export function ChoiceChips({

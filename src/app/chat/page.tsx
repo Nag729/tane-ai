@@ -3,24 +3,35 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect, useRef } from "react";
 import { AIMessageBubble } from "@/components/AIMessageBubble";
+import { UserMessageBubble } from "@/components/UserMessageBubble";
 import { ChoiceChips } from "@/components/ChoiceChips";
 import { InitialInputForm } from "@/components/InitialInputForm";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
-import type { HorensoType, AIMessage, ChatMessage, QuestionAnswer } from "@/types";
-
-const typeConfig: Record<
+import type {
   HorensoType,
-  {
-    label: string;
-    fields: {
-      topic: { label: string; placeholder: string };
-      recipient: { label: string; placeholder: string };
-      detail: { label: string; placeholder: string };
-    };
-  }
-> = {
+  AIMessage,
+  ChatMessage,
+  QuestionAnswer,
+  AnswerState,
+} from "@/types";
+
+type FieldConfig = {
+  label: string;
+  placeholder: string;
+};
+
+type TypeConfigItem = {
+  label: string;
+  fields: {
+    topic: FieldConfig;
+    recipient: FieldConfig;
+    detail: FieldConfig;
+  };
+};
+
+const typeConfig = {
   report: {
     label: "報告",
     fields: {
@@ -72,7 +83,7 @@ const typeConfig: Record<
       },
     },
   },
-};
+} as const satisfies Record<HorensoType, TypeConfigItem>;
 
 // 励ましのリアクション
 const encouragements = [
@@ -82,7 +93,7 @@ const encouragements = [
   "了解！",
   "ふむふむ",
   "わかった！",
-];
+] as const;
 
 const getRandomEncouragement = () =>
   encouragements[Math.floor(Math.random() * encouragements.length)];
@@ -118,11 +129,6 @@ const createFollowUpMessages = (): AIMessage[] => [
   },
 ];
 
-type AnswerState = {
-  selectedIds: string[];
-  customInput: string;
-};
-
 function ChatPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -139,7 +145,6 @@ function ChatPageContent() {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerState>>({});
   const [isStreaming, setIsStreaming] = useState(false);
-  const [showCompleteButton, setShowCompleteButton] = useState(false);
 
   const isValidParams = !!type;
   const config = type ? typeConfig[type] : null;
@@ -272,7 +277,11 @@ function ChatPageContent() {
     setAnswers({});
 
     if (isLastMessage) {
-      setShowCompleteButton(true);
+      // 最後の質問 → 結果ページへ遷移
+      setIsStreaming(true);
+      setTimeout(() => {
+        router.push(`/result?type=${type}`);
+      }, 500);
     } else {
       setIsStreaming(true);
       setTimeout(() => {
@@ -285,10 +294,6 @@ function ChatPageContent() {
         setIsStreaming(false);
       }, 600);
     }
-  };
-
-  const handleComplete = () => {
-    router.push(`/result?type=${type}`);
   };
 
   const getAnswerDisplay = (chatMessage: ChatMessage) => {
@@ -363,13 +368,7 @@ function ChatPageContent() {
                       )}
                     </div>
                   ) : (
-                    <div className="flex justify-end">
-                      <div className="bg-emerald-500 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs">
-                        <p className="whitespace-pre-wrap">
-                          {getAnswerDisplay(msg)}
-                        </p>
-                      </div>
-                    </div>
+                    <UserMessageBubble content={getAnswerDisplay(msg)} />
                   )}
                 </div>
               ))}
@@ -388,46 +387,38 @@ function ChatPageContent() {
       {initialInputSubmitted && (
         <div className="bg-white border-t border-stone-200 p-4 fixed bottom-0 left-0 right-0">
           <div className="max-w-2xl mx-auto space-y-3">
-            {showCompleteButton ? (
-              <Button onClick={handleComplete} className="w-full">
-                整理完了！結果を見る ✨
-              </Button>
-            ) : (
-              <>
-                {!isStreaming &&
-                  hasQuestions &&
-                  currentAIMessage.questions.map((q) => (
-                    <Card key={q.id} className="space-y-2">
-                      <p className="text-stone-700 font-medium text-sm">
-                        {q.content}
-                        {q.multiSelect && (
-                          <span className="text-stone-400 ml-2">（複数OK）</span>
-                        )}
-                      </p>
-                      <ChoiceChips
-                        options={q.options}
-                        selectedIds={answers[q.id]?.selectedIds || []}
-                        onChange={(ids) => handleOptionChange(q.id, ids)}
-                        multiSelect={q.multiSelect}
-                      />
-                      <Input
-                        value={answers[q.id]?.customInput || ""}
-                        onChange={(e) =>
-                          handleCustomInputChange(q.id, e.target.value)
-                        }
-                        placeholder={q.customInputPlaceholder || "自由に入力..."}
-                        onKeyDown={handleKeyDown}
-                        className="mt-2"
-                      />
-                    </Card>
-                  ))}
+            {!isStreaming &&
+              hasQuestions &&
+              currentAIMessage.questions.map((q) => (
+                <Card key={q.id} className="space-y-2">
+                  <p className="text-stone-700 font-medium text-sm">
+                    {q.content}
+                    {q.multiSelect && (
+                      <span className="text-stone-400 ml-2">（複数OK）</span>
+                    )}
+                  </p>
+                  <ChoiceChips
+                    options={q.options}
+                    selectedIds={answers[q.id]?.selectedIds || []}
+                    onChange={(ids) => handleOptionChange(q.id, ids)}
+                    multiSelect={q.multiSelect}
+                  />
+                  <Input
+                    value={answers[q.id]?.customInput || ""}
+                    onChange={(e) =>
+                      handleCustomInputChange(q.id, e.target.value)
+                    }
+                    placeholder={q.customInputPlaceholder || "自由に入力..."}
+                    onKeyDown={handleKeyDown}
+                    className="mt-2"
+                  />
+                </Card>
+              ))}
 
-                {canSubmit && (
-                  <Button onClick={handleSubmit} className="w-full">
-                    次へ →
-                  </Button>
-                )}
-              </>
+            {canSubmit && (
+              <Button onClick={handleSubmit} className="w-full">
+                次へ →
+              </Button>
             )}
           </div>
         </div>

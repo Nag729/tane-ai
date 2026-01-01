@@ -4,7 +4,7 @@
 
 ## Phase 1: プロジェクトセットアップ ✅
 
-- [x] Next.js 15 + TypeScript プロジェクト作成
+- [x] Next.js 16 + TypeScript プロジェクト作成
 - [x] Tailwind CSS v4 セットアップ
 - [x] Vitest + React Testing Library セットアップ
 - [x] Storybook 10 セットアップ
@@ -12,6 +12,7 @@
 - [x] 基本ディレクトリ構成作成
 - [x] 環境変数設定（.env.example）
 - [x] 型定義（src/types/index.ts）
+- [x] nextjs-toploader（ページ遷移インジケーター）
 - [ ] CI でテスト実行設定（GitHub Actions）
 
 ## Phase 2: 基盤コンポーネント ✅
@@ -26,44 +27,49 @@
 
 ## Phase 3: Presentational Components ✅
 
-| コンポーネント  | テスト | 実装 | Storybook | 説明                         |
-| --------------- | ------ | ---- | --------- | ---------------------------- |
-| TypeSelector    | ✅ 6   | ✅   | ✅        | 報告/連絡/相談の選択         |
-| InputForm       | ✅ 6   | ✅   | ✅        | 目的・相手・背景の入力       |
-| AIMessageBubble | ✅ 4   | ✅   | ✅        | AI の質問表示                |
-| ChoiceChips     | ✅ 6   | ✅   | ✅        | 選択肢グループ（単一/複数）  |
-| ChatInput       | ✅ 6   | ✅   | ✅        | カスタム入力欄               |
-| OutputCard      | ✅ 5   | ✅   | ✅        | 構造化出力（Markdown/Plain） |
-| FeedbackForm    | ✅ 5   | ✅   | ✅        | 再生成用フィードバック       |
+| コンポーネント    | テスト | 実装 | Storybook | 説明                         |
+| ----------------- | ------ | ---- | --------- | ---------------------------- |
+| TypeSelector      | ✅ 6   | ✅   | ✅        | 報告/連絡/相談の選択         |
+| InitialInputForm  | ✅ 6   | ✅   | ✅        | トピック・相手・詳細の入力   |
+| AIMessageBubble   | ✅ 4   | ✅   | ✅        | AI の質問表示                |
+| UserMessageBubble | ✅ 3   | ✅   | ✅        | ユーザーの回答表示           |
+| ChoiceChips       | ✅ 6   | ✅   | ✅        | 選択肢グループ（単一/複数）  |
+| OutputCard        | ✅ 5   | ✅   | ✅        | 構造化出力（Markdown/Plain） |
+| FeedbackForm      | ✅ 5   | ✅   | ✅        | 再生成用フィードバック       |
 
-**合計: 66 テスト ✅**
+**合計: 63 テスト ✅**
 
-## Phase 4: 画面統合 🔜
+## Phase 4: 画面統合 ✅
 
-### 4-1. 種類選択画面（トップ）
+### 4-1. トップページ（種類選択）
 
-- [ ] page.tsx に TypeSelector 統合
-- [ ] 選択後の画面遷移
+- [x] page.tsx に TypeSelector 統合
+- [x] 選択後 /chat へ遷移
 
-### 4-2. 初期入力フォーム画面
+### 4-2. チャットページ（/chat）
 
-- [ ] /input/page.tsx 作成
-- [ ] InputForm 統合
-- [ ] 送信後の画面遷移
+- [x] InitialInputForm で初期入力
+- [x] AIMessageBubble + ChoiceChips で対話
+- [x] 質問ごとの自由入力
+- [x] 「整理完了」ボタン表示
+- [x] モックデータで動作確認
 
-### 4-3. 対話画面
+### 4-3. 結果ページ（/result）
 
-- [ ] /chat/page.tsx 作成
-- [ ] AIMessageBubble + ChoiceChips + ChatInput を組み合わせ
-- [ ] 対話履歴の表示
-- [ ] 「整理完了」ボタンの条件付き表示
+- [x] OutputCard + FeedbackForm 統合
+- [x] Markdown / プレーンテキスト切り替え
+- [x] コピー機能
+- [x] 再生成フロー（モック）
 
-### 4-4. 最終出力画面
+### 4-4. リファクタリング ✅
 
-- [ ] /result/page.tsx 作成
-- [ ] OutputCard + FeedbackForm 統合
+- [x] 型安全性改善（as const satisfies, readonly）
+- [x] 未使用型の削除（InitialInput, ChatState）
+- [x] 未使用コンポーネントの削除（ChatInput）
+- [x] UserMessageBubble を Presentational Component として抽出
+- [x] ChoiceChips の readonly 対応
 
-## Phase 5: Claude API 連携
+## Phase 5: Claude API 連携 🔜
 
 ### 5-1. API クライアント
 
@@ -108,5 +114,5 @@
 
 ## 現在のステータス
 
-**完了**: Phase 1〜3（プロジェクトセットアップ + 全コンポーネント実装）
-**次のアクション**: Phase 4 - 画面統合
+**完了**: Phase 1〜4（セットアップ + コンポーネント + 画面統合）
+**次のアクション**: Phase 5 - Claude API 連携
