@@ -6,7 +6,7 @@ type AIMessageBubbleProps = {
 export function AIMessageBubble({ content, isStreaming = false }: AIMessageBubbleProps) {
   return (
     <div className="flex gap-3">
-      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-xl">
+      <div className="shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-xl">
         🤖
       </div>
       <div className="flex-1 bg-white rounded-2xl rounded-tl-sm p-4 shadow-md border border-stone-100">
