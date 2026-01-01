@@ -19,7 +19,7 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="w-[400px]">
+      <div className="w-100">
         <Story />
       </div>
     ),
@@ -30,6 +30,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const SingleSelect: Story = {
+  args: {
+    options: sampleOptions,
+    selectedIds: [],
+    onChange: () => {},
+    multiSelect: false,
+  },
   render: function SingleSelectDemo() {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     return (
@@ -44,6 +50,12 @@ export const SingleSelect: Story = {
 };
 
 export const MultiSelect: Story = {
+  args: {
+    options: sampleOptions,
+    selectedIds: [],
+    onChange: () => {},
+    multiSelect: true,
+  },
   render: function MultiSelectDemo() {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     return (

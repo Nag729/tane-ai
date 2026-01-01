@@ -11,6 +11,13 @@ const eslintConfig = defineConfig([
   ...nextTs,
   ...storybook.configs["flat/recommended"],
   prettier,
+  // Storybook ルールの調整（@storybook/react の型インポートは許可）
+  {
+    files: ["**/*.stories.tsx"],
+    rules: {
+      "storybook/no-renderer-packages": "off",
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

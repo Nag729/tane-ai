@@ -43,6 +43,9 @@ export const Disabled: Story = {
 };
 
 export const Interactive: Story = {
+  args: {
+    label: "クリックして選択",
+  },
   render: function InteractiveChip() {
     const [selected, setSelected] = useState(false);
     return (
@@ -56,6 +59,9 @@ export const Interactive: Story = {
 };
 
 export const MultipleChips: Story = {
+  args: {
+    label: "選択肢",
+  },
   render: function MultipleChipsDemo() {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const options = ["選択肢A", "選択肢B", "選択肢C", "選択肢D"];

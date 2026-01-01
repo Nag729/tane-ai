@@ -12,7 +12,7 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="w-[600px]">
+      <div className="w-150">
         <Story />
       </div>
     ),
@@ -50,6 +50,9 @@ export const ConsultSelected: Story = {
 };
 
 export const Interactive: Story = {
+  args: {
+    onSelect: () => {},
+  },
   render: function InteractiveTypeSelector() {
     const [selected, setSelected] = useState<HorensoType | undefined>();
     return <TypeSelector selected={selected} onSelect={setSelected} />;
