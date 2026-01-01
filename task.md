@@ -68,6 +68,11 @@
 - [x] 未使用コンポーネントの削除（ChatInput）
 - [x] UserMessageBubble を Presentational Component として抽出
 - [x] ChoiceChips の readonly 対応
+- [x] カスタムフック分離
+  - useChatAnswers: 回答入力状態管理
+  - useMockChat: モックチャットフロー（Phase 5 で API に置き換え）
+- [x] 定数ファイル分離（typeConfig → constants/horenso.ts）
+- [x] ChatHistory コンポーネント抽出
 
 ## Phase 5: Claude API 連携 🔜
 
