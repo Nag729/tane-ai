@@ -1,15 +1,18 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import { OutputCard } from "@/components/OutputCard";
-import { FeedbackForm } from "@/components/FeedbackForm";
+import { Suspense, useState, useEffect, useCallback } from "react";
+import { OutputCard } from "@/components/pages/result/OutputCard";
+import { FeedbackForm } from "@/components/pages/result/FeedbackForm";
+import { ResultHeader } from "@/components/pages/result/ResultHeader";
+import { RegeneratingCard } from "@/components/pages/result/RegeneratingCard";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { loadChatData, clearChatData } from "@/hooks";
+import { readTextSSEStream } from "@/lib/sse";
 import type { HorensoType, StructuredOutput, ChatMessage } from "@/types";
 
+/** 結果ページ本体 */
 function ResultPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -23,7 +26,6 @@ function ResultPageContent() {
   const [streamingContent, setStreamingContent] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // sessionStorage からデータを読み込み
   useEffect(() => {
     const chatData = loadChatData();
     if (chatData?.output) {
@@ -33,118 +35,64 @@ function ResultPageContent() {
     setIsLoaded(true);
   }, []);
 
-  // 無効なパラメータの場合はトップへリダイレクト
   useEffect(() => {
-    if (!isValidParams) {
-      router.replace("/");
-    }
+    if (!isValidParams) router.replace("/");
   }, [isValidParams, router]);
 
-  // データがない場合はトップへリダイレクト
   useEffect(() => {
-    if (isLoaded && !output) {
-      router.replace("/");
-    }
+    if (isLoaded && !output) router.replace("/");
   }, [isLoaded, output, router]);
 
-  if (!isValidParams || !output) {
-    return null;
-  }
+  const handleRegenerate = useCallback(
+    async (feedback: string) => {
+      if (!type) return;
 
-  const handleRegenerate = async (feedback: string) => {
-    if (!type) return;
-
-    setIsRegenerating(true);
-    setStreamingContent("");
-
-    try {
-      const response = await fetch("/api/chat/output", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type,
-          messages,
-          previousOutput: output,
-          feedback,
-        }),
-      });
-
-      let fullText = "";
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error("No response body");
-
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = JSON.parse(line.slice(6));
-
-            if (data.type === "text") {
-              fullText += data.text;
-              setStreamingContent(fullText);
-            } else if (data.type === "error") {
-              throw new Error(data.error);
-            }
-          }
-        }
-      }
-
-      setOutput({ content: fullText });
+      setIsRegenerating(true);
       setStreamingContent("");
-    } catch (error) {
-      console.error("Failed to regenerate output:", error);
-    } finally {
-      setIsRegenerating(false);
-    }
-  };
 
-  const handleStartOver = () => {
+      try {
+        const response = await fetch("/api/chat/output", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type, messages, previousOutput: output, feedback }),
+        });
+
+        const fullText = await readTextSSEStream(response, { onTextAccumulated: setStreamingContent });
+        setOutput({ content: fullText });
+        setStreamingContent("");
+      } catch (error) {
+        console.error("Failed to regenerate output:", error);
+      } finally {
+        setIsRegenerating(false);
+      }
+    },
+    [type, messages, output]
+  );
+
+  const handleStartOver = useCallback(() => {
     clearChatData();
     router.push("/");
-  };
+  }, [router]);
 
-  // ストリーミング中は途中経過を表示
+  if (!isValidParams || !output) return null;
+
   const displayContent = streamingContent || output.content;
 
   return (
     <div className="min-h-screen p-4">
       <div className="max-w-2xl mx-auto space-y-6">
-        {/* ヘッダー */}
-        <Card className="text-center">
-          <p className="text-4xl mb-2">🎉</p>
-          <h1 className="text-2xl font-bold text-stone-800 mb-1">整理完了！</h1>
-          <p className="text-stone-600">内容をコピーして使ってね</p>
-        </Card>
+        <ResultHeader />
 
-        {/* 出力カード */}
         {isRegenerating && streamingContent ? (
-          <Card className="space-y-4">
-            <h2 className="text-lg font-medium text-stone-800">📋 再生成中...</h2>
-            <div className="bg-stone-50 rounded-xl p-4 min-h-32">
-              <div className="prose prose-stone prose-sm max-w-none">
-                <ReactMarkdown>{streamingContent}</ReactMarkdown>
-              </div>
-            </div>
-          </Card>
+          <RegeneratingCard content={streamingContent} />
         ) : (
           <OutputCard output={{ content: displayContent }} />
         )}
 
-        {/* フィードバックフォーム */}
         <Card>
           <FeedbackForm onSubmit={handleRegenerate} isLoading={isRegenerating} />
         </Card>
 
-        {/* やり直しボタン */}
         <div className="text-center">
           <Button variant="secondary" onClick={handleStartOver} className="text-stone-500">
             🔄 最初からやり直す
