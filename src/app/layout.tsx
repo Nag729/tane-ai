@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className="antialiased">
-        <NextTopLoader color="#10b981" showSpinner={false} />
+        <NextTopLoader color="#10b981" height={2} />
         {children}
       </body>
     </html>

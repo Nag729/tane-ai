@@ -9,3 +9,16 @@ body {
   color: #1c1917; /* stone-900 */
   font-family: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'Yu Gothic', sans-serif;
 }
+
+/* クリック可能な要素に cursor: pointer を設定 */
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+a,
+label[for],
+select,
+summary {
+  cursor: pointer;
+}
