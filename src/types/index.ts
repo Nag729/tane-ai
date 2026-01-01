@@ -44,6 +44,8 @@ export type ChatState = {
 
 /** 構造化された出力 */
 export type StructuredOutput = {
-  content: string;
-  format: "markdown" | "plaintext";
+  /** Markdown形式（Slack, GitHub, Notion向け） */
+  markdown: string;
+  /** プレーンテキスト形式（メール向け、Markdown構文なし） */
+  plaintext: string;
 };
