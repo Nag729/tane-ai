@@ -14,9 +14,7 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
@@ -45,7 +43,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.2",
-    "@vitest/browser-playwright": "^4.0.16",
     "@vitest/coverage-v8": "^4.0.16",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
@@ -53,7 +50,6 @@
     "eslint-plugin-storybook": "^10.1.11",
     "jsdom": "^27.4.0",
     "msw": "^2.12.7",
-    "playwright": "^1.57.0",
     "prettier": "^3.7.4",
     "storybook": "^10.1.11",
     "tailwindcss": "^4",
