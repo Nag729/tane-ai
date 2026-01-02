@@ -4,7 +4,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { OutputCard } from "@/components/pages/result/OutputCard";
 import { AIFeedbackCard } from "@/components/pages/result/AIFeedbackCard";
-import { FeedbackForm } from "@/components/pages/result/FeedbackForm";
 import { ResultHeader } from "@/components/pages/result/ResultHeader";
 import { ThinkingPanel } from "@/components/projects/ThinkingPanel";
 import { StreamingText } from "@/components/projects/StreamingText";
@@ -168,15 +167,6 @@ function ResultPageContent() {
     }
   }, [output, aiFeedback, generateOutput]);
 
-  const handleRegenerate = useCallback(
-    async (feedback: string) => {
-      if (output) {
-        await generateOutput(feedback, output);
-      }
-    },
-    [output, generateOutput]
-  );
-
   const handleStartOver = useCallback(() => {
     clearChatData();
     router.push("/");
@@ -233,7 +223,7 @@ function ResultPageContent() {
         {/* AIレビューボタン: 完了時かつレビュー未実行 */}
         {phase === "complete" && output && !aiFeedback && (
           <div className="text-center">
-            <Button onClick={handleRequestReview} variant="secondary">
+            <Button onClick={handleRequestReview} variant="primary">
               🔍 AIにレビューしてもらう
             </Button>
           </div>
@@ -247,13 +237,6 @@ function ResultPageContent() {
             onApplyFeedback={aiFeedback ? handleApplyFeedback : undefined}
             isRegenerating={phase === "regenerating"}
           />
-        )}
-
-        {/* フィードバックフォーム: 完了時のみ表示 */}
-        {phase === "complete" && output && (
-          <Card>
-            <FeedbackForm onSubmit={handleRegenerate} isLoading={false} />
-          </Card>
         )}
 
         <div className="text-center">
