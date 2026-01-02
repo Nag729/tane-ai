@@ -16,7 +16,7 @@ type ThinkingPanelProps = {
  * Claude Desktop風のUI
  */
 export function ThinkingPanel({ isThinking, content, title = "思考中..." }: ThinkingPanelProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // 思考中でなく、内容もない場合は表示しない
   if (!isThinking && !content) {
@@ -48,8 +48,12 @@ export function ThinkingPanel({ isThinking, content, title = "思考中..." }: T
         </svg>
       </button>
 
-      {/* コンテンツ */}
-      {isExpanded && (
+      {/* コンテンツ（アニメーション付き） */}
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          isExpanded ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
         <div className="px-4 pb-4">
           <div className="bg-white/60 rounded-lg p-3 max-h-48 overflow-y-auto">
             {content ? (
@@ -62,7 +66,7 @@ export function ThinkingPanel({ isThinking, content, title = "思考中..." }: T
             )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

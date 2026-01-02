@@ -88,6 +88,7 @@ export function useChat({ type, onComplete }: UseChatOptions) {
       if (!currentAIMessage) return;
       setIsLoading(true);
       setError(null);
+      thinking.resetThinking();
       const userMessage: ChatMessage = {
         role: "user",
         answer: { messageId: currentAIMessage.id, answers: questionAnswers, customInput },
@@ -107,7 +108,7 @@ export function useChat({ type, onComplete }: UseChatOptions) {
         setIsLoading(false);
       }
     },
-    [currentAIMessage, messages, type]
+    [currentAIMessage, messages, type, thinking]
   );
 
   const completeAndGenerate = useCallback(async () => {
