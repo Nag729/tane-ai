@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { Model } from "@anthropic-ai/sdk/resources";
 
 /**
  * Anthropic クライアント
@@ -10,7 +11,7 @@ export const anthropic = new Anthropic({
 /**
  * モデル ID
  */
-export const MODEL_ID = "claude-opus-4-20250514" as const;
+export const MODEL_ID = "claude-opus-4-20250514" as const satisfies Model;
 
 /**
  * リトライ設定
