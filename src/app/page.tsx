@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TypeSelector } from "@/components/pages/home/TypeSelector";
 import { Card } from "@/components/ui/Card";
@@ -8,13 +7,9 @@ import type { MeetingType } from "@/types";
 
 export default function Home() {
   const router = useRouter();
-  const [selected, setSelected] = useState<MeetingType | undefined>();
 
   const handleSelect = (type: MeetingType) => {
-    setSelected(type);
-    setTimeout(() => {
-      router.push(`/chat?type=${type}`);
-    }, 300);
+    router.push(`/chat?type=${type}`);
   };
 
   return (
@@ -47,7 +42,7 @@ export default function Home() {
         {/* 種類選択 */}
         <div>
           <p className="text-center text-stone-600 mb-4">どんな会議？</p>
-          <TypeSelector selected={selected} onSelect={handleSelect} />
+          <TypeSelector onSelect={handleSelect} />
         </div>
       </div>
     </div>

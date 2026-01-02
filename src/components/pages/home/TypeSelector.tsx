@@ -2,7 +2,6 @@ import type { MeetingType } from "@/types";
 import { CardButton } from "@/components/ui/CardButton";
 
 type TypeSelectorProps = {
-  selected?: MeetingType;
   onSelect: (type: MeetingType) => void;
 };
 
@@ -24,20 +23,17 @@ const typeOptions = [
   },
 ] as const satisfies readonly { type: MeetingType; label: string; description: string }[];
 
-export function TypeSelector({ selected, onSelect }: TypeSelectorProps) {
+export function TypeSelector({ onSelect }: TypeSelectorProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4">
       {typeOptions.map(({ type, label, description }) => (
         <CardButton
           key={type}
-          selected={selected === type}
           onClick={() => onSelect(type)}
           className="flex-1"
         >
           <div className="text-2xl mb-2">{label}</div>
-          <div className={`text-sm ${selected === type ? "text-emerald-100" : "text-stone-500"}`}>
-            {description}
-          </div>
+          <div className="text-sm text-stone-500">{description}</div>
         </CardButton>
       ))}
     </div>
