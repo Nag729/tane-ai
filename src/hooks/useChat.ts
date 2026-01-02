@@ -1,11 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import {
-  fetchInitialQuestion,
-  fetchNextQuestion,
-  QuestionResponse,
-} from "@/lib/chatApi";
+import { fetchInitialQuestion, fetchNextQuestion, QuestionResponse } from "@/lib/chatApi";
 import { saveChatData } from "@/lib/chatStorage";
 import { useThinking } from "./useThinking";
 import type { MeetingType, AIMessage, ChatMessage, QuestionAnswer, ChatPhase } from "@/types";

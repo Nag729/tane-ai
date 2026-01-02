@@ -57,7 +57,11 @@ describe("chatApi", () => {
       global.fetch = vi.fn().mockResolvedValue({ body: {} });
       mockReadSSEStream.mockResolvedValue(mockQuestionResponse);
 
-      const result = await fetchInitialQuestion("decision", { topic: "", participant: "", detail: "" });
+      const result = await fetchInitialQuestion("decision", {
+        topic: "",
+        participant: "",
+        detail: "",
+      });
 
       expect(result).toEqual(mockQuestionResponse);
     });

@@ -222,7 +222,9 @@ describe("useChat", () => {
       return Promise.resolve({ ok: true, body: stream });
     });
 
-    const { result } = renderHook(() => useChat({ type: "discussion", onComplete: mockOnComplete }));
+    const { result } = renderHook(() =>
+      useChat({ type: "discussion", onComplete: mockOnComplete })
+    );
 
     // 初期入力
     await act(async () => {
