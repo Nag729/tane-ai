@@ -32,7 +32,7 @@ export default function Home() {
         {/* 使い方の説明 */}
         <div className="flex justify-center gap-2 sm:gap-4 mb-8 text-xs sm:text-sm text-stone-500">
           <span className="flex items-center gap-1">
-            <span className="text-emerald-500">①</span> AIが質問
+            <span className="text-emerald-500">①</span> AIの質問に
           </span>
           <span className="text-stone-300">→</span>
           <span className="flex items-center gap-1">
@@ -40,7 +40,7 @@ export default function Home() {
           </span>
           <span className="text-stone-300">→</span>
           <span className="flex items-center gap-1">
-            <span className="text-emerald-500">③</span> 資料完成
+            <span className="text-emerald-500">③</span> 資料が完成！
           </span>
         </div>
 
