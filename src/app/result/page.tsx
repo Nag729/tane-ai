@@ -195,15 +195,6 @@ function ResultPageContent() {
           />
         )}
 
-        {/* ThinkingPanel: レビュー中に表示 */}
-        {showReviewThinking && (
-          <ThinkingPanel
-            isThinking={reviewThinking.isThinking}
-            content={reviewThinking.thinkingContent}
-            title="資料をレビュー中..."
-          />
-        )}
-
         {/* 出力カード or ストリーミング表示 */}
         {isGenerating && !displayContent ? (
           <Card>
@@ -227,6 +218,15 @@ function ResultPageContent() {
               🔍 AIにレビューしてもらう
             </Button>
           </div>
+        )}
+
+        {/* ThinkingPanel: レビュー中に表示（AIFeedbackCardの直前） */}
+        {showReviewThinking && (
+          <ThinkingPanel
+            isThinking={reviewThinking.isThinking}
+            content={reviewThinking.thinkingContent}
+            title="資料をレビュー中..."
+          />
         )}
 
         {/* AIフィードバックカード */}
