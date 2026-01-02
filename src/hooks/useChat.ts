@@ -96,7 +96,11 @@ export function useChat({ type, onComplete }: UseChatOptions) {
       const updatedMessages = [...messages, userMessage];
       setMessages(updatedMessages);
       try {
-        const result = await fetchNextQuestion(type, updatedMessages);
+        const result = await fetchNextQuestion(
+          type,
+          updatedMessages,
+          thinking.createThinkingCallbacks()
+        );
         const aiMessage = createAIMessage(result);
         setMessages([...updatedMessages, { role: "ai", message: aiMessage }]);
         setCurrentAIMessage(aiMessage);
@@ -106,6 +110,7 @@ export function useChat({ type, onComplete }: UseChatOptions) {
         console.error("Failed to generate next question:", err);
       } finally {
         setIsLoading(false);
+        thinking.stopThinking();
       }
     },
     [currentAIMessage, messages, type, thinking]

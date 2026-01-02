@@ -36,14 +36,15 @@ export async function fetchInitialQuestion(
 /** 次の質問を生成 */
 export async function fetchNextQuestion(
   type: MeetingType,
-  messages: ChatMessage[]
+  messages: ChatMessage[],
+  callbacks?: SSECallbacks
 ): Promise<QuestionResponse> {
   const response = await fetch("/api/chat/question", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ type, messages }),
   });
-  return readSSEStream<QuestionResponse>(response);
+  return readSSEStream<QuestionResponse>(response, callbacks);
 }
 
 /** 最終出力を生成 */

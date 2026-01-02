@@ -6,9 +6,11 @@ import { OutputCard } from "@/components/pages/result/OutputCard";
 import { FeedbackForm } from "@/components/pages/result/FeedbackForm";
 import { ResultHeader } from "@/components/pages/result/ResultHeader";
 import { RegeneratingCard } from "@/components/pages/result/RegeneratingCard";
+import { ThinkingPanel } from "@/components/projects/ThinkingPanel";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { loadChatData, clearChatData } from "@/hooks";
+import { useThinking } from "@/hooks/useThinking";
 import { readTextSSEStream } from "@/lib/sse";
 import type { MeetingType, StructuredOutput, ChatMessage } from "@/types";
 
@@ -25,6 +27,7 @@ function ResultPageContent() {
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
+  const thinking = useThinking();
 
   useEffect(() => {
     const chatData = loadChatData();
@@ -49,6 +52,7 @@ function ResultPageContent() {
 
       setIsRegenerating(true);
       setStreamingContent("");
+      thinking.resetThinking();
 
       try {
         const response = await fetch("/api/chat/output", {
@@ -58,6 +62,7 @@ function ResultPageContent() {
         });
 
         const fullText = await readTextSSEStream(response, {
+          ...thinking.createThinkingCallbacks(),
           onTextAccumulated: setStreamingContent,
         });
         setOutput({ content: fullText });
@@ -66,9 +71,10 @@ function ResultPageContent() {
         console.error("Failed to regenerate output:", error);
       } finally {
         setIsRegenerating(false);
+        thinking.stopThinking();
       }
     },
-    [type, messages, output]
+    [type, messages, output, thinking]
   );
 
   const handleStartOver = useCallback(() => {
@@ -84,6 +90,11 @@ function ResultPageContent() {
     <div className="min-h-screen p-4">
       <div className="max-w-2xl mx-auto space-y-6">
         <ResultHeader />
+
+        {/* 再生成時のThinkingPanel */}
+        {isRegenerating && (
+          <ThinkingPanel isThinking={thinking.isThinking} content={thinking.thinkingContent} />
+        )}
 
         {isRegenerating && streamingContent ? (
           <RegeneratingCard content={streamingContent} />

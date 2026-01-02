@@ -34,9 +34,7 @@ export function ThinkingPanel({ isThinking, content, title = "思考中..." }: T
           {isThinking && (
             <span className="inline-block w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
           )}
-          <span className="text-sm font-medium text-amber-800">
-            {isThinking ? title : "思考完了"}
-          </span>
+          <span className="text-sm font-medium text-amber-800">{title}</span>
         </div>
         <svg
           className={`w-4 h-4 text-amber-600 transition-transform ${isExpanded ? "rotate-180" : ""}`}

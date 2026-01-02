@@ -7,6 +7,7 @@ import { ThinkingPanel } from "@/components/projects/ThinkingPanel";
 import { ChatHeader } from "@/components/pages/chat/ChatHeader";
 import { ChatHistory } from "@/components/pages/chat/ChatHistory";
 import { ChatFooter } from "@/components/pages/chat/ChatFooter";
+import { QuestionCard } from "@/components/pages/chat/QuestionCard";
 import { StreamingOutputCard } from "@/components/pages/chat/StreamingOutputCard";
 import { Card } from "@/components/ui/Card";
 import { useChatAnswers, useChat } from "@/hooks";
@@ -71,11 +72,18 @@ function ChatPageContent() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // IME変換中は無視
+    if (e.nativeEvent.isComposing) return;
+
     const canSubmitNow =
       chat.hasQuestions &&
       chat.currentAIMessage &&
       checkAllAnswered(chat.currentAIMessage.questions);
-    if (e.key === "Enter" && !e.shiftKey && canSubmitNow) {
+
+    // Command/Ctrl + Enter でのみ送信
+    const isSubmitShortcut = (e.metaKey || e.ctrlKey) && e.key === "Enter";
+
+    if (isSubmitShortcut && canSubmitNow) {
       e.preventDefault();
       handleSubmit();
     }
@@ -89,7 +97,7 @@ function ChatPageContent() {
     <div className="min-h-screen flex flex-col">
       <ChatHeader label={config.label} onBack={() => router.push("/")} />
 
-      <main className="flex-1 overflow-y-auto p-4 pb-48">
+      <main className="flex-1 overflow-y-auto p-4 pb-24">
         <div className="max-w-2xl mx-auto space-y-4">
           {!initialInputSubmitted ? (
             <InitialInputForm
@@ -111,6 +119,24 @@ function ChatPageContent() {
                   <p className="text-red-600">{chat.error}</p>
                 </Card>
               )}
+
+              {/* 質問カード */}
+              {!chat.isReady && !chat.isLoading && chat.hasQuestions && chat.currentAIMessage && (
+                <div className="space-y-3">
+                  {chat.currentAIMessage.questions.map((q) => (
+                    <QuestionCard
+                      key={q.id}
+                      question={q}
+                      selectedIds={answers[q.id]?.selectedIds || []}
+                      customInput={answers[q.id]?.customInput || ""}
+                      onOptionChange={(ids) => handleOptionChange(q.id, ids)}
+                      onCustomInputChange={(value) => handleCustomInputChange(q.id, value)}
+                      onKeyDown={handleKeyDown}
+                    />
+                  ))}
+                </div>
+              )}
+
               <div ref={chatEndRef} />
             </>
           )}
@@ -121,15 +147,9 @@ function ChatPageContent() {
         <ChatFooter
           isReady={chat.isReady}
           isLoading={chat.isLoading}
-          hasQuestions={chat.hasQuestions}
-          currentAIMessage={chat.currentAIMessage}
-          answers={answers}
           canSubmit={canSubmit}
           onComplete={chat.completeAndGenerate}
           onSubmit={handleSubmit}
-          onOptionChange={handleOptionChange}
-          onCustomInputChange={handleCustomInputChange}
-          onKeyDown={handleKeyDown}
         />
       )}
     </div>
