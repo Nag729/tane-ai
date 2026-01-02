@@ -140,11 +140,11 @@ export const Interactive: Story = {
 type MeetingType = "decision" | "share" | "discussion";
 ```
 
-| タイプ | 説明 | ゴール |
-|--------|------|--------|
-| decision | 意思判断会議 | 何かを決める |
-| share | 共有・通達会議 | 情報を伝える |
-| discussion | ディスカッション会議 | 議論する |
+| タイプ     | 説明                 | ゴール       |
+| ---------- | -------------------- | ------------ |
+| decision   | 意思判断会議         | 何かを決める |
+| share      | 共有・通達会議       | 情報を伝える |
+| discussion | ディスカッション会議 | 議論する     |
 
 ## コマンド
 

@@ -120,7 +120,9 @@ describe("useResult", () => {
   // When: useResult を初期化
   // Then: トップページにリダイレクト
   it("should redirect when no messages in storage", async () => {
-    mockSessionStorage._setStore({ "tane-chat-data": JSON.stringify({ type: "decision", messages: [] }) });
+    mockSessionStorage._setStore({
+      "tane-chat-data": JSON.stringify({ type: "decision", messages: [] }),
+    });
 
     renderHook(() => useResult({ type: "decision" }));
 

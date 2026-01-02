@@ -143,7 +143,6 @@ function ChatPageContent() {
                   ))}
                 </div>
               )}
-
             </>
           )}
         </div>

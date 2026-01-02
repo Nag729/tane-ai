@@ -27,11 +27,7 @@ export function TypeSelector({ onSelect }: TypeSelectorProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4">
       {typeOptions.map(({ type, label, description }) => (
-        <CardButton
-          key={type}
-          onClick={() => onSelect(type)}
-          className="flex-1"
-        >
+        <CardButton key={type} onClick={() => onSelect(type)} className="flex-1">
           <div className="text-2xl mb-2">{label}</div>
           <div className="text-sm text-stone-500">{description}</div>
         </CardButton>
