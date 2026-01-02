@@ -31,6 +31,12 @@ export const MODEL_CONFIG = {
     maxTokens: 4000,
     thinkingBudget: 0, // 再生成時は thinking 不要
   },
+  /** フィードバックレビュー: AI による批評 */
+  feedbackReview: {
+    model: "claude-sonnet-4-20250514",
+    maxTokens: 8000,
+    thinkingBudget: 4000,
+  },
 } as const satisfies {
   [key: string]: { model: Model; maxTokens: number; thinkingBudget: number };
 };

@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { OutputCard } from "@/components/pages/result/OutputCard";
+import { AIFeedbackCard } from "@/components/pages/result/AIFeedbackCard";
 import { FeedbackForm } from "@/components/pages/result/FeedbackForm";
 import { ResultHeader } from "@/components/pages/result/ResultHeader";
 import { ThinkingPanel } from "@/components/projects/ThinkingPanel";
@@ -16,11 +17,12 @@ import type { MeetingType, StructuredOutput, ChatMessage } from "@/types";
 
 /**
  * 結果ページのフェーズ
- * - generating: 初回出力生成中
- * - complete: 出力完了、表示中
- * - regenerating: 再生成中
  */
-type ResultPhase = "generating" | "complete" | "regenerating";
+type ResultPhase =
+  | "generating" // 初回出力生成中
+  | "complete" // 出力完了、表示中
+  | "regenerating" // 再生成中
+  | "reviewing"; // AIレビュー中
 
 /** 結果ページ本体 */
 // eslint-disable-next-line max-lines-per-function
@@ -39,13 +41,17 @@ function ResultPageContent() {
   const thinking = useThinking();
   const generationStarted = useRef(false);
 
+  // AIレビュー用の状態
+  const [aiFeedback, setAiFeedback] = useState("");
+  const [streamingFeedback, setStreamingFeedback] = useState("");
+  const reviewThinking = useThinking();
+
   // データをロード
   useEffect(() => {
     const chatData = loadChatData();
     if (chatData) {
       setMessages(chatData.messages);
       if (chatData.output) {
-        // 既に出力がある場合は完了状態
         setOutput(chatData.output);
         setPhase("complete");
       }
@@ -73,6 +79,11 @@ function ResultPageContent() {
       setPhase(feedback ? "regenerating" : "generating");
       setStreamingContent("");
       thinking.resetThinking();
+      // 再生成時はAIフィードバックをクリア
+      if (feedback) {
+        setAiFeedback("");
+        setStreamingFeedback("");
+      }
 
       try {
         const response = await fetch("/api/chat/output", {
@@ -95,11 +106,9 @@ function ResultPageContent() {
         setStreamingContent("");
         setPhase("complete");
 
-        // ストレージを更新
         saveChatData({ type, messages, output: newOutput });
       } catch (error) {
         console.error("Failed to generate output:", error);
-        // エラー時は完了状態に戻す（再試行可能に）
         setPhase("complete");
       } finally {
         thinking.stopThinking();
@@ -115,6 +124,49 @@ function ResultPageContent() {
       generateOutput();
     }
   }, [isLoaded, messages.length, output, generateOutput]);
+
+  /**
+   * AIレビューを実行
+   */
+  const handleRequestReview = useCallback(async () => {
+    if (!type || !output) return;
+
+    setPhase("reviewing");
+    setStreamingFeedback("");
+    setAiFeedback("");
+    reviewThinking.resetThinking();
+
+    try {
+      const response = await fetch("/api/chat/feedback-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, messages, output }),
+      });
+
+      const fullText = await readTextSSEStream(response, {
+        ...reviewThinking.createThinkingCallbacks(),
+        onTextAccumulated: setStreamingFeedback,
+      });
+
+      setAiFeedback(fullText);
+      setStreamingFeedback("");
+      setPhase("complete");
+    } catch (error) {
+      console.error("Failed to get AI feedback:", error);
+      setPhase("complete");
+    } finally {
+      reviewThinking.stopThinking();
+    }
+  }, [type, messages, output, reviewThinking]);
+
+  /**
+   * AIフィードバックを反映して再生成
+   */
+  const handleApplyFeedback = useCallback(async () => {
+    if (output && aiFeedback) {
+      await generateOutput(aiFeedback, output);
+    }
+  }, [output, aiFeedback, generateOutput]);
 
   const handleRegenerate = useCallback(
     async (feedback: string) => {
@@ -133,7 +185,10 @@ function ResultPageContent() {
   if (!isValidParams) return null;
 
   const isGenerating = phase === "generating" || phase === "regenerating";
+  const isReviewing = phase === "reviewing";
   const showThinking = isGenerating && (thinking.isThinking || thinking.thinkingContent);
+  const showReviewThinking =
+    isReviewing && (reviewThinking.isThinking || reviewThinking.thinkingContent);
   const displayContent = streamingContent || output?.content || "";
 
   return (
@@ -147,6 +202,15 @@ function ResultPageContent() {
             isThinking={thinking.isThinking}
             content={thinking.thinkingContent}
             title={phase === "regenerating" ? "修正を考え中..." : "文章を考え中..."}
+          />
+        )}
+
+        {/* ThinkingPanel: レビュー中に表示 */}
+        {showReviewThinking && (
+          <ThinkingPanel
+            isThinking={reviewThinking.isThinking}
+            content={reviewThinking.thinkingContent}
+            title="資料をレビュー中..."
           />
         )}
 
@@ -165,6 +229,25 @@ function ResultPageContent() {
         ) : output ? (
           <OutputCard output={output} />
         ) : null}
+
+        {/* AIレビューボタン: 完了時かつレビュー未実行 */}
+        {phase === "complete" && output && !aiFeedback && (
+          <div className="text-center">
+            <Button onClick={handleRequestReview} variant="secondary">
+              🔍 AIにレビューしてもらう
+            </Button>
+          </div>
+        )}
+
+        {/* AIフィードバックカード */}
+        {(isReviewing || aiFeedback) && (
+          <AIFeedbackCard
+            content={streamingFeedback || aiFeedback}
+            isStreaming={isReviewing}
+            onApplyFeedback={aiFeedback ? handleApplyFeedback : undefined}
+            isRegenerating={phase === "regenerating"}
+          />
+        )}
 
         {/* フィードバックフォーム: 完了時のみ表示 */}
         {phase === "complete" && output && (
