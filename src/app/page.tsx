@@ -36,7 +36,7 @@ export default function Home() {
           </span>
           <span className="text-stone-300">→</span>
           <span className="flex items-center gap-1">
-            <span className="text-emerald-500">②</span> 答えるだけ
+            <span className="text-emerald-500">②</span> 答えるだけで
           </span>
           <span className="text-stone-300">→</span>
           <span className="flex items-center gap-1">
