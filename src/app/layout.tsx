@@ -3,8 +3,8 @@ import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ほうれんそうAI",
-  description: "報告・連絡・相談を AI と一緒に整理しよう",
+  title: "たねAI",
+  description: "会議のタネ、AIがまく - ミーティング事前資料を一緒に作ろう",
 };
 
 export default function RootLayout({

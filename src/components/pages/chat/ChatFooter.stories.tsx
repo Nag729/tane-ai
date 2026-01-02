@@ -39,7 +39,7 @@ const mockAIMessage: AIMessage = {
 };
 
 const defaultHandlers = {
-  onComplete: () => alert("整理完了"),
+  onComplete: () => alert("資料完成"),
   onSubmit: () => alert("送信"),
   onOptionChange: () => {},
   onCustomInputChange: () => {},

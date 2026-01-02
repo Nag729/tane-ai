@@ -16,15 +16,15 @@ const mockQuestionResponse = createSSEResponse([
   {
     type: "complete",
     data: {
-      intro: "なるほど！いい相談内容だね",
+      intro: "なるほど！いい議論テーマだね",
       questions: [
         {
           id: "q1",
-          content: "この件で一番困っていることは？",
+          content: "この件で一番重要なポイントは？",
           options: [
-            { id: "opt1", label: "時間がない" },
-            { id: "opt2", label: "人手が足りない" },
-            { id: "opt3", label: "やり方がわからない" },
+            { id: "opt1", label: "コスト削減" },
+            { id: "opt2", label: "業務効率化" },
+            { id: "opt3", label: "メンバーの負担軽減" },
           ],
           multiSelect: false,
           customInputPlaceholder: "他にあれば...",
@@ -55,7 +55,7 @@ const mockReadyResponse = createSSEResponse([
  */
 function createOutputResponse(): string {
   const chunks = [
-    "# 相談内容",
+    "# 会議資料",
     "\n\n",
     "## 背景",
     "\n",
@@ -118,40 +118,40 @@ test.describe("ストリーミング表示", () => {
     // トップページへ
     await page.goto("/");
 
-    // 「相談」を選択（絵文字付きラベル）
-    await page.click("text=💭 相談");
+    // 「ディスカッション」を選択
+    await page.click("text=💬 ディスカッション");
 
     // チャットページへ遷移
-    await expect(page).toHaveURL(/\/chat\?type=consult/);
+    await expect(page).toHaveURL(/\/chat\?type=discussion/);
 
     // 初期入力フォームに入力（placeholder で特定）
-    await page.locator("textarea").first().fill("テストの相談内容");
-    await page.locator("textarea").nth(1).fill("テストの相手");
-    await page.locator("textarea").nth(2).fill("テストの詳細");
+    await page.locator("textarea").first().fill("チームの残業削減");
+    await page.locator("textarea").nth(1).fill("チームメンバー全員");
+    await page.locator("textarea").nth(2).fill("残業が増えている。対策を議論したい");
 
     // 送信
     await page.click('button:has-text("これで始める")');
 
     // AIの応答を待つ
-    await expect(page.locator("text=なるほど！いい相談内容だね")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("text=なるほど！いい議論テーマだね")).toBeVisible({ timeout: 10000 });
 
     // 質問が表示される
-    await expect(page.locator("text=この件で一番困っていることは？")).toBeVisible();
+    await expect(page.locator("text=この件で一番重要なポイントは？")).toBeVisible();
 
     // 選択肢をクリック
-    await page.click("text=時間がない");
+    await page.click("text=コスト削減");
 
     // 「次へ」ボタンをクリック
     await page.click('button:has-text("次へ")');
 
-    // ready状態になり「整理完了」ボタンが表示される
-    await expect(page.locator('button:has-text("整理完了")')).toBeVisible({ timeout: 10000 });
+    // ready状態になり「資料完成」ボタンが表示される
+    await expect(page.locator('button:has-text("資料完成")')).toBeVisible({ timeout: 10000 });
 
-    // 整理完了ボタンをクリック
-    await page.click('button:has-text("整理完了")');
+    // 資料完成ボタンをクリック
+    await page.click('button:has-text("資料完成")');
 
     // 結果ページへ遷移（モックが速いのでストリーミング表示はスキップ）
-    await expect(page).toHaveURL(/\/result\?type=consult/, { timeout: 15000 });
+    await expect(page).toHaveURL(/\/result\?type=discussion/, { timeout: 15000 });
 
     // 最終出力が表示される
     await expect(page.locator("text=これはモックされたレスポンスです")).toBeVisible();
@@ -168,12 +168,12 @@ test.describe("ストリーミング表示", () => {
       });
     });
 
-    await page.goto("/chat?type=report");
+    await page.goto("/chat?type=decision");
 
     // 初期入力
-    await page.locator("textarea").first().fill("テスト");
-    await page.locator("textarea").nth(1).fill("テスト");
-    await page.locator("textarea").nth(2).fill("テスト");
+    await page.locator("textarea").first().fill("来期の採用計画");
+    await page.locator("textarea").nth(1).fill("人事、マネージャー");
+    await page.locator("textarea").nth(2).fill("人員不足の対応");
     await page.click('button:has-text("これで始める")');
 
     // 「思考中...」が表示される
@@ -187,11 +187,11 @@ test.describe("結果ページでの再生成", () => {
     await page.goto("/");
     await page.evaluate(() => {
       const chatData = {
-        type: "report",
+        type: "decision",
         messages: [],
         output: { content: "# 初回出力\n\nこれは初回の出力です。" },
       };
-      sessionStorage.setItem("horenso-chat-data", JSON.stringify(chatData));
+      sessionStorage.setItem("tane-chat-data", JSON.stringify(chatData));
     });
 
     // 出力APIをモック
@@ -211,7 +211,7 @@ test.describe("結果ページでの再生成", () => {
     });
 
     // 結果ページへ
-    await page.goto("/result?type=report");
+    await page.goto("/result?type=decision");
 
     // 初回出力が表示される
     await expect(page.getByText("初回出力", { exact: false })).toBeVisible();

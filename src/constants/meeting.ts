@@ -23,15 +23,15 @@ export const typeConfig = {
     fields: {
       topic: {
         label: "何を決める？",
-        placeholder: "例：来期の開発言語の選定",
+        placeholder: "例：来期の採用計画、新サービスのリリース時期",
       },
       participant: {
         label: "誰と決める？",
-        placeholder: "例：テックリード、アーキテクト、PdM",
+        placeholder: "例：マネージャー、チームリーダー、経営陣",
       },
       detail: {
         label: "背景は？",
-        placeholder: "例：既存のフレームワークが古くなってきた。移行先を検討中",
+        placeholder: "例：事業拡大に伴い、人員体制の見直しが必要になった",
       },
     },
   },
@@ -40,15 +40,15 @@ export const typeConfig = {
     fields: {
       topic: {
         label: "何を共有する？",
-        placeholder: "例：新しいセキュリティポリシーについて",
+        placeholder: "例：新しい勤怠ルール、組織変更のお知らせ",
       },
       participant: {
         label: "誰に共有する？",
-        placeholder: "例：開発チーム全員",
+        placeholder: "例：チームメンバー全員、関係部署",
       },
       detail: {
         label: "概要は？",
-        placeholder: "例：来月からパスワードポリシーが変わる。対応が必要",
+        placeholder: "例：来月からフレックス制度が変わる。申請方法も変更",
       },
     },
   },
@@ -57,15 +57,15 @@ export const typeConfig = {
     fields: {
       topic: {
         label: "何を議論する？",
-        placeholder: "例：新機能の技術的アプローチ",
+        placeholder: "例：チームの生産性向上、来期の目標設定",
       },
       participant: {
         label: "誰と議論する？",
-        placeholder: "例：フロントエンド・バックエンドエンジニア",
+        placeholder: "例：チームメンバー、関連部署のリーダー",
       },
       detail: {
         label: "論点は？",
-        placeholder: "例：REST API vs GraphQL、どちらが適切か意見を出し合いたい",
+        placeholder: "例：残業が増えている。根本原因と対策を話し合いたい",
       },
     },
   },

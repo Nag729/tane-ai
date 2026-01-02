@@ -1,4 +1,4 @@
-# ほうれんそうAI - 実装タスク
+# たねAI - 実装タスク
 
 > TDD（テスト駆動開発）で進める: Red → Green → Refactor
 
@@ -26,17 +26,17 @@
 
 ## Phase 3: Presentational Components ✅
 
-| コンポーネント    | テスト | 実装 | Storybook | 説明                        |
-| ----------------- | ------ | ---- | --------- | --------------------------- |
-| TypeSelector      | ✅ 6   | ✅   | ✅        | 報告/連絡/相談の選択        |
-| InitialInputForm  | ✅ 6   | ✅   | ✅        | トピック・相手・詳細の入力  |
-| AIMessageBubble   | ✅ 4   | ✅   | ✅        | AI の質問表示               |
-| UserMessageBubble | ✅ 3   | ✅   | ✅        | ユーザーの回答表示          |
-| ChoiceChips       | ✅ 6   | ✅   | ✅        | 選択肢グループ（単一/複数） |
-| OutputCard        | ✅ 5   | ✅   | ✅        | 構造化出力（Markdown）      |
-| FeedbackForm      | ✅ 5   | ✅   | ✅        | 再生成用フィードバック      |
-| ThinkingPanel     | ✅ 7   | ✅   | ✅        | Extended Thinking 表示      |
-| StreamingText     | ✅ 7   | ✅   | ✅        | ストリーミングテキスト表示  |
+| コンポーネント    | テスト | 実装 | Storybook | 説明                         |
+| ----------------- | ------ | ---- | --------- | ---------------------------- |
+| TypeSelector      | ✅ 6   | ✅   | ✅        | 意思判断/共有/議論の選択     |
+| InitialInputForm  | ✅ 6   | ✅   | ✅        | トピック・参加者・詳細の入力 |
+| AIMessageBubble   | ✅ 4   | ✅   | ✅        | AI の質問表示                |
+| UserMessageBubble | ✅ 3   | ✅   | ✅        | ユーザーの回答表示           |
+| ChoiceChips       | ✅ 6   | ✅   | ✅        | 選択肢グループ（単一/複数）  |
+| OutputCard        | ✅ 5   | ✅   | ✅        | 構造化出力（Markdown）       |
+| FeedbackForm      | ✅ 5   | ✅   | ✅        | 再生成用フィードバック       |
+| ThinkingPanel     | ✅ 7   | ✅   | ✅        | Extended Thinking 表示       |
+| StreamingText     | ✅ 7   | ✅   | ✅        | ストリーミングテキスト表示   |
 
 ## Phase 4: 画面統合 ✅
 
@@ -50,7 +50,7 @@
 - [x] InitialInputForm で初期入力
 - [x] AIMessageBubble + ChoiceChips で対話
 - [x] 質問ごとの自由入力
-- [x] 「整理完了」ボタン表示
+- [x] 「資料完成」ボタン表示
 - [x] ThinkingPanel で Extended Thinking 表示
 - [x] StreamingText でストリーミング出力表示
 - [x] 自動スクロール
@@ -72,7 +72,7 @@
 - [x] カスタムフック分離
   - useChatAnswers: 回答入力状態管理
   - useChat: チャットフロー管理
-- [x] 定数ファイル分離（typeConfig → constants/horenso.ts）
+- [x] 定数ファイル分離（typeConfig → constants/meeting.ts）
 - [x] ChatHistory コンポーネント抽出
 - [x] components フォルダ構成整理（ui/, pages/, projects/）
 - [x] FormField コンポーネント抽出（InitialInputForm のリファクタリング）

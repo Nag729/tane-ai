@@ -19,7 +19,7 @@ export type ChatFooterProps = {
 function CompleteButton({ onClick }: { onClick: () => void }) {
   return (
     <Button onClick={onClick} className="w-full bg-green-600 hover:bg-green-700">
-      ✨ 整理完了！結果を見る
+      ✨ 資料完成！結果を見る
     </Button>
   );
 }

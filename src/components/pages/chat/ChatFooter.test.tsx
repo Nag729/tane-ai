@@ -40,7 +40,7 @@ describe("ChatFooter", () => {
   // Then: 完了ボタンが表示される
   it("should show complete button when isReady is true and not loading", () => {
     render(<ChatFooter {...defaultProps} isReady={true} />);
-    expect(screen.getByText(/整理完了！結果を見る/)).toBeInTheDocument();
+    expect(screen.getByText(/資料完成！結果を見る/)).toBeInTheDocument();
   });
 
   // Given: isReady が true かつ isLoading が true
@@ -48,7 +48,7 @@ describe("ChatFooter", () => {
   // Then: 完了ボタンが表示されない
   it("should not show complete button when loading", () => {
     render(<ChatFooter {...defaultProps} isReady={true} isLoading={true} />);
-    expect(screen.queryByText(/整理完了！結果を見る/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/資料完成！結果を見る/)).not.toBeInTheDocument();
   });
 
   // Given: hasQuestions が true かつ currentAIMessage がある
@@ -92,7 +92,7 @@ describe("ChatFooter", () => {
     const handleComplete = vi.fn();
     render(<ChatFooter {...defaultProps} isReady={true} onComplete={handleComplete} />);
 
-    await user.click(screen.getByText(/整理完了！結果を見る/));
+    await user.click(screen.getByText(/資料完成！結果を見る/));
     expect(handleComplete).toHaveBeenCalledTimes(1);
   });
 
@@ -122,7 +122,7 @@ describe("ChatFooter", () => {
       />
     );
     expect(screen.queryByText("どちらを選びますか？")).not.toBeInTheDocument();
-    expect(screen.getByText(/整理完了！結果を見る/)).toBeInTheDocument();
+    expect(screen.getByText(/資料完成！結果を見る/)).toBeInTheDocument();
   });
 
   // Given: isReady が true かつ canSubmit が true
@@ -131,6 +131,6 @@ describe("ChatFooter", () => {
   it("should not show submit button when isReady is true", () => {
     render(<ChatFooter {...defaultProps} isReady={true} canSubmit={true} />);
     expect(screen.queryByText("次へ →")).not.toBeInTheDocument();
-    expect(screen.getByText(/整理完了！結果を見る/)).toBeInTheDocument();
+    expect(screen.getByText(/資料完成！結果を見る/)).toBeInTheDocument();
   });
 });
