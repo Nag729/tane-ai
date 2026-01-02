@@ -1,4 +1,4 @@
-import { anthropic, MODEL_ID } from "@/lib/anthropic";
+import { anthropic, MODEL_CONFIG } from "@/lib/anthropic";
 import { getOutputSystemPrompt } from "@/lib/prompts";
 import type { MeetingType, ChatMessage } from "@/types";
 
@@ -91,12 +91,15 @@ export async function streamOutput(
     getOutputSystemPrompt(req.type) +
     "\n\n# 出力形式\nMarkdown形式で直接出力してください（JSONラッパー不要）。";
   const userPrompt = buildUserPrompt(req);
-  const useThinking = !req.feedback;
+  const isRegenerate = !!req.feedback;
+  const config = isRegenerate ? MODEL_CONFIG.regenerate : MODEL_CONFIG.output;
 
   const messageStream = anthropic.messages.stream({
-    model: MODEL_ID,
-    max_tokens: 16000,
-    ...(useThinking && { thinking: { type: "enabled" as const, budget_tokens: 8000 } }),
+    model: config.model,
+    max_tokens: config.maxTokens,
+    ...(config.thinkingBudget > 0 && {
+      thinking: { type: "enabled" as const, budget_tokens: config.thinkingBudget },
+    }),
     system: systemPrompt,
     messages: [{ role: "user", content: userPrompt }],
   });

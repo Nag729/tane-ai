@@ -1,4 +1,4 @@
-import { anthropic, MODEL_ID } from "@/lib/anthropic";
+import { anthropic, MODEL_CONFIG } from "@/lib/anthropic";
 import { getQuestionSystemPrompt } from "@/lib/prompts";
 import type { MeetingType } from "@/types";
 
@@ -64,12 +64,12 @@ export async function streamQuestion(
 ): Promise<unknown> {
   const systemPrompt = getQuestionSystemPrompt(type) + JSON_INSTRUCTION;
   const userPrompt = buildUserPrompt(initialInput, messages);
-  const useThinking = !!initialInput;
+  const config = MODEL_CONFIG.question;
 
   const messageStream = anthropic.messages.stream({
-    model: MODEL_ID,
-    max_tokens: 16000,
-    ...(useThinking && { thinking: { type: "enabled" as const, budget_tokens: 5000 } }),
+    model: config.model,
+    max_tokens: config.maxTokens,
+    thinking: { type: "enabled" as const, budget_tokens: config.thinkingBudget },
     system: systemPrompt,
     messages: [{ role: "user", content: userPrompt }],
   });

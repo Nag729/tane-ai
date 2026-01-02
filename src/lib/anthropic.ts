@@ -9,9 +9,31 @@ export const anthropic = new Anthropic({
 });
 
 /**
- * モデル ID
+ * モデル設定（用途別）
+ * Sonnet 4 を使用して速度を優先
  */
-export const MODEL_ID = "claude-opus-4-20250514" as const satisfies Model;
+export const MODEL_CONFIG = {
+  /** 質問生成: 軽量タスク */
+  question: {
+    model: "claude-sonnet-4-20250514",
+    maxTokens: 4000,
+    thinkingBudget: 3000,
+  },
+  /** 出力生成: メインタスク */
+  output: {
+    model: "claude-sonnet-4-20250514",
+    maxTokens: 8000,
+    thinkingBudget: 4000,
+  },
+  /** 再生成: フィードバック反映 */
+  regenerate: {
+    model: "claude-sonnet-4-20250514",
+    maxTokens: 4000,
+    thinkingBudget: 0, // 再生成時は thinking 不要
+  },
+} as const satisfies {
+  [key: string]: { model: Model; maxTokens: number; thinkingBudget: number };
+};
 
 /**
  * リトライ設定
