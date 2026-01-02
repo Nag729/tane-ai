@@ -25,7 +25,7 @@ function SubmitButton({ onClick }: { onClick: () => void }) {
 }
 
 function LoadingIndicator() {
-  return <p className="text-center text-stone-500">資料作成の準備中...</p>;
+  return <p className="text-center text-stone-500">情報を集めています...</p>;
 }
 
 export function ChatFooter({

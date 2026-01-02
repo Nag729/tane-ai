@@ -41,7 +41,7 @@ describe("ChatFooter", () => {
   // Then: ローディングテキストが表示される
   it("should show loading indicator when isLoading is true", () => {
     render(<ChatFooter {...defaultProps} isLoading={true} />);
-    expect(screen.getByText("資料作成の準備中...")).toBeInTheDocument();
+    expect(screen.getByText("情報を集めています...")).toBeInTheDocument();
   });
 
   // Given: 何も表示するものがない
