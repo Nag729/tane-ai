@@ -60,7 +60,11 @@ export function InitialInputForm({
           placeholder={fields.detail.placeholder}
           rows={3}
         />
-        <Button type="submit" disabled={!isValid || isLoading} className="w-full">
+        <Button
+          type="submit"
+          disabled={!isValid || isLoading}
+          className="w-full text-lg py-3 shadow-lg hover:scale-105 transition-transform"
+        >
           {isLoading ? "準備中..." : "これで始める 🚀"}
         </Button>
       </form>
