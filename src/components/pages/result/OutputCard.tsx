@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import toast from "react-hot-toast";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -18,20 +19,22 @@ export function OutputCard({ output }: OutputCardProps) {
     <Card className="space-y-4">
       <h2 className="text-lg font-medium text-stone-800">📋 整理された内容</h2>
 
-      <div className="relative bg-stone-50 rounded-xl p-4 min-h-32">
-        {/* コピーボタン（右上固定） */}
-        <Button
-          onClick={handleCopy}
-          variant="ghost"
-          size="sm"
-          className="absolute top-2 right-2 opacity-70 hover:opacity-100"
-          aria-label="コピー"
-        >
-          📋
-        </Button>
+      <div className="relative bg-stone-50 rounded-xl min-h-32 max-h-[70vh] overflow-y-auto">
+        {/* コピーボタン（スクロール時も上部に固定） */}
+        <div className="sticky top-0 z-10 flex justify-end p-2 bg-stone-50/95 backdrop-blur-sm">
+          <Button
+            onClick={handleCopy}
+            variant="secondary"
+            size="sm"
+            className="shadow-sm hover:shadow-md"
+            aria-label="コピー"
+          >
+            📋 Markdown形式でコピー
+          </Button>
+        </div>
 
-        <div className="prose prose-stone prose-sm max-w-none pr-10">
-          <ReactMarkdown>{output.content}</ReactMarkdown>
+        <div className="px-4 pb-4 prose prose-stone prose-sm max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{output.content}</ReactMarkdown>
         </div>
       </div>
     </Card>

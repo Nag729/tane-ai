@@ -1,6 +1,7 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type StreamingTextProps = {
   /** 表示するテキスト（ストリーミング中は途中経過） */
@@ -37,7 +38,7 @@ export function StreamingText({
     return (
       <div className={combinedClass}>
         <div className="prose prose-stone prose-sm max-w-none">
-          <ReactMarkdown>{content}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
         </div>
         {cursor}
       </div>

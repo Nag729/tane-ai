@@ -36,9 +36,9 @@ describe("ThinkingPanel", () => {
     expect(screen.getByText(/分析完了しました/)).toBeInTheDocument();
   });
 
-  // Given: パネルがデフォルトで閉じている
+  // Given: パネルがデフォルトで開いている
   // When: ヘッダーをクリックする
-  // Then: パネルが開く（max-h クラスが変わる）
+  // Then: パネルが閉じる（max-h クラスが変わる）
   it("should toggle panel when header is clicked", async () => {
     const user = userEvent.setup();
     render(<ThinkingPanel isThinking={true} content="テスト内容" />);
@@ -46,14 +46,14 @@ describe("ThinkingPanel", () => {
     // コンテンツのラッパーを取得
     const contentWrapper = screen.getByText(/テスト内容/).parentElement?.parentElement?.parentElement;
 
-    // 最初は閉じている（max-h-0）
-    expect(contentWrapper).toHaveClass("max-h-0");
+    // 最初は開いている（max-h-64）
+    expect(contentWrapper).toHaveClass("max-h-64");
 
-    // ヘッダーをクリックして開く
+    // ヘッダーをクリックして閉じる
     await user.click(screen.getByRole("button"));
 
-    // 開いた状態（max-h-64）
-    expect(contentWrapper).toHaveClass("max-h-64");
+    // 閉じた状態（max-h-0）
+    expect(contentWrapper).toHaveClass("max-h-0");
   });
 
   // Given: カスタムタイトル
