@@ -1,14 +1,13 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState, useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { InitialInputForm } from "@/components/pages/home/InitialInputForm";
 import { ThinkingPanel } from "@/components/projects/ThinkingPanel";
 import { ChatHeader } from "@/components/pages/chat/ChatHeader";
 import { ChatHistory } from "@/components/pages/chat/ChatHistory";
 import { ChatFooter } from "@/components/pages/chat/ChatFooter";
 import { QuestionCard } from "@/components/pages/chat/QuestionCard";
-import { StreamingOutputCard } from "@/components/pages/chat/StreamingOutputCard";
 import { Card } from "@/components/ui/Card";
 import { useChatAnswers, useChat } from "@/hooks";
 import { typeConfig } from "@/constants";
@@ -27,7 +26,6 @@ function ChatPageContent() {
     [type]
   );
 
-  const [initialInputSubmitted, setInitialInputSubmitted] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const chat = useChat({
@@ -47,7 +45,7 @@ function ChatPageContent() {
   // 自動スクロール
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat.messages, chat.thinkingContent, chat.streamingOutput, chat.isLoading]);
+  }, [chat.messages, chat.thinkingContent, chat.phase]);
 
   // 無効なパラメータの場合はトップへ
   useEffect(() => {
@@ -61,7 +59,6 @@ function ChatPageContent() {
     participant: string;
     detail: string;
   }) => {
-    setInitialInputSubmitted(true);
     await chat.submitInitialInput(data);
   };
 
@@ -93,13 +90,19 @@ function ChatPageContent() {
     chat.hasQuestions && chat.currentAIMessage && checkAllAnswered(chat.currentAIMessage.questions)
   );
 
+  // フェーズに基づいた表示制御
+  const showInitialForm = chat.phase === "idle";
+  const showThinking = chat.phase === "thinking";
+  const showQuestions = chat.phase === "answering" && chat.hasQuestions && chat.currentAIMessage;
+  const showFooter = chat.phase !== "idle";
+
   return (
     <div className="min-h-screen flex flex-col">
       <ChatHeader label={config.label} onBack={() => router.push("/")} />
 
       <main className="flex-1 overflow-y-auto p-4 pb-24">
         <div className="max-w-2xl mx-auto space-y-4">
-          {!initialInputSubmitted ? (
+          {showInitialForm ? (
             <InitialInputForm
               fields={config.fields}
               onSubmit={handleInitialSubmit}
@@ -107,21 +110,21 @@ function ChatPageContent() {
             />
           ) : (
             <>
-              <ChatHistory
-                messages={chat.messages}
-                getAnswerDisplay={chat.getAnswerDisplay}
-                isLoading={chat.isLoading && !chat.isThinking && !chat.streamingOutput}
-              />
-              <ThinkingPanel isThinking={chat.isThinking} content={chat.thinkingContent} />
-              <StreamingOutputCard content={chat.streamingOutput} isStreaming={chat.isLoading} />
+              <ChatHistory messages={chat.messages} getAnswerDisplay={chat.getAnswerDisplay} />
+
+              {/* ThinkingPanel: thinking フェーズで表示 */}
+              {showThinking && (
+                <ThinkingPanel isThinking={chat.isThinking} content={chat.thinkingContent} />
+              )}
+
               {chat.error && (
                 <Card className="bg-red-50 border-red-200">
                   <p className="text-red-600">{chat.error}</p>
                 </Card>
               )}
 
-              {/* 質問カード */}
-              {!chat.isReady && !chat.isLoading && chat.hasQuestions && chat.currentAIMessage && (
+              {/* 質問カード: answering フェーズで表示 */}
+              {showQuestions && chat.currentAIMessage && (
                 <div className="space-y-3">
                   {chat.currentAIMessage.questions.map((q) => (
                     <QuestionCard
@@ -143,12 +146,12 @@ function ChatPageContent() {
         </div>
       </main>
 
-      {initialInputSubmitted && (
+      {showFooter && (
         <ChatFooter
           isReady={chat.isReady}
           isLoading={chat.isLoading}
           canSubmit={canSubmit}
-          onComplete={chat.completeAndGenerate}
+          onComplete={chat.completeChat}
           onSubmit={handleSubmit}
         />
       )}

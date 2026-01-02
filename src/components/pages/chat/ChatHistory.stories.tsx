@@ -51,15 +51,6 @@ export const Default: Story = {
   args: {
     messages: sampleMessages,
     getAnswerDisplay: (msg) => (msg.role === "user" ? msg.answer.customInput || "" : ""),
-    isLoading: false,
-  },
-};
-
-export const Loading: Story = {
-  args: {
-    messages: sampleMessages.slice(0, 2),
-    getAnswerDisplay: (msg) => (msg.role === "user" ? msg.answer.customInput || "" : ""),
-    isLoading: true,
   },
 };
 
@@ -67,7 +58,6 @@ export const Empty: Story = {
   args: {
     messages: [],
     getAnswerDisplay: () => "",
-    isLoading: false,
   },
 };
 
@@ -75,6 +65,5 @@ export const SingleAIMessage: Story = {
   args: {
     messages: [sampleMessages[0]],
     getAnswerDisplay: () => "",
-    isLoading: false,
   },
 };

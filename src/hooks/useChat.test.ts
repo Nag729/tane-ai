@@ -121,13 +121,13 @@ describe("useChat", () => {
   it("should have correct initial state", () => {
     const { result } = renderHook(() => useChat({ type: "decision", onComplete: mockOnComplete }));
 
+    expect(result.current.phase).toBe("idle");
     expect(result.current.messages).toEqual([]);
     expect(result.current.currentAIMessage).toBeUndefined();
     expect(result.current.isLoading).toBe(false);
     expect(result.current.hasQuestions).toBe(false);
     expect(result.current.isReady).toBe(false);
     expect(result.current.error).toBeNull();
-    expect(result.current.streamingOutput).toBe("");
   });
 
   // Given: 初期入力データがある
@@ -250,9 +250,9 @@ describe("useChat", () => {
   });
 
   // Given: ready 状態になっている
-  // When: completeAndGenerate を呼ぶ
-  // Then: ストリーミング出力が更新され、onComplete が呼ばれる
-  it("should generate output with streaming", async () => {
+  // When: completeChat を呼ぶ
+  // Then: sessionStorage に保存され、onComplete が呼ばれる
+  it("should complete chat and save to storage", async () => {
     const questionResponse = createSSEResponse([
       {
         type: "complete",
@@ -264,24 +264,7 @@ describe("useChat", () => {
       },
     ]);
 
-    const outputResponse =
-      `data: ${JSON.stringify({ type: "text", text: "# 出力" })}\n\n` +
-      `data: ${JSON.stringify({ type: "text", text: "\n\nテスト" })}\n\n` +
-      `data: ${JSON.stringify({ type: "done" })}\n\n`;
-
-    let callCount = 0;
-    global.fetch = vi.fn().mockImplementation(() => {
-      callCount++;
-      const body = callCount === 1 ? questionResponse : outputResponse;
-      const encoder = new TextEncoder();
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(encoder.encode(body));
-          controller.close();
-        },
-      });
-      return Promise.resolve({ ok: true, body: stream });
-    });
+    global.fetch = mockFetchSSE(questionResponse);
 
     const { result } = renderHook(() => useChat({ type: "decision", onComplete: mockOnComplete }));
 
@@ -298,17 +281,15 @@ describe("useChat", () => {
       expect(result.current.isReady).toBe(true);
     });
 
-    // 出力生成
-    await act(async () => {
-      await result.current.completeAndGenerate();
-    });
-
-    await waitFor(() => {
-      expect(mockOnComplete).toHaveBeenCalled();
+    // チャット完了（ストレージ保存 + 遷移）
+    act(() => {
+      result.current.completeChat();
     });
 
     // sessionStorage に保存されている
     expect(mockSessionStorage.setItem).toHaveBeenCalled();
+    // onComplete が呼ばれる
+    expect(mockOnComplete).toHaveBeenCalled();
   });
 
   // Given: API がエラーを返す

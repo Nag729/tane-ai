@@ -1,20 +1,29 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { OutputCard } from "@/components/pages/result/OutputCard";
 import { FeedbackForm } from "@/components/pages/result/FeedbackForm";
 import { ResultHeader } from "@/components/pages/result/ResultHeader";
-import { RegeneratingCard } from "@/components/pages/result/RegeneratingCard";
 import { ThinkingPanel } from "@/components/projects/ThinkingPanel";
+import { StreamingText } from "@/components/projects/StreamingText";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { loadChatData, clearChatData } from "@/hooks";
+import { loadChatData, clearChatData, saveChatData } from "@/hooks";
 import { useThinking } from "@/hooks/useThinking";
 import { readTextSSEStream } from "@/lib/sse";
 import type { MeetingType, StructuredOutput, ChatMessage } from "@/types";
 
+/**
+ * 結果ページのフェーズ
+ * - generating: 初回出力生成中
+ * - complete: 出力完了、表示中
+ * - regenerating: 再生成中
+ */
+type ResultPhase = "generating" | "complete" | "regenerating";
+
 /** 結果ページ本体 */
+// eslint-disable-next-line max-lines-per-function
 function ResultPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -22,35 +31,46 @@ function ResultPageContent() {
   const type = searchParams.get("type") as MeetingType | null;
   const isValidParams = !!type;
 
+  const [phase, setPhase] = useState<ResultPhase>("generating");
   const [output, setOutput] = useState<StructuredOutput | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isRegenerating, setIsRegenerating] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const thinking = useThinking();
+  const generationStarted = useRef(false);
 
+  // データをロード
   useEffect(() => {
     const chatData = loadChatData();
-    if (chatData?.output) {
-      setOutput(chatData.output);
+    if (chatData) {
       setMessages(chatData.messages);
+      if (chatData.output) {
+        // 既に出力がある場合は完了状態
+        setOutput(chatData.output);
+        setPhase("complete");
+      }
     }
     setIsLoaded(true);
   }, []);
 
+  // パラメータチェック
   useEffect(() => {
     if (!isValidParams) router.replace("/");
   }, [isValidParams, router]);
 
+  // データがない場合はトップへ
   useEffect(() => {
-    if (isLoaded && !output) router.replace("/");
-  }, [isLoaded, output, router]);
+    if (isLoaded && messages.length === 0) router.replace("/");
+  }, [isLoaded, messages.length, router]);
 
-  const handleRegenerate = useCallback(
-    async (feedback: string) => {
+  /**
+   * 出力を生成する共通ロジック
+   */
+  const generateOutput = useCallback(
+    async (feedback?: string, previousOutput?: StructuredOutput) => {
       if (!type) return;
 
-      setIsRegenerating(true);
+      setPhase(feedback ? "regenerating" : "generating");
       setStreamingContent("");
       thinking.resetThinking();
 
@@ -58,23 +78,51 @@ function ResultPageContent() {
         const response = await fetch("/api/chat/output", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type, messages, previousOutput: output, feedback }),
+          body: JSON.stringify({
+            type,
+            messages,
+            ...(feedback && { previousOutput, feedback }),
+          }),
         });
 
         const fullText = await readTextSSEStream(response, {
           ...thinking.createThinkingCallbacks(),
           onTextAccumulated: setStreamingContent,
         });
-        setOutput({ content: fullText });
+
+        const newOutput = { content: fullText };
+        setOutput(newOutput);
         setStreamingContent("");
+        setPhase("complete");
+
+        // ストレージを更新
+        saveChatData({ type, messages, output: newOutput });
       } catch (error) {
-        console.error("Failed to regenerate output:", error);
+        console.error("Failed to generate output:", error);
+        // エラー時は完了状態に戻す（再試行可能に）
+        setPhase("complete");
       } finally {
-        setIsRegenerating(false);
         thinking.stopThinking();
       }
     },
-    [type, messages, output, thinking]
+    [type, messages, thinking]
+  );
+
+  // 初回出力生成
+  useEffect(() => {
+    if (isLoaded && messages.length > 0 && !output && !generationStarted.current) {
+      generationStarted.current = true;
+      generateOutput();
+    }
+  }, [isLoaded, messages.length, output, generateOutput]);
+
+  const handleRegenerate = useCallback(
+    async (feedback: string) => {
+      if (output) {
+        await generateOutput(feedback, output);
+      }
+    },
+    [output, generateOutput]
   );
 
   const handleStartOver = useCallback(() => {
@@ -82,29 +130,48 @@ function ResultPageContent() {
     router.push("/");
   }, [router]);
 
-  if (!isValidParams || !output) return null;
+  if (!isValidParams) return null;
 
-  const displayContent = streamingContent || output.content;
+  const isGenerating = phase === "generating" || phase === "regenerating";
+  const showThinking = isGenerating && (thinking.isThinking || thinking.thinkingContent);
+  const displayContent = streamingContent || output?.content || "";
 
   return (
     <div className="min-h-screen p-4">
       <div className="max-w-2xl mx-auto space-y-6">
         <ResultHeader />
 
-        {/* 再生成時のThinkingPanel */}
-        {isRegenerating && (
-          <ThinkingPanel isThinking={thinking.isThinking} content={thinking.thinkingContent} />
+        {/* ThinkingPanel: 生成中に表示 */}
+        {showThinking && (
+          <ThinkingPanel
+            isThinking={thinking.isThinking}
+            content={thinking.thinkingContent}
+            title={phase === "regenerating" ? "修正を考え中..." : "文章を考え中..."}
+          />
         )}
 
-        {isRegenerating && streamingContent ? (
-          <RegeneratingCard content={streamingContent} />
-        ) : (
-          <OutputCard output={{ content: displayContent }} />
-        )}
+        {/* 出力カード or ストリーミング表示 */}
+        {isGenerating && !displayContent ? (
+          <Card>
+            <div className="flex items-center gap-2 text-stone-500">
+              <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+              <span>文章を生成しています...</span>
+            </div>
+          </Card>
+        ) : isGenerating && streamingContent ? (
+          <Card>
+            <StreamingText content={streamingContent} isStreaming={true} />
+          </Card>
+        ) : output ? (
+          <OutputCard output={output} />
+        ) : null}
 
-        <Card>
-          <FeedbackForm onSubmit={handleRegenerate} isLoading={isRegenerating} />
-        </Card>
+        {/* フィードバックフォーム: 完了時のみ表示 */}
+        {phase === "complete" && output && (
+          <Card>
+            <FeedbackForm onSubmit={handleRegenerate} isLoading={false} />
+          </Card>
+        )}
 
         <div className="text-center">
           <Button variant="secondary" onClick={handleStartOver} className="text-stone-500">

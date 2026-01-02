@@ -1,6 +1,19 @@
 /** 会議の種類 */
 export type MeetingType = "decision" | "share" | "discussion";
 
+/**
+ * チャットのフェーズ（状態遷移）
+ *
+ * idle → thinking → answering → thinking → ... → ready
+ *                                                    ↓
+ *                                             /result へ遷移
+ */
+export type ChatPhase =
+  | "idle" // 初期状態（初期入力待ち）
+  | "thinking" // API呼び出し中（Extended Thinking）
+  | "answering" // 質問表示、回答待ち
+  | "ready"; // 準備完了、「完成！」ボタン表示可能
+
 /** 質問の選択肢 */
 export type QuestionOption = {
   readonly id: string;

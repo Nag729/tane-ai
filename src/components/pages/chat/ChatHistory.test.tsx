@@ -35,7 +35,7 @@ describe("ChatHistory", () => {
   // When: レンダリングする
   // Then: AI の intro が表示される
   it("should render AI messages", () => {
-    render(<ChatHistory messages={mockMessages} getAnswerDisplay={() => ""} isLoading={false} />);
+    render(<ChatHistory messages={mockMessages} getAnswerDisplay={() => ""} />);
     expect(screen.getByText("こんにちは！報告の整理をお手伝いします。")).toBeInTheDocument();
     expect(screen.getByText("なるほど！もう少し詳しく教えてください。")).toBeInTheDocument();
   });
@@ -45,36 +45,16 @@ describe("ChatHistory", () => {
   // Then: getAnswerDisplay の結果が表示される
   it("should render user messages using getAnswerDisplay", () => {
     const getAnswerDisplay = vi.fn().mockReturnValue("テスト回答");
-    render(
-      <ChatHistory messages={mockMessages} getAnswerDisplay={getAnswerDisplay} isLoading={false} />
-    );
+    render(<ChatHistory messages={mockMessages} getAnswerDisplay={getAnswerDisplay} />);
     expect(screen.getByText("テスト回答")).toBeInTheDocument();
     expect(getAnswerDisplay).toHaveBeenCalled();
-  });
-
-  // Given: isLoading が true
-  // When: レンダリングする
-  // Then: ストリーミングインジケータが表示される
-  it("should show streaming indicator when isLoading is true", () => {
-    render(<ChatHistory messages={[]} getAnswerDisplay={() => ""} isLoading={true} />);
-    expect(screen.getByTestId("streaming-indicator")).toBeInTheDocument();
-  });
-
-  // Given: isLoading が false
-  // When: レンダリングする
-  // Then: ストリーミングインジケータが表示されない
-  it("should not show streaming indicator when isLoading is false", () => {
-    render(<ChatHistory messages={[]} getAnswerDisplay={() => ""} isLoading={false} />);
-    expect(screen.queryByTestId("streaming-indicator")).not.toBeInTheDocument();
   });
 
   // Given: メッセージが空
   // When: レンダリングする
   // Then: 何も表示されない
   it("should render nothing when messages is empty", () => {
-    const { container } = render(
-      <ChatHistory messages={[]} getAnswerDisplay={() => ""} isLoading={false} />
-    );
+    const { container } = render(<ChatHistory messages={[]} getAnswerDisplay={() => ""} />);
     expect(container.textContent).toBe("");
   });
 });

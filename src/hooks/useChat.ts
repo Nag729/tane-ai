@@ -4,12 +4,11 @@ import { useState, useCallback, useMemo } from "react";
 import {
   fetchInitialQuestion,
   fetchNextQuestion,
-  fetchOutput,
   QuestionResponse,
 } from "@/lib/chatApi";
 import { saveChatData } from "@/lib/chatStorage";
 import { useThinking } from "./useThinking";
-import type { MeetingType, AIMessage, ChatMessage, QuestionAnswer } from "@/types";
+import type { MeetingType, AIMessage, ChatMessage, QuestionAnswer, ChatPhase } from "@/types";
 
 export { saveChatData, loadChatData, clearChatData } from "@/lib/chatStorage";
 
@@ -47,19 +46,22 @@ type UseChatOptions = { type: MeetingType; onComplete: () => void };
 
 // eslint-disable-next-line max-lines-per-function
 export function useChat({ type, onComplete }: UseChatOptions) {
+  // フェーズ管理（FSM）
+  const [phase, setPhase] = useState<ChatPhase>("idle");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentAIMessage, setCurrentAIMessage] = useState<AIMessage>();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [streamingOutput, setStreamingOutput] = useState("");
   const thinking = useThinking();
 
   const hasQuestions = (currentAIMessage?.questions?.length ?? 0) > 0;
 
+  /**
+   * 初期入力を送信して最初の質問を取得
+   * idle → thinking → answering
+   */
   const submitInitialInput = useCallback(
     async (initialInput: { topic: string; participant: string; detail: string }) => {
-      setIsLoading(true);
+      setPhase("thinking");
       setError(null);
       thinking.resetThinking();
       try {
@@ -71,22 +73,26 @@ export function useChat({ type, onComplete }: UseChatOptions) {
         const aiMessage = createAIMessage(result);
         setMessages([{ role: "ai", message: aiMessage }]);
         setCurrentAIMessage(aiMessage);
-        setIsReady(result.ready);
+        setPhase(result.ready ? "ready" : "answering");
       } catch (err) {
         setError("エラーが発生しました。もう一度お試しください。");
         console.error("Failed to generate first question:", err);
+        setPhase("idle");
       } finally {
-        setIsLoading(false);
         thinking.stopThinking();
       }
     },
     [type, thinking]
   );
 
+  /**
+   * 質問への回答を送信して次の質問を取得
+   * answering → thinking → answering | ready
+   */
   const submitAnswer = useCallback(
     async (questionAnswers: QuestionAnswer[], customInput?: string) => {
       if (!currentAIMessage) return;
-      setIsLoading(true);
+      setPhase("thinking");
       setError(null);
       thinking.resetThinking();
       const userMessage: ChatMessage = {
@@ -104,38 +110,27 @@ export function useChat({ type, onComplete }: UseChatOptions) {
         const aiMessage = createAIMessage(result);
         setMessages([...updatedMessages, { role: "ai", message: aiMessage }]);
         setCurrentAIMessage(aiMessage);
-        setIsReady(result.ready);
+        setPhase(result.ready ? "ready" : "answering");
       } catch (err) {
         setError("エラーが発生しました。もう一度お試しください。");
         console.error("Failed to generate next question:", err);
+        setPhase("answering");
       } finally {
-        setIsLoading(false);
         thinking.stopThinking();
       }
     },
     [currentAIMessage, messages, type, thinking]
   );
 
-  const completeAndGenerate = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    setStreamingOutput("");
-    thinking.resetThinking();
-    try {
-      const fullText = await fetchOutput(type, messages, {
-        ...thinking.createThinkingCallbacks(),
-        onTextAccumulated: setStreamingOutput,
-      });
-      saveChatData({ type, messages, output: { content: fullText } });
-      onComplete();
-    } catch (err) {
-      setError("出力の生成に失敗しました。もう一度お試しください。");
-      console.error("Failed to generate output:", err);
-    } finally {
-      setIsLoading(false);
-      thinking.stopThinking();
-    }
-  }, [type, messages, onComplete, thinking]);
+  /**
+   * チャットを完了してストレージに保存、結果ページへ遷移
+   * ready → /result へ遷移（出力生成は /result で行う）
+   */
+  const completeChat = useCallback(() => {
+    // メッセージを保存（出力は /result で生成）
+    saveChatData({ type, messages });
+    onComplete();
+  }, [type, messages, onComplete]);
 
   const getAnswerDisplay = useCallback(
     (chatMessage: ChatMessage): string => buildAnswerDisplayText(chatMessage, messages),
@@ -144,33 +139,36 @@ export function useChat({ type, onComplete }: UseChatOptions) {
 
   return useMemo(
     () => ({
+      // フェーズ
+      phase,
+      // 状態
       messages,
       currentAIMessage,
-      isLoading,
       hasQuestions,
-      isReady,
       error,
-      streamingOutput,
+      // Thinking 状態
       isThinking: thinking.isThinking,
       thinkingContent: thinking.thinkingContent,
+      // アクション
       submitInitialInput,
       submitAnswer,
-      completeAndGenerate,
+      completeChat,
       getAnswerDisplay,
+      // 便利なフラグ（後方互換用）
+      isLoading: phase === "thinking",
+      isReady: phase === "ready",
     }),
     [
+      phase,
       messages,
       currentAIMessage,
-      isLoading,
       hasQuestions,
-      isReady,
       error,
-      streamingOutput,
       thinking.isThinking,
       thinking.thinkingContent,
       submitInitialInput,
       submitAnswer,
-      completeAndGenerate,
+      completeChat,
       getAnswerDisplay,
     ]
   );

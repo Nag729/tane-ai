@@ -7,11 +7,9 @@ export type ChatHistoryProps = {
   messages: ChatMessage[];
   /** ユーザー回答の表示文字列を取得する関数 */
   getAnswerDisplay: (chatMessage: ChatMessage) => string;
-  /** ローディング中かどうか */
-  isLoading: boolean;
 };
 
-export function ChatHistory({ messages, getAnswerDisplay, isLoading }: ChatHistoryProps) {
+export function ChatHistory({ messages, getAnswerDisplay }: ChatHistoryProps) {
   return (
     <>
       {messages.map((msg, index) => (
@@ -25,7 +23,6 @@ export function ChatHistory({ messages, getAnswerDisplay, isLoading }: ChatHisto
           )}
         </div>
       ))}
-      {isLoading && <AIMessageBubble content="" isStreaming={true} />}
     </>
   );
 }
