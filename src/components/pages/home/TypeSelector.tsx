@@ -8,18 +8,18 @@ type TypeSelectorProps = {
 const typeOptions = [
   {
     type: "decision",
-    label: "💡 意思判断",
-    description: "何かを決める会議",
+    label: "💡 意思決定",
+    description: "承認・判断を得たい",
   },
   {
     type: "share",
-    label: "📢 共有・通達",
-    description: "情報を伝える会議",
+    label: "📢 情報共有",
+    description: "伝達・報告したい",
   },
   {
     type: "discussion",
     label: "💬 ディスカッション",
-    description: "議論する会議",
+    description: "アイデアを出し合いたい",
   },
 ] as const satisfies readonly { type: MeetingType; label: string; description: string }[];
 
