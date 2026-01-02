@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { AIFeedbackCard } from "./AIFeedbackCard";
 
 const meta: Meta<typeof AIFeedbackCard> = {
-  title: "pages/result/AIFeedbackCard",
   component: AIFeedbackCard,
   parameters: {
     layout: "padded",
