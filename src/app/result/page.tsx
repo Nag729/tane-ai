@@ -10,14 +10,14 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { loadChatData, clearChatData } from "@/hooks";
 import { readTextSSEStream } from "@/lib/sse";
-import type { HorensoType, StructuredOutput, ChatMessage } from "@/types";
+import type { MeetingType, StructuredOutput, ChatMessage } from "@/types";
 
 /** 結果ページ本体 */
 function ResultPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const type = searchParams.get("type") as HorensoType | null;
+  const type = searchParams.get("type") as MeetingType | null;
   const isValidParams = !!type;
 
   const [output, setOutput] = useState<StructuredOutput | null>(null);

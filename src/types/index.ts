@@ -1,5 +1,5 @@
-/** ほうれんそうの種類 */
-export type HorensoType = "report" | "contact" | "consult";
+/** 会議の種類 */
+export type MeetingType = "decision" | "share" | "discussion";
 
 /** 質問の選択肢 */
 export type QuestionOption = {

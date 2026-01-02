@@ -9,7 +9,7 @@ import {
 } from "@/lib/chatApi";
 import { saveChatData } from "@/lib/chatStorage";
 import { useThinking } from "./useThinking";
-import type { HorensoType, AIMessage, ChatMessage, QuestionAnswer } from "@/types";
+import type { MeetingType, AIMessage, ChatMessage, QuestionAnswer } from "@/types";
 
 export { saveChatData, loadChatData, clearChatData } from "@/lib/chatStorage";
 
@@ -43,7 +43,7 @@ function buildAnswerDisplayText(chatMessage: ChatMessage, allMessages: ChatMessa
   return lines.join("\n");
 }
 
-type UseChatOptions = { type: HorensoType; onComplete: () => void };
+type UseChatOptions = { type: MeetingType; onComplete: () => void };
 
 // eslint-disable-next-line max-lines-per-function
 export function useChat({ type, onComplete }: UseChatOptions) {
@@ -58,7 +58,7 @@ export function useChat({ type, onComplete }: UseChatOptions) {
   const hasQuestions = (currentAIMessage?.questions?.length ?? 0) > 0;
 
   const submitInitialInput = useCallback(
-    async (initialInput: { topic: string; recipient: string; detail: string }) => {
+    async (initialInput: { topic: string; participant: string; detail: string }) => {
       setIsLoading(true);
       setError(null);
       thinking.resetThinking();

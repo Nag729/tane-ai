@@ -19,20 +19,20 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Report: Story = {
+export const Decision: Story = {
   args: {
     fields: {
       topic: {
-        label: "何を報告する？",
-        placeholder: "例：新機能の開発進捗",
+        label: "何を決める？",
+        placeholder: "例：来期の開発言語の選定",
       },
-      recipient: {
-        label: "誰に？",
-        placeholder: "例：開発チームのリーダー山田さん",
+      participant: {
+        label: "誰と決める？",
+        placeholder: "例：テックリード、アーキテクト、PdM",
       },
       detail: {
-        label: "現状は？",
-        placeholder: "例：予定より1週間遅れてる。原因はAPIの仕様変更",
+        label: "背景は？",
+        placeholder: "例：既存のフレームワークが古くなってきた。移行先を検討中",
       },
     },
     onSubmit: (data) => {
@@ -42,20 +42,20 @@ export const Report: Story = {
   },
 };
 
-export const Contact: Story = {
+export const Share: Story = {
   args: {
     fields: {
       topic: {
-        label: "何を連絡する？",
-        placeholder: "例：来週のミーティング日程変更",
+        label: "何を共有する？",
+        placeholder: "例：来月からのリモートワーク制度変更",
       },
-      recipient: {
-        label: "誰に？",
-        placeholder: "例：プロジェクトメンバー全員",
+      participant: {
+        label: "誰に共有する？",
+        placeholder: "例：開発チーム全員",
       },
       detail: {
-        label: "伝えたい内容は？",
-        placeholder: "例：水曜14時から木曜10時に変更したい",
+        label: "概要は？",
+        placeholder: "例：週3日出社から週2日出社に変更。希望者は申請可",
       },
     },
     onSubmit: (data) => {
@@ -64,20 +64,20 @@ export const Contact: Story = {
   },
 };
 
-export const Consult: Story = {
+export const Discussion: Story = {
   args: {
     fields: {
       topic: {
-        label: "何を相談する？",
-        placeholder: "例：タスクの優先順位の付け方",
+        label: "何を議論する？",
+        placeholder: "例：プロダクトの今後の方向性",
       },
-      recipient: {
-        label: "誰に？",
-        placeholder: "例：チームリーダーの佐藤さん",
+      participant: {
+        label: "誰と議論する？",
+        placeholder: "例：プロダクトチーム、デザイナー、エンジニア",
       },
       detail: {
-        label: "困っていることは？",
-        placeholder: "例：急ぎの依頼が重なって何から手をつけるべきかわからない",
+        label: "論点は？",
+        placeholder: "例：競合が増えてきた。差別化戦略を検討したい",
       },
     },
     onSubmit: (data) => {
@@ -90,16 +90,16 @@ export const Loading: Story = {
   args: {
     fields: {
       topic: {
-        label: "何を報告する？",
-        placeholder: "例：新機能の開発進捗",
+        label: "何を決める？",
+        placeholder: "例：来期の開発言語の選定",
       },
-      recipient: {
-        label: "誰に？",
-        placeholder: "例：開発チームのリーダー山田さん",
+      participant: {
+        label: "誰と決める？",
+        placeholder: "例：テックリード、アーキテクト、PdM",
       },
       detail: {
-        label: "現状は？",
-        placeholder: "例：予定より1週間遅れてる",
+        label: "背景は？",
+        placeholder: "例：既存のフレームワークが古くなってきた",
       },
     },
     onSubmit: () => {},

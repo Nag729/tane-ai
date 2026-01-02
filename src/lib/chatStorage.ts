@@ -1,9 +1,9 @@
-import type { HorensoType, ChatMessage, StructuredOutput } from "@/types";
+import type { MeetingType, ChatMessage, StructuredOutput } from "@/types";
 
-const STORAGE_KEY = "horenso-chat-data";
+const STORAGE_KEY = "tane-chat-data";
 
 export type ChatData = {
-  type: HorensoType;
+  type: MeetingType;
   messages: ChatMessage[];
   output?: StructuredOutput;
 };

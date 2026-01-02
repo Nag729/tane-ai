@@ -1,6 +1,6 @@
 import { anthropic, MODEL_ID } from "@/lib/anthropic";
 import { getQuestionSystemPrompt } from "@/lib/prompts";
-import type { HorensoType } from "@/types";
+import type { MeetingType } from "@/types";
 
 const JSON_INSTRUCTION = `
 必ず以下の JSON 形式で出力してください（他のテキストは不要）:
@@ -22,16 +22,16 @@ const JSON_INSTRUCTION = `
 }
 `;
 
-type InitialInput = { topic: string; recipient: string; detail: string };
+type InitialInput = { topic: string; participant: string; detail: string };
 
 function buildUserPrompt(initialInput?: InitialInput, messages?: unknown[]): string {
   if (initialInput) {
     return `ユーザーの初期入力:
-- 何を伝えたい: ${initialInput.topic}
-- 誰に: ${initialInput.recipient}
+- 会議のテーマ: ${initialInput.topic}
+- 参加者: ${initialInput.participant}
 - 状況・背景: ${initialInput.detail}
 
-この情報を元に、より詳しく整理するための質問を生成してください。`;
+この情報を元に、会議資料に必要な情報を引き出す質問を生成してください。`;
   }
   return `これまでの対話:
 ${JSON.stringify(messages, null, 2)}
@@ -57,7 +57,7 @@ export type QuestionStreamCallbacks = {
 };
 
 export async function streamQuestion(
-  type: HorensoType,
+  type: MeetingType,
   initialInput: InitialInput | undefined,
   messages: unknown[] | undefined,
   callbacks: QuestionStreamCallbacks

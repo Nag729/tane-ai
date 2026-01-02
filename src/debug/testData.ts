@@ -1,8 +1,8 @@
-import type { HorensoType } from "@/types";
+import type { MeetingType } from "@/types";
 
 type InitialInputData = {
   topic: string;
-  recipient: string;
+  participant: string;
   detail: string;
 };
 
@@ -10,111 +10,115 @@ type InitialInputData = {
  * テスト用の初期入力データ
  * 開発チーム（エンジニア・PdM）向けのシナリオ
  */
-const testDataByType: Record<HorensoType, InitialInputData[]> = {
-  report: [
-    // 詳細（数値はあるが、課題や次のアクションが曖昧）
+const testDataByType: Record<MeetingType, InitialInputData[]> = {
+  decision: [
+    // 技術選定
     {
-      topic: "本番環境のパフォーマンス改善について",
-      recipient: "テックリードとPdM",
+      topic: "来期の開発言語選定",
+      participant: "テックリード、アーキテクト、PdM",
       detail:
-        "キャッシュ入れたら速くなった気がする。800msが120msくらいになったっぽい。エラーも減った。でもメモリ使用量が増えてる気もするんだよね。これって報告した方がいいのかな",
+        "Rust vs Go で迷ってる。パフォーマンスと学習コストのバランスを考えたい。チームはTypeScript経験者が多い",
     },
-    // やや詳細（進捗はあるが、見通しに自信がない）
+    // リリース判断
     {
-      topic: "スプリント3の状況",
-      recipient: "PdM",
+      topic: "新機能のリリース日程",
+      participant: "PdM、開発チーム、QA",
       detail:
-        "5つのストーリーのうち3つ終わった。認証のところで詰まってる。Cognito連携が思ったより大変。来週には何とかなると思うけど、正直自信ない",
+        "機能はほぼ完成。リリース前のテスト期間をどれくらい取るか決めたい。ユーザーからの要望も強い",
     },
-    // 中程度（状況はあるが、判断を求めている）
+    // アーキテクチャ決定
     {
-      topic: "技術的負債の対応",
-      recipient: "EM",
+      topic: "マイクロサービス化の範囲",
+      participant: "テックリード、インフラチーム",
       detail:
-        "レガシーAPI移行、7割くらい終わった。残りは来月やる予定だけど、優先度これでいいのかな",
+        "認証サービスを切り出すか迷ってる。運用コストとスケーラビリティのトレードオフ",
     },
-    // ざっくり（事実はあるが、次のアクションが未定）
+    // ツール選定
     {
-      topic: "昨夜の障害について",
-      recipient: "チームリーダー",
+      topic: "フィーチャーフラグ導入",
+      participant: "PdM、テックリード",
       detail:
-        "DB接続エラー直した。原因はコネクションプールの設定ミス。再発防止どうしよう",
+        "LaunchDarkly使うか自前で作るか。コストと保守性のバランスが分からない",
     },
-    // 最小限（ほぼ情報なし）
+    // 優先度決定
     {
-      topic: "新機能の実装",
-      recipient: "PdM",
-      detail: "検索できるようになった。動作確認してほしい",
+      topic: "技術的負債の対応順序",
+      participant: "EM、テックリード",
+      detail: "レガシーAPI移行とテストカバレッジ改善、どっちを先にやるべき？",
     },
   ],
-  contact: [
-    // 詳細（内容はあるが、伝える範囲が曖昧）
+  share: [
+    // リリース通知
     {
-      topic: "明日のリリースについて",
-      recipient: "関係者",
+      topic: "v2.3.0のリリース予定",
+      participant: "開発チーム全員、QA、CS",
       detail:
-        "v2.3.0を明日リリースしたい。開発チームとQAには詳しく伝えたいけど、他のチームにはどこまで共有すべき？CSチームにも影響あるかも",
+        "明日14時リリース予定。リリース中の30分間ステージング環境使えなくなる。主要な変更点も共有したい",
     },
-    // やや詳細（変更はあるが、対象範囲が不明確）
+    // ポリシー変更
     {
-      topic: "ESLintの設定変更",
-      recipient: "エンジニア",
+      topic: "新しいコードレビュー規約",
+      participant: "開発チーム全員",
       detail:
-        "strictモードにしたい。フロントだけ？バックエンドも？既存コードのwarningどうする？",
+        "PRのサイズ制限（300行以内）とレビュー完了の目標時間（24時間）を周知したい",
     },
-    // 中程度（変更はあるが、周知範囲が不明確）
+    // 技術情報共有
+    {
+      topic: "ESLint設定変更の案内",
+      participant: "フロントエンドチーム",
+      detail:
+        "strictモードに変更した。既存コードのwarning対応方針も説明したい",
+    },
+    // スケジュール変更
     {
       topic: "プランニングMTGの日程変更",
-      recipient: "チーム",
+      participant: "スクラムチーム",
       detail:
-        "PdMの出張で月曜から火曜に変えたい。スクラムチームだけでいい？ステークホルダーにも言うべき？",
+        "PdMの出張で月曜から火曜に変更。アジェンダは変更なし",
     },
-    // ざっくり（共有したいが、誰に伝えるか迷っている）
+    // 成果共有
     {
-      topic: "ドキュメント更新",
-      recipient: "メンバー",
-      detail: "API仕様書直した。見てほしいけど、誰に声かければいい？",
-    },
-    // 最小限（リマインドしたいが、手段が未定）
-    {
-      topic: "明日のMTG",
-      recipient: "参加者",
-      detail: "リマインドしたい。Slackでいい？メール？",
+      topic: "パフォーマンス改善の結果報告",
+      participant: "ステークホルダー、開発チーム",
+      detail:
+        "キャッシュ導入で応答時間が800msから120msに改善。次のステップも共有したい",
     },
   ],
-  consult: [
-    // 詳細（選択肢はあるが、判断基準が不明確）
+  discussion: [
+    // 技術アプローチ
     {
-      topic: "状態管理どうしよう",
-      recipient: "テックリード",
+      topic: "API設計：REST vs GraphQL",
+      participant: "バックエンド・フロントエンドエンジニア",
       detail:
-        "新しい画面でグローバルステートが必要になりそう。Redux ToolkitかZustandかJotaiか迷ってる。今はContext APIだけ。チームはRedux経験少ない。パフォーマンスも気になる。どれがいいかな",
+        "新しいダッシュボード機能で複数データソースからの取得が必要。効率的なAPI設計を議論したい",
     },
-    // やや詳細（目的はあるが、トレードオフが不明確）
+    // アーキテクチャ検討
     {
-      topic: "フィーチャーフラグ入れたい",
-      recipient: "PdMとテックリード",
+      topic: "モノレポ移行の是非",
+      participant: "テックリード、EM、インフラ",
       detail:
-        "大型機能のリリースを段階的にしたい。LaunchDarkly使うか自前で作るか。コストと保守性のバランスが分からない",
+        "リポジトリ増えてきて管理がつらい。移行コストと運用メリットを整理したい",
     },
-    // 中程度（課題認識はあるが、判断基準が不明確）
+    // プロセス改善
     {
-      topic: "モノレポにすべき？",
-      recipient: "EM",
+      topic: "テスト戦略の見直し",
+      participant: "QA、開発チーム",
       detail:
-        "リポジトリ増えてきてつらい。でも移行コストも怖い。どう判断すればいい？",
+        "単体テストどこまで書くか、E2Eとの棲み分けを議論したい。カバレッジ目標も決めたい",
     },
-    // ざっくり（漠然とした悩み）
+    // 設計レビュー
     {
-      topic: "テストの書き方",
-      recipient: "先輩",
-      detail: "単体テストどこまで書けばいいか分からない。カバレッジ何%目指す？",
+      topic: "状態管理ライブラリの選定",
+      participant: "フロントエンドチーム",
+      detail:
+        "Redux Toolkit、Zustand、Jotaiで迷ってる。チームの経験とパフォーマンス要件を考慮したい",
     },
-    // 最小限（ほぼ情報なし、不安だけ）
+    // 振り返り
     {
-      topic: "設計レビューしてほしい",
-      recipient: "テックリード",
-      detail: "今の設計で大丈夫か不安",
+      topic: "直近のインシデント振り返り",
+      participant: "オンコールチーム、開発リード",
+      detail:
+        "DB接続エラーの根本原因と再発防止策を議論したい。プロセス改善も検討",
     },
   ],
 };
@@ -129,7 +133,7 @@ export function isDebugMode(): boolean {
 /**
  * 指定された種類のテストデータをランダムに取得
  */
-export function getRandomTestData(type: HorensoType): InitialInputData {
+export function getRandomTestData(type: MeetingType): InitialInputData {
   const patterns = testDataByType[type];
   const randomIndex = Math.floor(Math.random() * patterns.length);
   return patterns[randomIndex];

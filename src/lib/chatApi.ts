@@ -1,5 +1,5 @@
 import { readSSEStream, readTextSSEStream, SSECallbacks } from "@/lib/sse";
-import type { HorensoType, ChatMessage } from "@/types";
+import type { MeetingType, ChatMessage } from "@/types";
 
 export type QuestionResponse = {
   intro: string;
@@ -15,13 +15,13 @@ export type QuestionResponse = {
 
 type InitialInput = {
   topic: string;
-  recipient: string;
+  participant: string;
   detail: string;
 };
 
 /** 初回質問を生成 */
 export async function fetchInitialQuestion(
-  type: HorensoType,
+  type: MeetingType,
   initialInput: InitialInput,
   callbacks?: SSECallbacks
 ): Promise<QuestionResponse> {
@@ -35,7 +35,7 @@ export async function fetchInitialQuestion(
 
 /** 次の質問を生成 */
 export async function fetchNextQuestion(
-  type: HorensoType,
+  type: MeetingType,
   messages: ChatMessage[]
 ): Promise<QuestionResponse> {
   const response = await fetch("/api/chat/question", {
@@ -48,7 +48,7 @@ export async function fetchNextQuestion(
 
 /** 最終出力を生成 */
 export async function fetchOutput(
-  type: HorensoType,
+  type: MeetingType,
   messages: ChatMessage[],
   callbacks?: SSECallbacks & { onTextAccumulated?: (text: string) => void }
 ): Promise<string> {

@@ -1,10 +1,10 @@
 import { streamOutput } from "@/domain/chat/streamOutput";
-import type { HorensoType, ChatMessage } from "@/types";
+import type { MeetingType, ChatMessage } from "@/types";
 
 export async function POST(request: Request) {
   const body = await request.json();
   const { type, messages, previousOutput, feedback } = body as {
-    type: HorensoType;
+    type: MeetingType;
     messages: ChatMessage[];
     previousOutput?: { content: string };
     feedback?: string;

@@ -4,13 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TypeSelector } from "@/components/pages/home/TypeSelector";
 import { Card } from "@/components/ui/Card";
-import type { HorensoType } from "@/types";
+import type { MeetingType } from "@/types";
 
 export default function Home() {
   const router = useRouter();
-  const [selected, setSelected] = useState<HorensoType | undefined>();
+  const [selected, setSelected] = useState<MeetingType | undefined>();
 
-  const handleSelect = (type: HorensoType) => {
+  const handleSelect = (type: MeetingType) => {
     setSelected(type);
     setTimeout(() => {
       router.push(`/chat?type=${type}`);
@@ -22,10 +22,10 @@ export default function Home() {
       <div className="w-full max-w-2xl">
         {/* ヒーローセクション */}
         <Card className="text-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 mb-3">🥬 ほうれんそうAI</h1>
-          <p className="text-lg sm:text-xl text-stone-700 mb-2">答えるだけで、考えがまとまる</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 mb-3">🌱 たねAI</h1>
+          <p className="text-lg sm:text-xl text-stone-700 mb-2">会議のタネ、AIがまく</p>
           <p className="text-stone-500 text-sm sm:text-base">
-            「で、結局？」を言われる前に、AIと壁打ち
+            準備8割、会議2割。事前資料を一緒に作ろう
           </p>
         </Card>
 
@@ -40,13 +40,13 @@ export default function Home() {
           </span>
           <span className="text-stone-300">→</span>
           <span className="flex items-center gap-1">
-            <span className="text-emerald-500">③</span> コピペで完了
+            <span className="text-emerald-500">③</span> 資料完成
           </span>
         </div>
 
         {/* 種類選択 */}
         <div>
-          <p className="text-center text-stone-600 mb-4">何を整理しますか？</p>
+          <p className="text-center text-stone-600 mb-4">どんな会議？</p>
           <TypeSelector selected={selected} onSelect={handleSelect} />
         </div>
       </div>

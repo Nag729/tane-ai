@@ -7,7 +7,7 @@ describe("chatStorage", () => {
   });
 
   const mockChatData: ChatData = {
-    type: "report",
+    type: "decision",
     messages: [
       {
         role: "ai",
@@ -26,7 +26,7 @@ describe("chatStorage", () => {
     // Then: sessionStorage に保存される
     it("should save data to sessionStorage", () => {
       saveChatData(mockChatData);
-      const stored = sessionStorage.getItem("horenso-chat-data");
+      const stored = sessionStorage.getItem("tane-chat-data");
       expect(stored).not.toBeNull();
       expect(JSON.parse(stored!)).toEqual(mockChatData);
     });
@@ -37,7 +37,7 @@ describe("chatStorage", () => {
     // When: loadChatData を呼び出す
     // Then: データが返される
     it("should load data from sessionStorage", () => {
-      sessionStorage.setItem("horenso-chat-data", JSON.stringify(mockChatData));
+      sessionStorage.setItem("tane-chat-data", JSON.stringify(mockChatData));
       const result = loadChatData();
       expect(result).toEqual(mockChatData);
     });
@@ -54,7 +54,7 @@ describe("chatStorage", () => {
     // When: loadChatData を呼び出す
     // Then: null が返される
     it("should return null when invalid JSON exists", () => {
-      sessionStorage.setItem("horenso-chat-data", "invalid json");
+      sessionStorage.setItem("tane-chat-data", "invalid json");
       const result = loadChatData();
       expect(result).toBeNull();
     });
@@ -65,9 +65,9 @@ describe("chatStorage", () => {
     // When: clearChatData を呼び出す
     // Then: データが削除される
     it("should remove data from sessionStorage", () => {
-      sessionStorage.setItem("horenso-chat-data", JSON.stringify(mockChatData));
+      sessionStorage.setItem("tane-chat-data", JSON.stringify(mockChatData));
       clearChatData();
-      expect(sessionStorage.getItem("horenso-chat-data")).toBeNull();
+      expect(sessionStorage.getItem("tane-chat-data")).toBeNull();
     });
   });
 });

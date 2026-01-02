@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { TypeSelector } from "./TypeSelector";
-import type { HorensoType } from "@/types";
+import type { MeetingType } from "@/types";
 
 const meta = {
   component: TypeSelector,
@@ -27,23 +27,23 @@ export const Default: Story = {
   },
 };
 
-export const ReportSelected: Story = {
+export const DecisionSelected: Story = {
   args: {
-    selected: "report",
+    selected: "decision",
     onSelect: () => {},
   },
 };
 
-export const ContactSelected: Story = {
+export const ShareSelected: Story = {
   args: {
-    selected: "contact",
+    selected: "share",
     onSelect: () => {},
   },
 };
 
-export const ConsultSelected: Story = {
+export const DiscussionSelected: Story = {
   args: {
-    selected: "consult",
+    selected: "discussion",
     onSelect: () => {},
   },
 };
@@ -53,7 +53,7 @@ export const Interactive: Story = {
     onSelect: () => {},
   },
   render: function InteractiveTypeSelector() {
-    const [selected, setSelected] = useState<HorensoType | undefined>();
+    const [selected, setSelected] = useState<MeetingType | undefined>();
     return <TypeSelector selected={selected} onSelect={setSelected} />;
   },
 };

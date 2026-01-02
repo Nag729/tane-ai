@@ -65,11 +65,11 @@ describe("loadChatData", () => {
   // Then: パースされたデータを返す
   it("should return parsed data when valid data exists", () => {
     const chatData = {
-      type: "report",
+      type: "decision",
       messages: [],
       output: { content: "テスト出力" },
     };
-    mockSessionStorage.setItem("horenso-chat-data", JSON.stringify(chatData));
+    mockSessionStorage.setItem("tane-chat-data", JSON.stringify(chatData));
 
     const result = loadChatData();
     expect(result).toEqual(chatData);
@@ -79,7 +79,7 @@ describe("loadChatData", () => {
   // When: loadChatData を呼ぶ
   // Then: null を返す
   it("should return null when invalid JSON exists", () => {
-    mockSessionStorage.setItem("horenso-chat-data", "invalid json");
+    mockSessionStorage.setItem("tane-chat-data", "invalid json");
 
     const result = loadChatData();
     expect(result).toBeNull();
@@ -95,11 +95,11 @@ describe("clearChatData", () => {
   // When: clearChatData を呼ぶ
   // Then: データが削除される
   it("should remove data from sessionStorage", () => {
-    mockSessionStorage.setItem("horenso-chat-data", '{"type":"report"}');
+    mockSessionStorage.setItem("tane-chat-data", '{"type":"decision"}');
 
     clearChatData();
 
-    expect(mockSessionStorage.removeItem).toHaveBeenCalledWith("horenso-chat-data");
+    expect(mockSessionStorage.removeItem).toHaveBeenCalledWith("tane-chat-data");
   });
 });
 
@@ -119,7 +119,7 @@ describe("useChat", () => {
   // When: レンダリングする
   // Then: 初期状態が正しい
   it("should have correct initial state", () => {
-    const { result } = renderHook(() => useChat({ type: "report", onComplete: mockOnComplete }));
+    const { result } = renderHook(() => useChat({ type: "decision", onComplete: mockOnComplete }));
 
     expect(result.current.messages).toEqual([]);
     expect(result.current.currentAIMessage).toBeUndefined();
@@ -155,12 +155,12 @@ describe("useChat", () => {
 
     global.fetch = mockFetchSSE(mockResponse);
 
-    const { result } = renderHook(() => useChat({ type: "report", onComplete: mockOnComplete }));
+    const { result } = renderHook(() => useChat({ type: "decision", onComplete: mockOnComplete }));
 
     await act(async () => {
       await result.current.submitInitialInput({
         topic: "テスト",
-        recipient: "テスト相手",
+        participant: "テスト相手",
         detail: "テスト詳細",
       });
     });
@@ -222,13 +222,13 @@ describe("useChat", () => {
       return Promise.resolve({ ok: true, body: stream });
     });
 
-    const { result } = renderHook(() => useChat({ type: "consult", onComplete: mockOnComplete }));
+    const { result } = renderHook(() => useChat({ type: "discussion", onComplete: mockOnComplete }));
 
     // 初期入力
     await act(async () => {
       await result.current.submitInitialInput({
-        topic: "相談内容",
-        recipient: "相手",
+        topic: "議論内容",
+        participant: "参加者",
         detail: "詳細",
       });
     });
@@ -283,13 +283,13 @@ describe("useChat", () => {
       return Promise.resolve({ ok: true, body: stream });
     });
 
-    const { result } = renderHook(() => useChat({ type: "report", onComplete: mockOnComplete }));
+    const { result } = renderHook(() => useChat({ type: "decision", onComplete: mockOnComplete }));
 
     // 初期入力（ready: true を返す）
     await act(async () => {
       await result.current.submitInitialInput({
         topic: "テスト",
-        recipient: "相手",
+        participant: "参加者",
         detail: "詳細",
       });
     });
@@ -317,12 +317,12 @@ describe("useChat", () => {
   it("should handle API errors", async () => {
     global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
 
-    const { result } = renderHook(() => useChat({ type: "report", onComplete: mockOnComplete }));
+    const { result } = renderHook(() => useChat({ type: "decision", onComplete: mockOnComplete }));
 
     await act(async () => {
       await result.current.submitInitialInput({
         topic: "テスト",
-        recipient: "相手",
+        participant: "参加者",
         detail: "詳細",
       });
     });
@@ -342,12 +342,12 @@ describe("useChat", () => {
 
     global.fetch = mockFetchSSE(errorResponse);
 
-    const { result } = renderHook(() => useChat({ type: "report", onComplete: mockOnComplete }));
+    const { result } = renderHook(() => useChat({ type: "decision", onComplete: mockOnComplete }));
 
     await act(async () => {
       await result.current.submitInitialInput({
         topic: "テスト",
-        recipient: "相手",
+        participant: "参加者",
         detail: "詳細",
       });
     });
@@ -405,12 +405,12 @@ describe("useChat.getAnswerDisplay", () => {
       return Promise.resolve({ ok: true, body: stream });
     });
 
-    const { result } = renderHook(() => useChat({ type: "report", onComplete: vi.fn() }));
+    const { result } = renderHook(() => useChat({ type: "decision", onComplete: vi.fn() }));
 
     await act(async () => {
       await result.current.submitInitialInput({
         topic: "t",
-        recipient: "r",
+        participant: "p",
         detail: "d",
       });
     });

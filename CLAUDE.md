@@ -1,11 +1,13 @@
-# CLAUDE.md - ほうれんそうAI
+# CLAUDE.md - たねAI 🌱
 
 このファイルはプロジェクト固有のコーディングルールを記録しています。
 
 ## プロジェクト概要
 
-報告・連絡・相談を AI との対話で整理するツール。
+ミーティング事前資料を AI との対話で作成するツール。
 任天堂みたいな遊び心のあるデザインで、使っていて楽しいアプリを目指す。
+
+**コンセプト**: 「会議のタネ、AIがまく」- 準備8割、会議2割
 
 ## 技術スタック
 
@@ -134,9 +136,15 @@ export const Interactive: Story = {
 `src/types/index.ts` に集約:
 
 ```typescript
-// ほうれんそうの種類
-type HorensoType = "report" | "contact" | "consult";
+// 会議の種類
+type MeetingType = "decision" | "share" | "discussion";
 ```
+
+| タイプ | 説明 | ゴール |
+|--------|------|--------|
+| decision | 意思判断会議 | 何かを決める |
+| share | 共有・通達会議 | 情報を伝える |
+| discussion | ディスカッション会議 | 議論する |
 
 ## コマンド
 

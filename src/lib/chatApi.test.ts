@@ -40,13 +40,13 @@ describe("chatApi", () => {
       global.fetch = mockFetch;
       mockReadSSEStream.mockResolvedValue(mockQuestionResponse);
 
-      const initialInput = { topic: "テスト", recipient: "上司", detail: "詳細" };
-      await fetchInitialQuestion("report", initialInput);
+      const initialInput = { topic: "テスト", participant: "テックリード", detail: "詳細" };
+      await fetchInitialQuestion("decision", initialInput);
 
       expect(mockFetch).toHaveBeenCalledWith("/api/chat/question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "report", initialInput }),
+        body: JSON.stringify({ type: "decision", initialInput }),
       });
     });
 
@@ -57,7 +57,7 @@ describe("chatApi", () => {
       global.fetch = vi.fn().mockResolvedValue({ body: {} });
       mockReadSSEStream.mockResolvedValue(mockQuestionResponse);
 
-      const result = await fetchInitialQuestion("report", { topic: "", recipient: "", detail: "" });
+      const result = await fetchInitialQuestion("decision", { topic: "", participant: "", detail: "" });
 
       expect(result).toEqual(mockQuestionResponse);
     });
@@ -75,12 +75,12 @@ describe("chatApi", () => {
       const messages = [
         { role: "ai" as const, message: { id: "1", intro: "test", questions: [] } },
       ];
-      await fetchNextQuestion("contact", messages);
+      await fetchNextQuestion("share", messages);
 
       expect(mockFetch).toHaveBeenCalledWith("/api/chat/question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "contact", messages }),
+        body: JSON.stringify({ type: "share", messages }),
       });
     });
   });
@@ -97,12 +97,12 @@ describe("chatApi", () => {
       const messages = [
         { role: "ai" as const, message: { id: "1", intro: "test", questions: [] } },
       ];
-      await fetchOutput("consult", messages);
+      await fetchOutput("discussion", messages);
 
       expect(mockFetch).toHaveBeenCalledWith("/api/chat/output", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "consult", messages }),
+        body: JSON.stringify({ type: "discussion", messages }),
       });
     });
 
@@ -113,7 +113,7 @@ describe("chatApi", () => {
       global.fetch = vi.fn().mockResolvedValue({ body: {} });
       mockReadTextSSEStream.mockResolvedValue("生成された出力");
 
-      const result = await fetchOutput("report", []);
+      const result = await fetchOutput("decision", []);
 
       expect(result).toBe("生成された出力");
     });

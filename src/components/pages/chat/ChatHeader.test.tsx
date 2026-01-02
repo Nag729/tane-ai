@@ -8,16 +8,16 @@ describe("ChatHeader", () => {
   // When: レンダリングする
   // Then: ラベルが表示される
   it("should render label", () => {
-    render(<ChatHeader label="報告" onBack={() => {}} />);
-    expect(screen.getByText(/報告を整理中/)).toBeInTheDocument();
+    render(<ChatHeader label="意思判断" onBack={() => {}} />);
+    expect(screen.getByText(/意思判断会議を準備中/)).toBeInTheDocument();
   });
 
-  // Given: ロボットアイコンがある
+  // Given: 種アイコンがある
   // When: レンダリングする
   // Then: アイコンが表示される
-  it("should render robot icon", () => {
-    render(<ChatHeader label="連絡" onBack={() => {}} />);
-    expect(screen.getByText(/🤖/)).toBeInTheDocument();
+  it("should render seed icon", () => {
+    render(<ChatHeader label="共有" onBack={() => {}} />);
+    expect(screen.getByText(/🌱/)).toBeInTheDocument();
   });
 
   // Given: 戻るボタンがある
@@ -26,7 +26,7 @@ describe("ChatHeader", () => {
   it("should call onBack when back button is clicked", async () => {
     const user = userEvent.setup();
     const handleBack = vi.fn();
-    render(<ChatHeader label="相談" onBack={handleBack} />);
+    render(<ChatHeader label="ディスカッション" onBack={handleBack} />);
 
     await user.click(screen.getByText("← やめる"));
     expect(handleBack).toHaveBeenCalledTimes(1);

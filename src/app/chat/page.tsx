@@ -12,13 +12,13 @@ import { Card } from "@/components/ui/Card";
 import { useChatAnswers, useChat } from "@/hooks";
 import { typeConfig } from "@/constants";
 import { isDebugMode, getRandomTestData } from "@/debug/testData";
-import type { HorensoType } from "@/types";
+import type { MeetingType } from "@/types";
 
 // eslint-disable-next-line max-lines-per-function
 function ChatPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const type = searchParams.get("type") as HorensoType | null;
+  const type = searchParams.get("type") as MeetingType | null;
   const config = type ? typeConfig[type] : null;
 
   const debugDefaultValues = useMemo(
@@ -30,7 +30,7 @@ function ChatPageContent() {
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const chat = useChat({
-    type: type || "report",
+    type: type || "decision",
     onComplete: () => router.push(`/result?type=${type}`),
   });
 
@@ -57,7 +57,7 @@ function ChatPageContent() {
 
   const handleInitialSubmit = async (data: {
     topic: string;
-    recipient: string;
+    participant: string;
     detail: string;
   }) => {
     setInitialInputSubmitted(true);

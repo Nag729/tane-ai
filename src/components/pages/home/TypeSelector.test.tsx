@@ -6,62 +6,62 @@ import { TypeSelector } from "./TypeSelector";
 describe("TypeSelector", () => {
   // Given: TypeSelectorコンポーネントが存在する
   // When: レンダリングする
-  // Then: 報告・連絡・相談の3つが表示される
+  // Then: 意思判断・共有・ディスカッションの3つが表示される
   it("should render three type options", () => {
     render(<TypeSelector onSelect={() => {}} />);
 
-    expect(screen.getByRole("button", { name: /報告/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /連絡/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /相談/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /意思判断/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /共有/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /ディスカッション/ })).toBeInTheDocument();
   });
 
   // Given: onSelectが渡されている
-  // When: 報告をクリックする
-  // Then: onSelectが"report"で呼ばれる
-  it("should call onSelect with 'report' when report is clicked", async () => {
+  // When: 意思判断をクリックする
+  // Then: onSelectが"decision"で呼ばれる
+  it("should call onSelect with 'decision' when decision is clicked", async () => {
     const user = userEvent.setup();
     const handleSelect = vi.fn();
 
     render(<TypeSelector onSelect={handleSelect} />);
-    await user.click(screen.getByRole("button", { name: /報告/ }));
+    await user.click(screen.getByRole("button", { name: /意思判断/ }));
 
-    expect(handleSelect).toHaveBeenCalledWith("report");
+    expect(handleSelect).toHaveBeenCalledWith("decision");
   });
 
   // Given: onSelectが渡されている
-  // When: 連絡をクリックする
-  // Then: onSelectが"contact"で呼ばれる
-  it("should call onSelect with 'contact' when contact is clicked", async () => {
+  // When: 共有をクリックする
+  // Then: onSelectが"share"で呼ばれる
+  it("should call onSelect with 'share' when share is clicked", async () => {
     const user = userEvent.setup();
     const handleSelect = vi.fn();
 
     render(<TypeSelector onSelect={handleSelect} />);
-    await user.click(screen.getByRole("button", { name: /連絡/ }));
+    await user.click(screen.getByRole("button", { name: /共有/ }));
 
-    expect(handleSelect).toHaveBeenCalledWith("contact");
+    expect(handleSelect).toHaveBeenCalledWith("share");
   });
 
   // Given: onSelectが渡されている
-  // When: 相談をクリックする
-  // Then: onSelectが"consult"で呼ばれる
-  it("should call onSelect with 'consult' when consult is clicked", async () => {
+  // When: ディスカッションをクリックする
+  // Then: onSelectが"discussion"で呼ばれる
+  it("should call onSelect with 'discussion' when discussion is clicked", async () => {
     const user = userEvent.setup();
     const handleSelect = vi.fn();
 
     render(<TypeSelector onSelect={handleSelect} />);
-    await user.click(screen.getByRole("button", { name: /相談/ }));
+    await user.click(screen.getByRole("button", { name: /ディスカッション/ }));
 
-    expect(handleSelect).toHaveBeenCalledWith("consult");
+    expect(handleSelect).toHaveBeenCalledWith("discussion");
   });
 
-  // Given: selectedが"report"
+  // Given: selectedが"decision"
   // When: レンダリングする
-  // Then: 報告が選択状態で表示される
-  it("should show report as selected when selected is report", () => {
-    render(<TypeSelector selected="report" onSelect={() => {}} />);
+  // Then: 意思判断が選択状態で表示される
+  it("should show decision as selected when selected is decision", () => {
+    render(<TypeSelector selected="decision" onSelect={() => {}} />);
 
-    const reportButton = screen.getByRole("button", { name: /報告/ });
-    expect(reportButton).toHaveClass("bg-emerald-500");
+    const decisionButton = screen.getByRole("button", { name: /意思判断/ });
+    expect(decisionButton).toHaveClass("bg-emerald-500");
   });
 
   // Given: selectedがundefined

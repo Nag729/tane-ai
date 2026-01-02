@@ -1,1 +1,1 @@
-export { typeConfig, type TypeConfigItem } from "./horenso";
+export { typeConfig, type TypeConfigItem } from "./meeting";

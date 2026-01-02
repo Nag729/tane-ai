@@ -1,28 +1,28 @@
-import type { HorensoType } from "@/types";
+import type { MeetingType } from "@/types";
 import { CardButton } from "@/components/ui/CardButton";
 
 type TypeSelectorProps = {
-  selected?: HorensoType;
-  onSelect: (type: HorensoType) => void;
+  selected?: MeetingType;
+  onSelect: (type: MeetingType) => void;
 };
 
 const typeOptions = [
   {
-    type: "report",
-    label: "📋 報告",
-    description: "一発で伝わる報告を作る",
+    type: "decision",
+    label: "💡 意思判断",
+    description: "何かを決める会議",
   },
   {
-    type: "contact",
-    label: "📢 連絡",
-    description: "確実に届く連絡を作る",
+    type: "share",
+    label: "📢 共有・通達",
+    description: "情報を伝える会議",
   },
   {
-    type: "consult",
-    label: "💭 相談",
-    description: "すぐ答えがもらえる相談を作る",
+    type: "discussion",
+    label: "💬 ディスカッション",
+    description: "議論する会議",
   },
-] as const satisfies readonly { type: HorensoType; label: string; description: string }[];
+] as const satisfies readonly { type: MeetingType; label: string; description: string }[];
 
 export function TypeSelector({ selected, onSelect }: TypeSelectorProps) {
   return (

@@ -1,9 +1,9 @@
 import { anthropic, MODEL_ID } from "@/lib/anthropic";
 import { getOutputSystemPrompt } from "@/lib/prompts";
-import type { HorensoType, ChatMessage } from "@/types";
+import type { MeetingType, ChatMessage } from "@/types";
 
 type OutputRequest = {
-  type: HorensoType;
+  type: MeetingType;
   messages: ChatMessage[];
   previousOutput?: { content: string };
   feedback?: string;

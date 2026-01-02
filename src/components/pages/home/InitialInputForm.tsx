@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
 type FieldConfig = { label: string; placeholder: string };
-type InitialInputData = { topic: string; recipient: string; detail: string };
+type InitialInputData = { topic: string; participant: string; detail: string };
 
 type InitialInputFormProps = {
-  fields: { topic: FieldConfig; recipient: FieldConfig; detail: FieldConfig };
+  fields: { topic: FieldConfig; participant: FieldConfig; detail: FieldConfig };
   onSubmit: (data: InitialInputData) => void;
   isLoading?: boolean;
   defaultValues?: InitialInputData;
@@ -20,11 +20,11 @@ export function InitialInputForm({
   defaultValues,
 }: InitialInputFormProps) {
   const [topic, setTopic] = useState(defaultValues?.topic ?? "");
-  const [recipient, setRecipient] = useState(defaultValues?.recipient ?? "");
+  const [participant, setParticipant] = useState(defaultValues?.participant ?? "");
   const [detail, setDetail] = useState(defaultValues?.detail ?? "");
   const firstInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const isValid = topic.trim() && recipient.trim() && detail.trim();
+  const isValid = topic.trim() && participant.trim() && detail.trim();
 
   useEffect(() => {
     firstInputRef.current?.focus();
@@ -33,7 +33,7 @@ export function InitialInputForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid || isLoading) return;
-    onSubmit({ topic: topic.trim(), recipient: recipient.trim(), detail: detail.trim() });
+    onSubmit({ topic: topic.trim(), participant: participant.trim(), detail: detail.trim() });
   };
 
   return (
@@ -48,10 +48,10 @@ export function InitialInputForm({
           placeholder={fields.topic.placeholder}
         />
         <FormField
-          label={fields.recipient.label}
-          value={recipient}
-          onChange={setRecipient}
-          placeholder={fields.recipient.placeholder}
+          label={fields.participant.label}
+          value={participant}
+          onChange={setParticipant}
+          placeholder={fields.participant.placeholder}
         />
         <FormField
           label={fields.detail.label}

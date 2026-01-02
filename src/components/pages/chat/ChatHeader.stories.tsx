@@ -12,23 +12,23 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Report: Story = {
+export const Decision: Story = {
   args: {
-    label: "報告",
+    label: "意思判断",
     onBack: () => alert("戻る"),
   },
 };
 
-export const Contact: Story = {
+export const Share: Story = {
   args: {
-    label: "連絡",
+    label: "共有",
     onBack: () => alert("戻る"),
   },
 };
 
-export const Consult: Story = {
+export const Discussion: Story = {
   args: {
-    label: "相談",
+    label: "ディスカッション",
     onBack: () => alert("戻る"),
   },
 };
