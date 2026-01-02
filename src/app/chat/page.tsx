@@ -9,6 +9,7 @@ import { ChatHistory } from "@/components/pages/chat/ChatHistory";
 import { ChatFooter } from "@/components/pages/chat/ChatFooter";
 import { QuestionCard } from "@/components/pages/chat/QuestionCard";
 import { Card } from "@/components/ui/Card";
+import { PageLoading } from "@/components/ui/PageLoading";
 import { useChatAnswers, useChat } from "@/hooks";
 import { typeConfig } from "@/constants";
 import { isDebugMode, getRandomTestData } from "@/debug/testData";
@@ -26,7 +27,7 @@ function ChatPageContent() {
     [type]
   );
 
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const latestContentRef = useRef<HTMLDivElement>(null);
 
   const chat = useChat({
     type: type || "decision",
@@ -42,9 +43,9 @@ function ChatPageContent() {
     buildQuestionAnswers,
   } = useChatAnswers();
 
-  // 自動スクロール
+  // 自動スクロール（最新コンテンツへ）
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    latestContentRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat.messages, chat.thinkingContent, chat.phase]);
 
   // 無効なパラメータの場合はトップへ
@@ -112,6 +113,9 @@ function ChatPageContent() {
             <>
               <ChatHistory messages={chat.messages} getAnswerDisplay={chat.getAnswerDisplay} />
 
+              {/* スクロール位置: 最新の質問/Thinking の先頭 */}
+              <div ref={latestContentRef} />
+
               {/* ThinkingPanel: thinking フェーズで表示 */}
               {showThinking && (
                 <ThinkingPanel isThinking={chat.isThinking} content={chat.thinkingContent} />
@@ -140,7 +144,6 @@ function ChatPageContent() {
                 </div>
               )}
 
-              <div ref={chatEndRef} />
             </>
           )}
         </div>
@@ -161,13 +164,7 @@ function ChatPageContent() {
 
 export default function ChatPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <p className="text-stone-500">読み込み中...</p>
-        </div>
-      }
-    >
+    <Suspense fallback={<PageLoading />}>
       <ChatPageContent />
     </Suspense>
   );

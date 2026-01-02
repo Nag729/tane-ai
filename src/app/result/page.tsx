@@ -9,6 +9,7 @@ import { ThinkingPanel } from "@/components/projects/ThinkingPanel";
 import { StreamingText } from "@/components/projects/StreamingText";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { PageLoading } from "@/components/ui/PageLoading";
 import { loadChatData, clearChatData, saveChatData } from "@/hooks";
 import { useThinking } from "@/hooks/useThinking";
 import { readTextSSEStream } from "@/lib/sse";
@@ -251,13 +252,7 @@ function ResultPageContent() {
 
 export default function ResultPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <p className="text-stone-500">読み込み中...</p>
-        </div>
-      }
-    >
+    <Suspense fallback={<PageLoading />}>
       <ResultPageContent />
     </Suspense>
   );
