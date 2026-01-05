@@ -19,14 +19,6 @@
 | コンポーネントカタログ | Storybook 10                         |
 | Lint/Format            | ESLint 9 + Prettier                  |
 
-## 開発フロー
-
-TDD（テスト駆動開発）で進める:
-
-1. **Red**: 失敗するテストを書く
-2. **Green**: テストが通る最小限の実装
-3. **Refactor**: コードを綺麗にする
-
 ## コンポーネント設計
 
 ### ディレクトリ構成
@@ -97,14 +89,6 @@ describe("HooksName", () => {
 - `w-[400px]` → `w-100`
 - `w-[500px]` → `w-125`
 - `w-[600px]` → `w-150`
-
-### フォント
-
-丸ゴシック（Kosugi Maru）を使用:
-
-```css
-font-family: "Kosugi Maru", "Hiragino Maru Gothic ProN", sans-serif;
-```
 
 ## Storybook ルール
 
