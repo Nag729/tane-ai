@@ -159,9 +159,9 @@ describe("useChat", () => {
 
     await act(async () => {
       await result.current.submitInitialInput({
-        topic: "テスト",
-        participant: "テスト相手",
-        detail: "テスト詳細",
+        theme: "テスト",
+        verb: "決定する",
+        supplements: [{ id: "1", label: "参加者", value: "テスト相手" }],
       });
     });
 
@@ -229,9 +229,9 @@ describe("useChat", () => {
     // 初期入力
     await act(async () => {
       await result.current.submitInitialInput({
-        topic: "議論内容",
-        participant: "参加者",
-        detail: "詳細",
+        theme: "議論内容",
+        verb: "議論する",
+        supplements: [{ id: "1", label: "参加者", value: "参加者" }],
       });
     });
 
@@ -273,9 +273,9 @@ describe("useChat", () => {
     // 初期入力（ready: true を返す）
     await act(async () => {
       await result.current.submitInitialInput({
-        topic: "テスト",
-        participant: "参加者",
-        detail: "詳細",
+        theme: "テスト",
+        verb: "決定する",
+        supplements: [],
       });
     });
 
@@ -304,9 +304,9 @@ describe("useChat", () => {
 
     await act(async () => {
       await result.current.submitInitialInput({
-        topic: "テスト",
-        participant: "参加者",
-        detail: "詳細",
+        theme: "テスト",
+        verb: "決定する",
+        supplements: [],
       });
     });
 
@@ -329,9 +329,9 @@ describe("useChat", () => {
 
     await act(async () => {
       await result.current.submitInitialInput({
-        topic: "テスト",
-        participant: "参加者",
-        detail: "詳細",
+        theme: "テスト",
+        verb: "決定する",
+        supplements: [],
       });
     });
 
@@ -392,9 +392,9 @@ describe("useChat.getAnswerDisplay", () => {
 
     await act(async () => {
       await result.current.submitInitialInput({
-        topic: "t",
-        participant: "p",
-        detail: "d",
+        theme: "t",
+        verb: "決定する",
+        supplements: [],
       });
     });
 

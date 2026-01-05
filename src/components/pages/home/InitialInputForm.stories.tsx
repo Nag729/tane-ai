@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { InitialInputForm } from "./InitialInputForm";
+import { verbsByType, supplementLabels } from "@/constants";
+import type { InitialInputData, SupplementLabel } from "@/types";
 
 const meta = {
   component: InitialInputForm,
@@ -16,8 +18,13 @@ const meta = {
     ),
   ],
   args: {
+    typeLabel: "意思決定",
+    themePlaceholder: "例：来期の採用計画",
+    verbs: verbsByType.decision,
+    supplementLabels: supplementLabels as unknown as SupplementLabel[],
     sampleCases: [],
     onSampleSelect: () => {},
+    onSubmit: (data) => console.log("Submitted:", data),
   },
 } satisfies Meta<typeof InitialInputForm>;
 
@@ -26,20 +33,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Decision: Story = {
   args: {
-    fields: {
-      topic: {
-        label: "何を決める？",
-        placeholder: "例：来期の開発言語の選定",
-      },
-      participant: {
-        label: "誰と決める？",
-        placeholder: "例：テックリード、アーキテクト、PdM",
-      },
-      detail: {
-        label: "背景は？",
-        placeholder: "例：既存のフレームワークが古くなってきた。移行先を検討中",
-      },
-    },
+    typeLabel: "意思決定",
+    themePlaceholder: "例：来期の採用計画、新サービスのリリース時期...",
+    verbs: verbsByType.decision,
     onSubmit: (data) => {
       console.log("Submitted:", data);
       alert(`送信: ${JSON.stringify(data, null, 2)}`);
@@ -49,20 +45,9 @@ export const Decision: Story = {
 
 export const Share: Story = {
   args: {
-    fields: {
-      topic: {
-        label: "何を共有する？",
-        placeholder: "例：来月からのリモートワーク制度変更",
-      },
-      participant: {
-        label: "誰に共有する？",
-        placeholder: "例：開発チーム全員",
-      },
-      detail: {
-        label: "概要は？",
-        placeholder: "例：週3日出社から週2日出社に変更。希望者は申請可",
-      },
-    },
+    typeLabel: "情報共有",
+    themePlaceholder: "例：新しい勤怠ルール、システム移行のお知らせ...",
+    verbs: verbsByType.share,
     onSubmit: (data) => {
       console.log("Submitted:", data);
     },
@@ -71,20 +56,9 @@ export const Share: Story = {
 
 export const Discussion: Story = {
   args: {
-    fields: {
-      topic: {
-        label: "何を議論する？",
-        placeholder: "例：プロダクトの今後の方向性",
-      },
-      participant: {
-        label: "誰と議論する？",
-        placeholder: "例：プロダクトチーム、デザイナー、エンジニア",
-      },
-      detail: {
-        label: "論点は？",
-        placeholder: "例：競合が増えてきた。差別化戦略を検討したい",
-      },
-    },
+    typeLabel: "ディスカッション",
+    themePlaceholder: "例：チームの生産性向上、来期の開発方針...",
+    verbs: verbsByType.discussion,
     onSubmit: (data) => {
       console.log("Submitted:", data);
     },
@@ -93,74 +67,58 @@ export const Discussion: Story = {
 
 export const Loading: Story = {
   args: {
-    fields: {
-      topic: {
-        label: "何を決める？",
-        placeholder: "例：来期の開発言語の選定",
-      },
-      participant: {
-        label: "誰と決める？",
-        placeholder: "例：テックリード、アーキテクト、PdM",
-      },
-      detail: {
-        label: "背景は？",
-        placeholder: "例：既存のフレームワークが古くなってきた",
-      },
-    },
+    typeLabel: "意思決定",
+    themePlaceholder: "例：来期の採用計画",
+    verbs: verbsByType.decision,
     onSubmit: () => {},
     isLoading: true,
   },
 };
 
-const sampleCasesData = [
+const sampleCasesData: { id: string; label: string; data: InitialInputData }[] = [
   {
     id: "hiring",
     label: "採用計画",
     data: {
-      topic: "来期の採用計画",
-      participant: "人事、各チームマネージャー、経営企画",
-      detail:
-        "事業拡大で人員が不足。営業とCSで特に負荷が高い。予算は確保済みだが、何人採用するか決めたい",
+      theme: "来期の採用計画",
+      verb: "決定する",
+      supplements: [
+        { id: "1", label: "参加者", value: "人事、各チームマネージャー" },
+        { id: "2", label: "背景", value: "事業拡大で人員が不足" },
+      ],
     },
   },
   {
     id: "release",
     label: "リリース時期",
     data: {
-      topic: "新サービスのリリース時期",
-      participant: "プロダクトマネージャー、営業、CS、開発",
-      detail:
-        "機能は8割完成。年度内に出すか、品質を上げて来期にするか迷っている。競合の動きも気になる",
+      theme: "新サービスのリリース時期",
+      verb: "決定する",
+      supplements: [
+        { id: "1", label: "参加者", value: "PM、営業、開発" },
+        { id: "2", label: "制約", value: "年度内にローンチしたい" },
+      ],
     },
   },
   {
     id: "tool",
     label: "ツール選定",
     data: {
-      topic: "プロジェクト管理ツールの選定",
-      participant: "マネージャー陣、情シス",
-      detail:
-        "現状Excelで管理限界。Notion、Asana、Backlogで迷ってる。コストと使いやすさのバランスが重要",
+      theme: "プロジェクト管理ツールの選定",
+      verb: "選定する",
+      supplements: [
+        { id: "1", label: "参加者", value: "マネージャー陣、情シス" },
+        { id: "2", value: "Notion、Asana、Backlogで迷ってる" },
+      ],
     },
   },
 ];
 
 export const WithSampleCases: Story = {
   args: {
-    fields: {
-      topic: {
-        label: "何を決める？",
-        placeholder: "例：来期の開発言語の選定",
-      },
-      participant: {
-        label: "誰と決める？",
-        placeholder: "例：テックリード、アーキテクト、PdM",
-      },
-      detail: {
-        label: "背景は？",
-        placeholder: "例：既存のフレームワークが古くなってきた",
-      },
-    },
+    typeLabel: "意思決定",
+    themePlaceholder: "例：来期の採用計画",
+    verbs: verbsByType.decision,
     onSubmit: (data) => {
       console.log("Submitted:", data);
       alert(`送信: ${JSON.stringify(data, null, 2)}`);
@@ -169,23 +127,40 @@ export const WithSampleCases: Story = {
     onSampleSelect: () => {},
   },
   render: function WithSampleCasesRender(args) {
-    const [defaultValues, setDefaultValues] = useState<
-      { topic: string; participant: string; detail: string } | undefined
-    >();
+    const [selectedId, setSelectedId] = useState<string | undefined>();
+    const selectedSample = sampleCasesData.find((s) => s.id === selectedId);
 
     const handleSampleSelect = (id: string) => {
-      const sample = sampleCasesData.find((s) => s.id === id);
-      if (sample) {
-        setDefaultValues(sample.data);
-      }
+      setSelectedId(id);
     };
 
     return (
       <InitialInputForm
+        key={selectedId ?? "empty"}
         {...args}
-        defaultValues={defaultValues}
+        defaultValues={selectedSample?.data}
         onSampleSelect={handleSampleSelect}
       />
     );
+  },
+};
+
+export const WithDefaultValues: Story = {
+  args: {
+    typeLabel: "意思決定",
+    themePlaceholder: "例：来期の採用計画",
+    verbs: verbsByType.decision,
+    defaultValues: {
+      theme: "来期の採用計画",
+      verb: "決定する",
+      supplements: [
+        { id: "1", label: "参加者", value: "人事、各チームマネージャー" },
+        { id: "2", label: "背景", value: "事業拡大で人員が不足。予算は確保済み" },
+      ],
+    },
+    onSubmit: (data) => {
+      console.log("Submitted:", data);
+      alert(`送信: ${JSON.stringify(data, null, 2)}`);
+    },
   },
 };

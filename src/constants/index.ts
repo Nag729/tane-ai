@@ -1,1 +1,1 @@
-export { typeConfig, type TypeConfigItem } from "./meeting";
+export { typeConfig, verbsByType, supplementLabels, type TypeConfigItem } from "./meeting";

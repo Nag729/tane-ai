@@ -18,10 +18,12 @@ export const sampleCases: SampleCase[] = [
     label: "採用計画",
     type: "decision",
     data: {
-      topic: "来期の採用計画",
-      participant: "人事、各チームマネージャー、経営企画",
-      detail:
-        "事業拡大で人員が不足。営業とCSで特に負荷が高い。予算は確保済みだが、何人採用するか決めたい",
+      theme: "来期の採用計画",
+      verb: "決定する",
+      supplements: [
+        { id: "1", label: "参加者", value: "人事、各チームマネージャー、経営企画" },
+        { id: "2", label: "背景", value: "事業拡大で人員が不足。営業とCSで特に負荷が高い" },
+      ],
     },
   },
   {
@@ -29,10 +31,12 @@ export const sampleCases: SampleCase[] = [
     label: "リリース時期",
     type: "decision",
     data: {
-      topic: "新サービスのリリース時期",
-      participant: "プロダクトマネージャー、営業、CS、開発",
-      detail:
-        "機能は8割完成。年度内に出すか、品質を上げて来期にするか迷っている。競合の動きも気になる",
+      theme: "新サービスのリリース時期",
+      verb: "決定する",
+      supplements: [
+        { id: "1", label: "参加者", value: "プロダクトマネージャー、営業、CS、開発" },
+        { id: "2", label: "背景", value: "機能は8割完成。年度内に出すか、品質を上げて来期にするか迷っている" },
+      ],
     },
   },
   {
@@ -40,10 +44,13 @@ export const sampleCases: SampleCase[] = [
     label: "オフィス移転",
     type: "decision",
     data: {
-      topic: "オフィス移転先の決定",
-      participant: "経営陣、総務、各部門長",
-      detail:
-        "現オフィスの契約更新が半年後。3候補まで絞った。コスト・アクセス・広さのバランスで決めたい",
+      theme: "オフィス移転先",
+      verb: "選定する",
+      supplements: [
+        { id: "1", label: "参加者", value: "経営陣、総務、各部門長" },
+        { id: "2", label: "背景", value: "現オフィスの契約更新が半年後。3候補まで絞った" },
+        { id: "3", label: "制約", value: "コスト・アクセス・広さのバランスが重要" },
+      ],
     },
   },
   {
@@ -51,10 +58,12 @@ export const sampleCases: SampleCase[] = [
     label: "ツール選定",
     type: "decision",
     data: {
-      topic: "プロジェクト管理ツールの選定",
-      participant: "マネージャー陣、情シス",
-      detail:
-        "現状Excelで管理限界。Notion、Asana、Backlogで迷ってる。コストと使いやすさのバランスが重要",
+      theme: "プロジェクト管理ツール",
+      verb: "選定する",
+      supplements: [
+        { id: "1", label: "参加者", value: "マネージャー陣、情シス" },
+        { id: "2", label: "背景", value: "現状Excelで管理限界。Notion、Asana、Backlogで迷っている" },
+      ],
     },
   },
   {
@@ -62,9 +71,12 @@ export const sampleCases: SampleCase[] = [
     label: "価格改定",
     type: "decision",
     data: {
-      topic: "サービスの価格改定",
-      participant: "経営陣、営業、カスタマーサクセス",
-      detail: "原価高騰で利益率が低下。値上げしたいが、顧客離れも心配。どの程度上げるか決めたい",
+      theme: "サービスの価格改定",
+      verb: "決定する",
+      supplements: [
+        { id: "1", label: "参加者", value: "経営陣、営業、カスタマーサクセス" },
+        { id: "2", label: "背景", value: "原価高騰で利益率が低下。値上げしたいが、顧客離れも心配" },
+      ],
     },
   },
 
@@ -74,9 +86,12 @@ export const sampleCases: SampleCase[] = [
     label: "組織変更",
     type: "share",
     data: {
-      topic: "4月からの組織変更について",
-      participant: "全社員",
-      detail: "新規事業部の設立と、それに伴う人員異動。影響を受けるメンバーへの説明が必要",
+      theme: "4月からの組織変更",
+      verb: "共有する",
+      supplements: [
+        { id: "1", label: "参加者", value: "全社員" },
+        { id: "2", label: "背景", value: "新規事業部の設立と、それに伴う人員異動がある" },
+      ],
     },
   },
   {
@@ -84,9 +99,12 @@ export const sampleCases: SampleCase[] = [
     label: "リモート制度",
     type: "share",
     data: {
-      topic: "リモートワーク制度の変更",
-      participant: "全社員",
-      detail: "週2出社から週3出社に変更。適用は来月から。各自のスケジュール調整をお願いしたい",
+      theme: "リモートワーク制度の変更",
+      verb: "周知する",
+      supplements: [
+        { id: "1", label: "参加者", value: "全社員" },
+        { id: "2", label: "背景", value: "週2出社から週3出社に変更。適用は来月から" },
+      ],
     },
   },
   {
@@ -94,9 +112,12 @@ export const sampleCases: SampleCase[] = [
     label: "システム移行",
     type: "share",
     data: {
-      topic: "経費精算システムの移行",
-      participant: "全社員",
-      detail: "来月から新システムに切り替え。操作方法の説明と、移行期間中の注意事項を共有したい",
+      theme: "経費精算システムの移行",
+      verb: "説明する",
+      supplements: [
+        { id: "1", label: "参加者", value: "全社員" },
+        { id: "2", label: "背景", value: "来月から新システムに切り替え。操作方法の説明が必要" },
+      ],
     },
   },
   {
@@ -104,10 +125,12 @@ export const sampleCases: SampleCase[] = [
     label: "新メンバー",
     type: "share",
     data: {
-      topic: "新入社員の紹介",
-      participant: "チームメンバー全員",
-      detail:
-        "来週入社する中途社員2名の紹介。経歴と担当業務を共有し、オンボーディング協力をお願いしたい",
+      theme: "新入社員の紹介",
+      verb: "共有する",
+      supplements: [
+        { id: "1", label: "参加者", value: "チームメンバー全員" },
+        { id: "2", label: "背景", value: "来週入社する中途社員2名の経歴と担当業務を共有したい" },
+      ],
     },
   },
   {
@@ -115,9 +138,12 @@ export const sampleCases: SampleCase[] = [
     label: "進捗報告",
     type: "share",
     data: {
-      topic: "大型案件の進捗報告",
-      participant: "関係者全員、経営陣",
-      detail: "予定通り進行中。マイルストーン達成状況と、今後のスケジュールを共有したい",
+      theme: "大型案件の進捗",
+      verb: "報告する",
+      supplements: [
+        { id: "1", label: "参加者", value: "関係者全員、経営陣" },
+        { id: "2", label: "背景", value: "予定通り進行中。マイルストーン達成状況を共有したい" },
+      ],
     },
   },
 
@@ -127,9 +153,12 @@ export const sampleCases: SampleCase[] = [
     label: "残業削減",
     type: "discussion",
     data: {
-      topic: "チームの残業削減について",
-      participant: "チームメンバー全員、マネージャー",
-      detail: "直近3ヶ月で残業が増加傾向。原因と対策を話し合いたい。メンバーからの提案も聞きたい",
+      theme: "チームの残業削減",
+      verb: "議論する",
+      supplements: [
+        { id: "1", label: "参加者", value: "チームメンバー全員、マネージャー" },
+        { id: "2", label: "背景", value: "直近3ヶ月で残業が増加傾向。原因と対策を話し合いたい" },
+      ],
     },
   },
   {
@@ -137,10 +166,12 @@ export const sampleCases: SampleCase[] = [
     label: "来期目標",
     type: "discussion",
     data: {
-      topic: "来期のチーム目標設定",
-      participant: "チームメンバー全員",
-      detail:
-        "会社の方針は出たが、チームとして何にフォーカスするか議論したい。各自の意見を聞きたい",
+      theme: "来期のチーム目標",
+      verb: "検討する",
+      supplements: [
+        { id: "1", label: "参加者", value: "チームメンバー全員" },
+        { id: "2", label: "背景", value: "会社の方針は出たが、チームとして何にフォーカスするか議論したい" },
+      ],
     },
   },
   {
@@ -148,9 +179,12 @@ export const sampleCases: SampleCase[] = [
     label: "会議の見直し",
     type: "discussion",
     data: {
-      topic: "定例会議の見直し",
-      participant: "チームリーダー陣",
-      detail: "会議が多すぎるという声がある。本当に必要な会議はどれか、整理したい",
+      theme: "定例会議の見直し",
+      verb: "議論する",
+      supplements: [
+        { id: "1", label: "参加者", value: "チームリーダー陣" },
+        { id: "2", label: "背景", value: "会議が多すぎるという声がある。本当に必要な会議はどれか整理したい" },
+      ],
     },
   },
   {
@@ -158,9 +192,12 @@ export const sampleCases: SampleCase[] = [
     label: "クレーム対応",
     type: "discussion",
     data: {
-      topic: "クレーム対応フローの改善",
-      participant: "CS、営業、開発",
-      detail: "同じようなクレームが繰り返し発生。根本原因と対策を部門横断で議論したい",
+      theme: "クレーム対応フローの改善",
+      verb: "相談する",
+      supplements: [
+        { id: "1", label: "参加者", value: "CS、営業、開発" },
+        { id: "2", label: "背景", value: "同じようなクレームが繰り返し発生。根本原因と対策を部門横断で議論したい" },
+      ],
     },
   },
   {
@@ -168,9 +205,13 @@ export const sampleCases: SampleCase[] = [
     label: "新規事業",
     type: "discussion",
     data: {
-      topic: "新規事業のアイデア出し",
-      participant: "有志メンバー、経営企画",
-      detail: "社長から「新しい収益源を考えて」と指示。まずは自由にアイデアを出し合いたい",
+      theme: "新規事業のアイデア",
+      verb: "ブレストする",
+      supplements: [
+        { id: "1", label: "参加者", value: "有志メンバー、経営企画" },
+        { id: "2", label: "背景", value: "社長から「新しい収益源を考えて」と指示があった" },
+        { id: "3", label: "ゴール", value: "まずは自由にアイデアを出し合いたい" },
+      ],
     },
   },
 ];

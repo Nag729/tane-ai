@@ -1,11 +1,21 @@
 /** 会議の種類 */
 export type MeetingType = "decision" | "share" | "discussion";
 
+/** 補足ラベルの型（リテラル型で制限） */
+export type SupplementLabel = "参加者" | "背景" | "制約" | "期限" | "ゴール";
+
+/** 補足項目 */
+export type Supplement = {
+  readonly id: string;
+  readonly label?: SupplementLabel;
+  readonly value: string;
+};
+
 /** 初期入力データ */
 export type InitialInputData = {
-  readonly topic: string;
-  readonly participant: string;
-  readonly detail: string;
+  readonly theme: string;
+  readonly verb: string;
+  readonly supplements: readonly Supplement[];
 };
 
 /**

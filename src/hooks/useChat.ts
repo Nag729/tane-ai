@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 import { fetchInitialQuestion, fetchNextQuestion, QuestionResponse } from "@/lib/chatApi";
 import { saveChatData } from "@/lib/chatStorage";
 import { useThinking } from "./useThinking";
-import type { MeetingType, AIMessage, ChatMessage, QuestionAnswer, ChatPhase } from "@/types";
+import type { MeetingType, AIMessage, ChatMessage, QuestionAnswer, ChatPhase, InitialInputData } from "@/types";
 
 export { saveChatData, loadChatData, clearChatData } from "@/lib/chatStorage";
 
@@ -56,7 +56,7 @@ export function useChat({ type, onComplete }: UseChatOptions) {
    * idle → thinking → answering
    */
   const submitInitialInput = useCallback(
-    async (initialInput: { topic: string; participant: string; detail: string }) => {
+    async (initialInput: InitialInputData) => {
       setPhase("thinking");
       setError(null);
       thinking.resetThinking();

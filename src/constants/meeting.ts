@@ -1,18 +1,25 @@
-import type { MeetingType } from "@/types";
-
-type FieldConfig = {
-  readonly label: string;
-  readonly placeholder: string;
-};
+import type { MeetingType, SupplementLabel } from "@/types";
 
 export type TypeConfigItem = {
   readonly label: string;
-  readonly fields: {
-    readonly topic: FieldConfig;
-    readonly participant: FieldConfig;
-    readonly detail: FieldConfig;
-  };
+  readonly themePlaceholder: string;
 };
+
+/** 会議タイプごとの動詞リスト */
+export const verbsByType = {
+  decision: ["決定する", "合意する", "承認を得る", "選定する", "方針を決める"],
+  share: ["共有する", "報告する", "周知する", "説明する", "伝達する"],
+  discussion: ["議論する", "相談する", "ブレストする", "検討する", "意見交換する"],
+} as const satisfies Record<MeetingType, readonly string[]>;
+
+/** 補足ラベルの候補 */
+export const supplementLabels: readonly SupplementLabel[] = [
+  "参加者",
+  "背景",
+  "制約",
+  "期限",
+  "ゴール",
+];
 
 /**
  * 会議の種類ごとの設定
@@ -20,53 +27,14 @@ export type TypeConfigItem = {
 export const typeConfig = {
   decision: {
     label: "意思決定",
-    fields: {
-      topic: {
-        label: "何を決める？",
-        placeholder: "例：来期の採用計画、新サービスのリリース時期",
-      },
-      participant: {
-        label: "誰と決める？",
-        placeholder: "例：マネージャー、チームリーダー、経営陣",
-      },
-      detail: {
-        label: "背景は？",
-        placeholder: "例：事業拡大に伴い、人員体制の見直しが必要になった",
-      },
-    },
+    themePlaceholder: "例：来期の採用計画",
   },
   share: {
     label: "情報共有",
-    fields: {
-      topic: {
-        label: "何を共有する？",
-        placeholder: "例：新しい勤怠ルール、組織変更のお知らせ",
-      },
-      participant: {
-        label: "誰に共有する？",
-        placeholder: "例：チームメンバー全員、関係部署",
-      },
-      detail: {
-        label: "概要は？",
-        placeholder: "例：来月からフレックス制度が変わる。申請方法も変更",
-      },
-    },
+    themePlaceholder: "例：組織変更のお知らせ",
   },
   discussion: {
     label: "ディスカッション",
-    fields: {
-      topic: {
-        label: "何を議論する？",
-        placeholder: "例：チームの生産性向上、来期の目標設定",
-      },
-      participant: {
-        label: "誰と議論する？",
-        placeholder: "例：チームメンバー、関連部署のリーダー",
-      },
-      detail: {
-        label: "論点は？",
-        placeholder: "例：残業が増えている。根本原因と対策を話し合いたい",
-      },
-    },
+    themePlaceholder: "例：来期の目標設定",
   },
 } as const satisfies Record<MeetingType, TypeConfigItem>;

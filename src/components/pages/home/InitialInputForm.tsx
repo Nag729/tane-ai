@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect } from "react";
-import { FormField } from "@/components/ui/FormField";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
+import { VerbSelector } from "./VerbSelector";
+import { SupplementList } from "./SupplementList";
+import type { InitialInputData, Supplement, SupplementLabel } from "@/types";
 
-type FieldConfig = { label: string; placeholder: string };
-type InitialInputData = { topic: string; participant: string; detail: string };
 type SampleCaseForDisplay = { id: string; label: string };
 
 type InitialInputFormProps = {
-  fields: { topic: FieldConfig; participant: FieldConfig; detail: FieldConfig };
+  typeLabel: string;
+  themePlaceholder: string;
+  verbs: readonly string[];
+  supplementLabels: readonly SupplementLabel[];
   onSubmit: (data: InitialInputData) => void;
   isLoading?: boolean;
   defaultValues?: InitialInputData;
@@ -18,35 +21,52 @@ type InitialInputFormProps = {
 };
 
 export function InitialInputForm({
-  fields,
+  typeLabel,
+  themePlaceholder,
+  verbs,
+  supplementLabels,
   onSubmit,
   isLoading = false,
   defaultValues,
   sampleCases,
   onSampleSelect,
 }: InitialInputFormProps) {
-  const [topic, setTopic] = useState(defaultValues?.topic ?? "");
-  const [participant, setParticipant] = useState(defaultValues?.participant ?? "");
-  const [detail, setDetail] = useState(defaultValues?.detail ?? "");
-  const firstInputRef = useRef<HTMLTextAreaElement>(null);
+  const [theme, setTheme] = useState(defaultValues?.theme ?? "");
+  const [verb, setVerb] = useState(defaultValues?.verb ?? "");
+  const [supplements, setSupplements] = useState<Supplement[]>(
+    defaultValues?.supplements ? [...defaultValues.supplements] : []
+  );
+  const themeInputRef = useRef<HTMLInputElement>(null);
 
-  const isValid = topic.trim() && participant.trim() && detail.trim();
+  const isValid = theme.trim() && verb.trim();
 
   useEffect(() => {
-    firstInputRef.current?.focus();
+    themeInputRef.current?.focus();
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid || isLoading) return;
-    onSubmit({ topic: topic.trim(), participant: participant.trim(), detail: detail.trim() });
+
+    const validSupplements = supplements.filter((s) => s.value.trim());
+    onSubmit({
+      theme: theme.trim(),
+      verb: verb.trim(),
+      supplements: validSupplements,
+    });
   };
 
   return (
     <Card>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <p className="text-stone-600 text-center text-sm">最初にざっくり教えてください 📝</p>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* ヘッダー */}
+        <div className="text-center">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">
+            💡 {typeLabel}
+          </span>
+        </div>
 
+        {/* サンプル事例 */}
         {sampleCases.length > 0 && (
           <div className="space-y-2">
             <p className="text-xs text-stone-500 flex items-center gap-1">
@@ -55,42 +75,42 @@ export function InitialInputForm({
             </p>
             <div className="flex flex-wrap gap-2">
               {sampleCases.map((sample) => (
-                <Chip
-                  key={sample.id}
-                  label={sample.label}
-                  onClick={() => onSampleSelect(sample.id)}
-                />
+                <Chip key={sample.id} label={sample.label} onClick={() => onSampleSelect(sample.id)} />
               ))}
             </div>
           </div>
         )}
 
-        <FormField
-          ref={firstInputRef}
-          label={fields.topic.label}
-          value={topic}
-          onChange={setTopic}
-          placeholder={fields.topic.placeholder}
-        />
-        <FormField
-          label={fields.participant.label}
-          value={participant}
-          onChange={setParticipant}
-          placeholder={fields.participant.placeholder}
-        />
-        <FormField
-          label={fields.detail.label}
-          value={detail}
-          onChange={setDetail}
-          placeholder={fields.detail.placeholder}
-          rows={3}
-        />
+        {/* テーマ + 動詞 入力エリア */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <input
+            ref={themeInputRef}
+            type="text"
+            value={theme}
+            onChange={(e) => setTheme(e.target.value)}
+            placeholder={themePlaceholder}
+            className="
+              flex-1 min-w-48 px-4 py-3 rounded-xl
+              text-base
+              bg-white border-2 border-stone-200
+              focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-500
+              transition-colors
+            "
+          />
+          <span className="text-stone-500">を</span>
+          <VerbSelector verbs={verbs} value={verb} onChange={setVerb} placeholder="選択..." />
+        </div>
+
+        {/* 補足セクション */}
+        <SupplementList supplements={supplements} onChange={setSupplements} labels={supplementLabels} />
+
+        {/* 送信ボタン */}
         <Button
           type="submit"
           disabled={!isValid || isLoading}
           className="w-full text-lg py-3 shadow-lg hover:scale-105 transition-transform"
         >
-          {isLoading ? "準備中..." : "これで始める 🚀"}
+          {isLoading ? "準備中..." : "対話を始める →"}
         </Button>
       </form>
     </Card>

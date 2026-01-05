@@ -1,5 +1,5 @@
 import { readSSEStream, readTextSSEStream, SSECallbacks } from "@/lib/sse";
-import type { MeetingType, ChatMessage } from "@/types";
+import type { MeetingType, ChatMessage, InitialInputData } from "@/types";
 
 export type QuestionResponse = {
   intro: string;
@@ -13,16 +13,10 @@ export type QuestionResponse = {
   ready: boolean;
 };
 
-type InitialInput = {
-  topic: string;
-  participant: string;
-  detail: string;
-};
-
 /** 初回質問を生成 */
 export async function fetchInitialQuestion(
   type: MeetingType,
-  initialInput: InitialInput,
+  initialInput: InitialInputData,
   callbacks?: SSECallbacks
 ): Promise<QuestionResponse> {
   const response = await fetch("/api/chat/question", {

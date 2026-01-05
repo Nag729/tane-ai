@@ -1,6 +1,6 @@
 import { anthropic, MODEL_CONFIG } from "@/lib/anthropic";
 import { getQuestionSystemPrompt } from "@/lib/prompts";
-import type { MeetingType } from "@/types";
+import type { MeetingType, InitialInputData } from "@/types";
 
 const JSON_INSTRUCTION = `
 必ず以下の JSON 形式で出力してください（他のテキストは不要）:
@@ -22,14 +22,20 @@ const JSON_INSTRUCTION = `
 }
 `;
 
-type InitialInput = { topic: string; participant: string; detail: string };
-
-function buildUserPrompt(initialInput?: InitialInput, messages?: unknown[]): string {
+function buildUserPrompt(initialInput?: InitialInputData, messages?: unknown[]): string {
   if (initialInput) {
+    const supplementsText =
+      initialInput.supplements.length > 0
+        ? initialInput.supplements
+            .map((s) => (s.label ? `- ${s.label}: ${s.value}` : `- ${s.value}`))
+            .join("\n")
+        : "（補足情報なし）";
+
     return `ユーザーの初期入力:
-- 会議のテーマ: ${initialInput.topic}
-- 参加者: ${initialInput.participant}
-- 状況・背景: ${initialInput.detail}
+- 会議の目的: 「${initialInput.theme}」を${initialInput.verb}
+
+補足情報:
+${supplementsText}
 
 この情報を元に、会議資料に必要な情報を引き出す質問を生成してください。`;
   }
@@ -58,7 +64,7 @@ export type QuestionStreamCallbacks = {
 
 export async function streamQuestion(
   type: MeetingType,
-  initialInput: InitialInput | undefined,
+  initialInput: InitialInputData | undefined,
   messages: unknown[] | undefined,
   callbacks: QuestionStreamCallbacks
 ): Promise<unknown> {

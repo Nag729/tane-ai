@@ -1,11 +1,11 @@
 import { streamQuestion } from "@/domain/chat/streamQuestion";
-import type { MeetingType } from "@/types";
+import type { MeetingType, InitialInputData } from "@/types";
 
 export async function POST(request: Request) {
   const body = await request.json();
   const { type, initialInput, messages } = body as {
     type: MeetingType;
-    initialInput?: { topic: string; participant: string; detail: string };
+    initialInput?: InitialInputData;
     messages?: unknown[];
   };
 

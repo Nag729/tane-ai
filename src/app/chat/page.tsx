@@ -11,9 +11,9 @@ import { QuestionCard } from "@/components/pages/chat/QuestionCard";
 import { Card } from "@/components/ui/Card";
 import { PageLoading } from "@/components/ui/PageLoading";
 import { useChatAnswers, useChat } from "@/hooks";
-import { typeConfig } from "@/constants";
+import { typeConfig, verbsByType, supplementLabels } from "@/constants";
 import { getSampleCasesByType } from "@/constants/sampleCases";
-import type { MeetingType } from "@/types";
+import type { MeetingType, InitialInputData } from "@/types";
 
 // eslint-disable-next-line max-lines-per-function
 function ChatPageContent() {
@@ -58,11 +58,7 @@ function ChatPageContent() {
 
   if (!type || !config) return null;
 
-  const handleInitialSubmit = async (data: {
-    topic: string;
-    participant: string;
-    detail: string;
-  }) => {
+  const handleInitialSubmit = async (data: InitialInputData) => {
     await chat.submitInitialInput(data);
   };
 
@@ -109,7 +105,10 @@ function ChatPageContent() {
           {showInitialForm ? (
             <InitialInputForm
               key={selectedSampleId ?? "empty"}
-              fields={config.fields}
+              typeLabel={config.label}
+              themePlaceholder={config.themePlaceholder}
+              verbs={verbsByType[type]}
+              supplementLabels={supplementLabels}
               onSubmit={handleInitialSubmit}
               defaultValues={selectedSample}
               sampleCases={sampleCases.map((s) => ({ id: s.id, label: s.label }))}

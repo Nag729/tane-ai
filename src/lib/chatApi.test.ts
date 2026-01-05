@@ -40,7 +40,11 @@ describe("chatApi", () => {
       global.fetch = mockFetch;
       mockReadSSEStream.mockResolvedValue(mockQuestionResponse);
 
-      const initialInput = { topic: "テスト", participant: "テックリード", detail: "詳細" };
+      const initialInput = {
+        theme: "テスト",
+        verb: "決定する",
+        supplements: [{ id: "1", label: "参加者" as const, value: "テックリード" }],
+      };
       await fetchInitialQuestion("decision", initialInput);
 
       expect(mockFetch).toHaveBeenCalledWith("/api/chat/question", {
@@ -58,9 +62,9 @@ describe("chatApi", () => {
       mockReadSSEStream.mockResolvedValue(mockQuestionResponse);
 
       const result = await fetchInitialQuestion("decision", {
-        topic: "",
-        participant: "",
-        detail: "",
+        theme: "",
+        verb: "",
+        supplements: [],
       });
 
       expect(result).toEqual(mockQuestionResponse);
