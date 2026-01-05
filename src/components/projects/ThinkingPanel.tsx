@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 
 type ThinkingPanelProps = {
   /** 思考内容（ストリーミング中は途中経過） */
@@ -15,6 +15,16 @@ type ThinkingPanelProps = {
  */
 export function ThinkingPanel({ content, title = "思考中..." }: ThinkingPanelProps) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    // 一番下までスクロールしているかチェック（2pxの余裕を持たせる）
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 2;
+    setIsAtBottom(atBottom);
+  }, []);
 
   // 内容がない場合は表示しない（表示制御は親コンポーネントで行う）
   if (!content) {
@@ -50,14 +60,22 @@ export function ThinkingPanel({ content, title = "思考中..." }: ThinkingPanel
       >
         <div className="px-4 pb-4">
           <div className="relative">
-            <div className="bg-white/60 rounded-lg p-3 max-h-48 overflow-y-auto scrollbar-thin">
+            <div
+              ref={scrollRef}
+              onScroll={handleScroll}
+              className="bg-white/60 rounded-lg p-3 max-h-48 overflow-y-auto scrollbar-thin"
+            >
               <p className="text-sm text-amber-900 whitespace-pre-wrap font-mono leading-relaxed">
                 {content}
                 <span className="animate-pulse">▊</span>
               </p>
             </div>
-            {/* スクロール可能を示すグラデーション */}
-            <div className="absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-white/60 to-transparent rounded-b-lg pointer-events-none" />
+            {/* スクロール可能を示すグラデーション（一番下の時は非表示） */}
+            <div
+              className={`absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-white via-white/80 to-transparent rounded-b-lg pointer-events-none transition-opacity duration-200 ${
+                isAtBottom ? "opacity-0" : "opacity-100"
+              }`}
+            />
           </div>
         </div>
       </div>
