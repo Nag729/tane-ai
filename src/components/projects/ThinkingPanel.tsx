@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 
 type ThinkingPanelProps = {
   /** 思考内容（ストリーミング中は途中経過） */
@@ -14,16 +14,20 @@ type ThinkingPanelProps = {
  * Claude Desktop風のUI
  */
 export function ThinkingPanel({ content, isThinking }: ThinkingPanelProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  // ユーザーによる展開状態のオーバーライド（null = デフォルト動作）
+  const [userExpandedOverride, setUserExpandedOverride] = useState<boolean | null>(null);
+  const [prevIsThinking, setPrevIsThinking] = useState(isThinking);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // 思考完了時に自動で折りたたむ
-  useEffect(() => {
-    if (!isThinking) {
-      setIsExpanded(false);
-    }
-  }, [isThinking]);
+  // props の変化に応じてオーバーライドをリセット
+  if (isThinking !== prevIsThinking) {
+    setPrevIsThinking(isThinking);
+    setUserExpandedOverride(null);
+  }
+
+  // 思考中は展開、完了時は折りたたむ（ユーザーがオーバーライド可能）
+  const isExpanded = userExpandedOverride ?? isThinking;
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -42,7 +46,7 @@ export function ThinkingPanel({ content, isThinking }: ThinkingPanelProps) {
     <div className="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden">
       {/* ヘッダー（クリックで開閉） */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => setUserExpandedOverride(!isExpanded)}
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-amber-100/50 transition-colors"
       >
         <div className="flex items-center gap-2">
