@@ -19,7 +19,7 @@ export type TypeConfigItem = {
  */
 export const typeConfig = {
   decision: {
-    label: "意思判断",
+    label: "意思決定",
     fields: {
       topic: {
         label: "何を決める？",
@@ -36,7 +36,7 @@ export const typeConfig = {
     },
   },
   share: {
-    label: "共有・通達",
+    label: "情報共有",
     fields: {
       topic: {
         label: "何を共有する？",

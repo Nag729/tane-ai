@@ -16,7 +16,7 @@ export const typeContext: Record<
   }
 > = {
   decision: {
-    label: "意思判断",
+    label: "意思決定",
     goal: "会議で何かを決定する（承認を得る、選択肢から選ぶ）",
     storyArc:
       "なぜ今決める必要があるのか → 何を決めるのか → どんな選択肢があるか → なぜこの案を推奨するか → どう進めるか",
@@ -92,7 +92,7 @@ export const typeContext: Record<
   },
 
   share: {
-    label: "共有・通達",
+    label: "情報共有",
     goal: "情報を正確に伝え、必要なアクションを促す",
     storyArc: "何が変わるのか → なぜ変わるのか → 具体的に何が変わるのか → あなたは何をすべきか",
     outputStructure:

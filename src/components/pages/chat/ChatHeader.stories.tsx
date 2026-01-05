@@ -14,7 +14,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Decision: Story = {
   args: {
-    label: "意思判断",
+    label: "意思決定",
     onBack: () => alert("戻る"),
   },
 };
