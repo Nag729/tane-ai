@@ -104,11 +104,7 @@ export function InitialInputForm({
         />
 
         {/* 送信ボタン */}
-        <Button
-          type="submit"
-          disabled={!isValid || isLoading}
-          className="w-full text-lg py-3 shadow-lg hover:scale-105 transition-transform"
-        >
+        <Button type="submit" disabled={!isValid || isLoading} className="w-full py-2.5">
           {isLoading ? "準備中..." : "対話を始める →"}
         </Button>
       </form>
