@@ -21,25 +21,27 @@ function createAIMessage(result: QuestionResponse): AIMessage {
 
 function buildAnswerDisplayText(chatMessage: ChatMessage, allMessages: ChatMessage[]): string {
   if (chatMessage.role !== "user") return "";
-  const { answers: ans, customInput } = chatMessage.answer;
-  const allQuestions = allMessages
-    .filter((m): m is ChatMessage & { role: "ai" } => m.role === "ai")
-    .flatMap((m) => m.message.questions);
+  const { messageId, answers: ans, customInput } = chatMessage.answer;
 
-  const lines = ans
-    .map((a) => {
-      const question = allQuestions.find((q) => q.id === a.questionId);
-      if (!question) return null;
-      const labels = a.selectedOptionIds
-        .map((id) => question.options.find((o) => o.id === id)?.label)
-        .filter(Boolean);
-      const parts = [
-        ...(labels.length > 0 ? [labels.join("、")] : []),
-        ...(a.customInput ? [a.customInput] : []),
-      ];
-      return parts.length > 0 ? parts.join(" + ") : null;
-    })
-    .filter(Boolean);
+  // messageId に対応する AI メッセージの質問だけを検索
+  const targetAIMessage = allMessages.find(
+    (m): m is ChatMessage & { role: "ai" } => m.role === "ai" && m.message.id === messageId
+  );
+
+  if (!targetAIMessage) return customInput || "";
+
+  const questions = targetAIMessage.message.questions;
+
+  const lines = ans.flatMap((a) => {
+    const question = questions.find((q) => q.id === a.questionId);
+    if (!question) return [];
+    const labels = a.selectedOptionIds
+      .map((id) => question.options.find((o) => o.id === id)?.label)
+      .filter(Boolean)
+      .join("、");
+    const text = [labels, a.customInput].filter(Boolean).join(" + ");
+    return text ? [text] : [];
+  });
 
   if (customInput) lines.push(customInput);
   return lines.join("\n");

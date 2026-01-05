@@ -416,4 +416,121 @@ describe("useChat.getAnswerDisplay", () => {
       expect(display).toContain("選択肢A");
     }
   });
+
+  // Given: 複数のAIメッセージが同じ question.id を持つ
+  // When: 2回目のユーザー回答の getAnswerDisplay を呼ぶ
+  // Then: 2回目のAIメッセージの選択肢ラベルが返される（1回目ではない）
+  it("should return correct label when multiple AI messages have same question id", async () => {
+    const firstQuestionResponse = createSSEResponse([
+      {
+        type: "complete",
+        data: {
+          intro: "最初の質問",
+          questions: [
+            {
+              id: "q1",
+              content: "質問1",
+              options: [
+                { id: "opt1", label: "1回目の選択肢A" },
+                { id: "opt2", label: "1回目の選択肢B" },
+              ],
+              multiSelect: false,
+            },
+          ],
+          ready: false,
+        },
+      },
+    ]);
+
+    const secondQuestionResponse = createSSEResponse([
+      {
+        type: "complete",
+        data: {
+          intro: "2回目の質問",
+          questions: [
+            {
+              id: "q1", // 同じ question.id を使用
+              content: "質問2",
+              options: [
+                { id: "opt1", label: "2回目の選択肢A" },
+                { id: "opt2", label: "2回目の選択肢B" },
+              ],
+              multiSelect: false,
+            },
+          ],
+          ready: false,
+        },
+      },
+    ]);
+
+    const readyResponse = createSSEResponse([
+      {
+        type: "complete",
+        data: { intro: "完了", questions: [], ready: true },
+      },
+    ]);
+
+    let callCount = 0;
+    global.fetch = vi.fn().mockImplementation(() => {
+      callCount++;
+      const body =
+        callCount === 1
+          ? firstQuestionResponse
+          : callCount === 2
+            ? secondQuestionResponse
+            : readyResponse;
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(body));
+          controller.close();
+        },
+      });
+      return Promise.resolve({ ok: true, body: stream });
+    });
+
+    const { result } = renderHook(() => useChat({ type: "decision", onComplete: vi.fn() }));
+
+    // 初期入力 → 1回目の質問取得
+    await act(async () => {
+      await result.current.submitInitialInput({
+        theme: "t",
+        verb: "決定する",
+        supplements: [],
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.hasQuestions).toBe(true);
+    });
+
+    // 1回目の回答 → 2回目の質問取得
+    await act(async () => {
+      await result.current.submitAnswer([{ questionId: "q1", selectedOptionIds: ["opt1"] }]);
+    });
+
+    await waitFor(() => {
+      expect(result.current.currentAIMessage?.intro).toBe("2回目の質問");
+    });
+
+    // 2回目の回答
+    await act(async () => {
+      await result.current.submitAnswer([{ questionId: "q1", selectedOptionIds: ["opt1"] }]);
+    });
+
+    await waitFor(() => {
+      expect(result.current.phase).toBe("ready");
+    });
+
+    const userMessages = result.current.messages.filter((m) => m.role === "user");
+    expect(userMessages).toHaveLength(2);
+
+    // 1回目のユーザー回答は「1回目の選択肢A」
+    const firstUserDisplay = result.current.getAnswerDisplay(userMessages[0]);
+    expect(firstUserDisplay).toBe("1回目の選択肢A");
+
+    // 2回目のユーザー回答は「2回目の選択肢A」（バグがあると「1回目の選択肢A」になる）
+    const secondUserDisplay = result.current.getAnswerDisplay(userMessages[1]);
+    expect(secondUserDisplay).toBe("2回目の選択肢A");
+  });
 });
