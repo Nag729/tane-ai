@@ -6,7 +6,7 @@ import { useResult } from "./useResult";
 const mockPush = vi.fn();
 const mockReplace = vi.fn();
 
-vi.mock("next/navigation", () => ({
+vi.mock("nextjs-toploader/app", () => ({
   useRouter: () => ({
     push: mockPush,
     replace: mockReplace,
