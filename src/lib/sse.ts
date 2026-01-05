@@ -1,13 +1,5 @@
 /** SSE イベントの型 */
-export type SSEEventType =
-  | "progress"
-  | "text"
-  | "thinking_start"
-  | "thinking"
-  | "block_stop"
-  | "complete"
-  | "done"
-  | "error";
+export type SSEEventType = "progress" | "text" | "thinking" | "complete" | "done" | "error";
 
 export type SSEEventData = {
   type: SSEEventType;
@@ -20,9 +12,7 @@ export type SSEEventData = {
 export type SSECallbacks = {
   onProgress?: () => void;
   onText?: (text: string) => void;
-  onThinkingStart?: () => void;
   onThinking?: (text: string) => void;
-  onBlockStop?: () => void;
 };
 
 /** SSE イベントを処理するハンドラを作成 */
@@ -30,9 +20,7 @@ function createEventHandlers(callbacks?: SSECallbacks) {
   return {
     progress: () => callbacks?.onProgress?.(),
     text: (data: SSEEventData) => callbacks?.onText?.(data.text ?? ""),
-    thinking_start: () => callbacks?.onThinkingStart?.(),
     thinking: (data: SSEEventData) => callbacks?.onThinking?.(data.text ?? ""),
-    block_stop: () => callbacks?.onBlockStop?.(),
   };
 }
 
@@ -87,9 +75,7 @@ function createTextEventHandler(
   let fullText = "";
 
   const handlers: Record<string, (data: SSEEventData) => void> = {
-    thinking_start: () => callbacks?.onThinkingStart?.(),
     thinking: (data) => callbacks?.onThinking?.(data.text ?? ""),
-    block_stop: () => callbacks?.onBlockStop?.(),
     text: (data) => {
       fullText += data.text ?? "";
       callbacks?.onTextAccumulated?.(fullText);

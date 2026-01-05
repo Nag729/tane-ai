@@ -47,7 +47,6 @@ function buildAnswerDisplayText(chatMessage: ChatMessage, allMessages: ChatMessa
 
 type UseChatOptions = { type: MeetingType; onComplete: () => void };
 
-// eslint-disable-next-line max-lines-per-function
 export function useChat({ type, onComplete }: UseChatOptions) {
   // フェーズ管理（FSM）
   const [phase, setPhase] = useState<ChatPhase>("idle");
@@ -81,8 +80,6 @@ export function useChat({ type, onComplete }: UseChatOptions) {
         setError("エラーが発生しました。もう一度お試しください。");
         console.error("Failed to generate first question:", err);
         setPhase("idle");
-      } finally {
-        thinking.stopThinking();
       }
     },
     [type, thinking]
@@ -118,8 +115,6 @@ export function useChat({ type, onComplete }: UseChatOptions) {
         setError("エラーが発生しました。もう一度お試しください。");
         console.error("Failed to generate next question:", err);
         setPhase("answering");
-      } finally {
-        thinking.stopThinking();
       }
     },
     [currentAIMessage, messages, type, thinking]
@@ -150,7 +145,6 @@ export function useChat({ type, onComplete }: UseChatOptions) {
       hasQuestions,
       error,
       // Thinking 状態
-      isThinking: thinking.isThinking,
       thinkingContent: thinking.thinkingContent,
       // アクション
       submitInitialInput,
@@ -167,7 +161,6 @@ export function useChat({ type, onComplete }: UseChatOptions) {
       currentAIMessage,
       hasQuestions,
       error,
-      thinking.isThinking,
       thinking.thinkingContent,
       submitInitialInput,
       submitAnswer,

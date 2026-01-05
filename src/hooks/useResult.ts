@@ -39,7 +39,8 @@ export function useResult({ type }: UseResultOptions) {
   const [streamingFeedback, setStreamingFeedback] = useState("");
   const reviewThinking = useThinking();
 
-  // データをロード
+  // データをロード（マウント時の初期化）
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const chatData = loadChatData();
     if (chatData) {
@@ -51,6 +52,7 @@ export function useResult({ type }: UseResultOptions) {
     }
     setIsLoaded(true);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // パラメータチェック
   useEffect(() => {
@@ -103,20 +105,20 @@ export function useResult({ type }: UseResultOptions) {
       } catch (error) {
         console.error("Failed to generate output:", error);
         setPhase("complete");
-      } finally {
-        thinking.stopThinking();
       }
     },
     [type, messages, thinking]
   );
 
-  // 初回出力生成
+  // 初回出力生成（データロード完了後に自動開始）
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (isLoaded && messages.length > 0 && !output && !generationStarted.current) {
       generationStarted.current = true;
       generateOutput();
     }
   }, [isLoaded, messages.length, output, generateOutput]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   /**
    * AIレビューを実行
@@ -147,8 +149,6 @@ export function useResult({ type }: UseResultOptions) {
     } catch (error) {
       console.error("Failed to get AI feedback:", error);
       setPhase("complete");
-    } finally {
-      reviewThinking.stopThinking();
     }
   }, [type, messages, output, reviewThinking]);
 
@@ -172,9 +172,8 @@ export function useResult({ type }: UseResultOptions) {
   // 派生状態
   const isGenerating = phase === "generating" || phase === "regenerating";
   const isReviewing = phase === "reviewing";
-  const showThinking = isGenerating && (thinking.isThinking || thinking.thinkingContent);
-  const showReviewThinking =
-    isReviewing && (reviewThinking.isThinking || reviewThinking.thinkingContent);
+  const showThinking = isGenerating && !!thinking.thinkingContent;
+  const showReviewThinking = isReviewing && !!reviewThinking.thinkingContent;
   const displayContent = streamingContent || output?.content || "";
 
   return useMemo(
@@ -196,11 +195,9 @@ export function useResult({ type }: UseResultOptions) {
 
       // Thinking 状態
       thinking: {
-        isThinking: thinking.isThinking,
         content: thinking.thinkingContent,
       },
       reviewThinking: {
-        isThinking: reviewThinking.isThinking,
         content: reviewThinking.thinkingContent,
       },
 
@@ -221,9 +218,7 @@ export function useResult({ type }: UseResultOptions) {
       showThinking,
       showReviewThinking,
       displayContent,
-      thinking.isThinking,
       thinking.thinkingContent,
-      reviewThinking.isThinking,
       reviewThinking.thinkingContent,
       requestReview,
       applyFeedback,

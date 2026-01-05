@@ -121,9 +121,7 @@ function ChatPageContent() {
               <div ref={latestContentRef} />
 
               {/* ThinkingPanel: thinking フェーズで表示 */}
-              {showThinking && (
-                <ThinkingPanel isThinking={chat.isThinking} content={chat.thinkingContent} />
-              )}
+              {showThinking && <ThinkingPanel content={chat.thinkingContent} />}
 
               {chat.error && (
                 <Card className="bg-red-50 border-red-200">

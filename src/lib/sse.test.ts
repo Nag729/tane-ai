@@ -32,23 +32,17 @@ describe("readSSEStream", () => {
   // Given: thinking イベントを含むレスポンス
   // When: readSSEStream を呼び出す
   // Then: onThinking コールバックが呼ばれる
-  it("should call thinking callbacks", async () => {
-    const onThinkingStart = vi.fn();
+  it("should call thinking callback", async () => {
     const onThinking = vi.fn();
-    const onBlockStop = vi.fn();
 
     const response = createMockResponse([
-      'data: {"type":"thinking_start"}\n\n',
       'data: {"type":"thinking","text":"thinking..."}\n\n',
-      'data: {"type":"block_stop"}\n\n',
       'data: {"type":"complete","data":"done"}\n\n',
     ]);
 
-    await readSSEStream(response, { onThinkingStart, onThinking, onBlockStop });
+    await readSSEStream(response, { onThinking });
 
-    expect(onThinkingStart).toHaveBeenCalled();
     expect(onThinking).toHaveBeenCalledWith("thinking...");
-    expect(onBlockStop).toHaveBeenCalled();
   });
 
   // Given: error イベントを含むレスポンス

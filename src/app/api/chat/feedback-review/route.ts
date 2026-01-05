@@ -20,11 +20,8 @@ export async function POST(request: Request) {
         await streamFeedbackReview(
           { type, messages, output },
           {
-            onThinkingStart: () => send({ type: "thinking_start" }),
             onThinking: (text) => send({ type: "thinking", text }),
-            onTextStart: () => send({ type: "text_start" }),
             onText: (text) => send({ type: "text", text }),
-            onBlockStop: () => send({ type: "block_stop" }),
           }
         );
 

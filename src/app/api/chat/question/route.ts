@@ -18,9 +18,7 @@ export async function POST(request: Request) {
 
       try {
         const result = await streamQuestion(type, initialInput, messages, {
-          onThinkingStart: () => send({ type: "thinking_start" }),
           onThinking: (text) => send({ type: "thinking", text }),
-          onBlockStop: () => send({ type: "block_stop" }),
           onProgress: () => send({ type: "progress" }),
         });
 

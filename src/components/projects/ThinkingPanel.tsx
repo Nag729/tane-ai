@@ -3,8 +3,6 @@
 import { useState } from "react";
 
 type ThinkingPanelProps = {
-  /** 思考中かどうか */
-  isThinking: boolean;
   /** 思考内容（ストリーミング中は途中経過） */
   content: string;
   /** パネルのタイトル */
@@ -15,11 +13,11 @@ type ThinkingPanelProps = {
  * Extended Thinking の内容を表示する折りたたみ可能なパネル
  * Claude Desktop風のUI
  */
-export function ThinkingPanel({ isThinking, content, title = "思考中..." }: ThinkingPanelProps) {
+export function ThinkingPanel({ content, title = "思考中..." }: ThinkingPanelProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
-  // 思考中でなく、内容もない場合は表示しない
-  if (!isThinking && !content) {
+  // 内容がない場合は表示しない（表示制御は親コンポーネントで行う）
+  if (!content) {
     return null;
   }
 
@@ -31,9 +29,7 @@ export function ThinkingPanel({ isThinking, content, title = "思考中..." }: T
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-amber-100/50 transition-colors"
       >
         <div className="flex items-center gap-2">
-          {isThinking && (
-            <span className="inline-block w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-          )}
+          <span className="inline-block w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
           <span className="text-sm font-medium text-amber-800">{title}</span>
         </div>
         <svg
@@ -55,14 +51,10 @@ export function ThinkingPanel({ isThinking, content, title = "思考中..." }: T
         <div className="px-4 pb-4">
           <div className="relative">
             <div className="bg-white/60 rounded-lg p-3 max-h-48 overflow-y-auto scrollbar-thin">
-              {content ? (
-                <p className="text-sm text-amber-900 whitespace-pre-wrap font-mono leading-relaxed">
-                  {content}
-                  {isThinking && <span className="animate-pulse">▊</span>}
-                </p>
-              ) : (
-                <p className="text-sm text-amber-600 italic">考えています...</p>
-              )}
+              <p className="text-sm text-amber-900 whitespace-pre-wrap font-mono leading-relaxed">
+                {content}
+                <span className="animate-pulse">▊</span>
+              </p>
             </div>
             {/* スクロール可能を示すグラデーション */}
             <div className="absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-white/60 to-transparent rounded-b-lg pointer-events-none" />

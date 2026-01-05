@@ -5,25 +5,10 @@ import { useThinking } from "./useThinking";
 describe("useThinking", () => {
   // Given: 初期状態
   // When: フックを呼び出す
-  // Then: isThinking は false、thinkingContent は空
-  it("should have correct initial state", () => {
+  // Then: thinkingContent は空
+  it("should have empty initial state", () => {
     const { result } = renderHook(() => useThinking());
-    expect(result.current.isThinking).toBe(false);
     expect(result.current.thinkingContent).toBe("");
-  });
-
-  // Given: createThinkingCallbacks を呼び出す
-  // When: onThinkingStart を実行
-  // Then: isThinking が true になる
-  it("should set isThinking to true on onThinkingStart", () => {
-    const { result } = renderHook(() => useThinking());
-    const callbacks = result.current.createThinkingCallbacks();
-
-    act(() => {
-      callbacks.onThinkingStart?.();
-    });
-
-    expect(result.current.isThinking).toBe(true);
   });
 
   // Given: createThinkingCallbacks を呼び出す
@@ -39,21 +24,6 @@ describe("useThinking", () => {
     });
 
     expect(result.current.thinkingContent).toBe("Hello World");
-  });
-
-  // Given: createThinkingCallbacks を呼び出す
-  // When: onBlockStop を実行
-  // Then: isThinking が false になる
-  it("should set isThinking to false on onBlockStop", () => {
-    const { result } = renderHook(() => useThinking());
-    const callbacks = result.current.createThinkingCallbacks();
-
-    act(() => {
-      callbacks.onThinkingStart?.();
-      callbacks.onBlockStop?.();
-    });
-
-    expect(result.current.isThinking).toBe(false);
   });
 
   // Given: thinkingContent がある
@@ -72,23 +42,5 @@ describe("useThinking", () => {
       result.current.resetThinking();
     });
     expect(result.current.thinkingContent).toBe("");
-  });
-
-  // Given: isThinking が true
-  // When: stopThinking を呼び出す
-  // Then: isThinking が false になる
-  it("should stop thinking", () => {
-    const { result } = renderHook(() => useThinking());
-    const callbacks = result.current.createThinkingCallbacks();
-
-    act(() => {
-      callbacks.onThinkingStart?.();
-    });
-    expect(result.current.isThinking).toBe(true);
-
-    act(() => {
-      result.current.stopThinking();
-    });
-    expect(result.current.isThinking).toBe(false);
   });
 });

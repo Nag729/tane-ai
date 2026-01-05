@@ -76,11 +76,8 @@ ${chatHistory}
 }
 
 export type OutputStreamCallbacks = {
-  onThinkingStart: () => void;
   onThinking: (text: string) => void;
-  onTextStart: () => void;
   onText: (text: string) => void;
-  onBlockStop: () => void;
 };
 
 export async function streamOutput(
@@ -105,20 +102,12 @@ export async function streamOutput(
   });
 
   for await (const event of messageStream) {
-    if (event.type === "content_block_start") {
-      if (event.content_block.type === "thinking") {
-        callbacks.onThinkingStart();
-      } else if (event.content_block.type === "text") {
-        callbacks.onTextStart();
-      }
-    } else if (event.type === "content_block_delta") {
+    if (event.type === "content_block_delta") {
       if (event.delta.type === "thinking_delta") {
         callbacks.onThinking(event.delta.thinking);
       } else if (event.delta.type === "text_delta") {
         callbacks.onText(event.delta.text);
       }
-    } else if (event.type === "content_block_stop") {
-      callbacks.onBlockStop();
     }
   }
 }

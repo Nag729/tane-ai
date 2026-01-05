@@ -30,7 +30,6 @@ function ResultPageContent() {
         {/* ThinkingPanel: 生成中に表示 */}
         {result.showThinking && (
           <ThinkingPanel
-            isThinking={result.thinking.isThinking}
             content={result.thinking.content}
             title={result.phase === "regenerating" ? "修正を考え中..." : "文章を考え中..."}
           />
@@ -63,11 +62,7 @@ function ResultPageContent() {
 
         {/* ThinkingPanel: レビュー中に表示（AIFeedbackCardの直前） */}
         {result.showReviewThinking && (
-          <ThinkingPanel
-            isThinking={result.reviewThinking.isThinking}
-            content={result.reviewThinking.content}
-            title="資料をレビュー中..."
-          />
+          <ThinkingPanel content={result.reviewThinking.content} title="資料をレビュー中..." />
         )}
 
         {/* AIフィードバックカード */}

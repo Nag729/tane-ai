@@ -56,9 +56,7 @@ function cleanJsonResponse(text: string): string {
 }
 
 export type QuestionStreamCallbacks = {
-  onThinkingStart: () => void;
   onThinking: (text: string) => void;
-  onBlockStop: () => void;
   onProgress: () => void;
 };
 
@@ -83,17 +81,13 @@ export async function streamQuestion(
   let fullText = "";
 
   for await (const event of messageStream) {
-    if (event.type === "content_block_start" && event.content_block.type === "thinking") {
-      callbacks.onThinkingStart();
-    } else if (event.type === "content_block_delta") {
+    if (event.type === "content_block_delta") {
       if (event.delta.type === "thinking_delta") {
         callbacks.onThinking(event.delta.thinking);
       } else if (event.delta.type === "text_delta") {
         fullText += event.delta.text;
         callbacks.onProgress();
       }
-    } else if (event.type === "content_block_stop") {
-      callbacks.onBlockStop();
     }
   }
 
