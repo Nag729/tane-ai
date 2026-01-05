@@ -1,5 +1,4 @@
-/* シンプルで読みやすい丸ゴシック - @import は最初に！ */
-@import url("https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap");
 
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
@@ -7,7 +6,7 @@
 body {
   background: #fafaf9; /* stone-50 */
   color: #1c1917; /* stone-900 */
-  font-family: "Kosugi Maru", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  font-family: "M PLUS Rounded 1c", sans-serif;
 }
 
 /* ペーパーマリオ風の影（少し浮いてる感） */
