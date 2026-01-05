@@ -53,15 +53,19 @@ export function ThinkingPanel({ isThinking, content, title = "思考中..." }: T
         }`}
       >
         <div className="px-4 pb-4">
-          <div className="bg-white/60 rounded-lg p-3 max-h-48 overflow-y-auto">
-            {content ? (
-              <p className="text-sm text-amber-900 whitespace-pre-wrap font-mono leading-relaxed">
-                {content}
-                {isThinking && <span className="animate-pulse">▊</span>}
-              </p>
-            ) : (
-              <p className="text-sm text-amber-600 italic">考えています...</p>
-            )}
+          <div className="relative">
+            <div className="bg-white/60 rounded-lg p-3 max-h-48 overflow-y-auto scrollbar-thin">
+              {content ? (
+                <p className="text-sm text-amber-900 whitespace-pre-wrap font-mono leading-relaxed">
+                  {content}
+                  {isThinking && <span className="animate-pulse">▊</span>}
+                </p>
+              ) : (
+                <p className="text-sm text-amber-600 italic">考えています...</p>
+              )}
+            </div>
+            {/* スクロール可能を示すグラデーション */}
+            <div className="absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-white/60 to-transparent rounded-b-lg pointer-events-none" />
           </div>
         </div>
       </div>
