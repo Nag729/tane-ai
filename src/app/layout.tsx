@@ -6,7 +6,7 @@ import "./globals.css";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tane-ai.vercel.app";
 
 export const metadata: Metadata = {
-  title: "たねAI - 会議のタネ、AIがまく",
+  title: "たねAI",
   description:
     "準備8割、会議2割。AIとの対話で会議の事前資料をサクッと作成。意思決定・共有・ディスカッション、どんな会議にも対応。",
   keywords: ["会議", "事前資料", "AI", "ミーティング", "議事録", "アジェンダ"],
