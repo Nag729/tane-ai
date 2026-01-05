@@ -62,11 +62,10 @@ export type QuestionAnswer = {
   readonly customInput?: string;
 };
 
-/** ユーザーの回答（複数の質問への回答 + カスタム入力） */
+/** ユーザーの回答（複数の質問への回答） */
 export type UserAnswer = {
   readonly messageId: string;
   readonly answers: readonly QuestionAnswer[];
-  readonly customInput?: string;
 };
 
 /** AIからのチャットメッセージ */

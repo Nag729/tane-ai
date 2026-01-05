@@ -45,8 +45,7 @@ function formatChatHistory(messages: ChatMessage[]): string {
           })
           .filter(Boolean)
           .join("\n");
-        const customInput = msg.answer.customInput ? `\n自由入力: ${msg.answer.customInput}` : "";
-        return `ユーザー:\n${answers}${customInput}`;
+        return `ユーザー:\n${answers}`;
       }
     })
     .join("\n\n");

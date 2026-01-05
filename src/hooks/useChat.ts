@@ -22,30 +22,29 @@ function createAIMessage(result: QuestionResponse): AIMessage {
 
 function buildAnswerDisplayText(chatMessage: ChatMessage, allMessages: ChatMessage[]): string {
   if (chatMessage.role !== "user") return "";
-  const { messageId, answers: ans, customInput } = chatMessage.answer;
+  const { messageId, answers } = chatMessage.answer;
 
   // messageId に対応する AI メッセージの質問だけを検索
   const targetAIMessage = allMessages.find(
     (m): m is AIChatMessage => m.role === "ai" && m.message.id === messageId
   );
 
-  if (!targetAIMessage) return customInput || "";
+  if (!targetAIMessage) return "";
 
   const questions = targetAIMessage.message.questions;
 
-  const lines = ans.flatMap((a) => {
-    const question = questions.find((q) => q.id === a.questionId);
-    if (!question) return [];
-    const labels = a.selectedOptionIds
-      .map((id) => question.options.find((o) => o.id === id)?.label)
-      .filter(Boolean)
-      .join("、");
-    const text = [labels, a.customInput].filter(Boolean).join(" + ");
-    return text ? [text] : [];
-  });
-
-  if (customInput) lines.push(customInput);
-  return lines.join("\n");
+  return answers
+    .flatMap((a) => {
+      const question = questions.find((q) => q.id === a.questionId);
+      if (!question) return [];
+      const labels = a.selectedOptionIds
+        .map((id) => question.options.find((o) => o.id === id)?.label)
+        .filter(Boolean)
+        .join("、");
+      const text = [labels, a.customInput].filter(Boolean).join(" + ");
+      return text ? [text] : [];
+    })
+    .join("\n");
 }
 
 type UseChatOptions = { type: MeetingType; onComplete: () => void };
@@ -93,14 +92,14 @@ export function useChat({ type, onComplete }: UseChatOptions) {
    * answering → thinking → answering | ready
    */
   const submitAnswer = useCallback(
-    async (questionAnswers: QuestionAnswer[], customInput?: string) => {
+    async (questionAnswers: QuestionAnswer[]) => {
       if (!currentAIMessage) return;
       setPhase("thinking");
       setError(null);
       thinking.resetThinking();
       const userMessage: ChatMessage = {
         role: "user",
-        answer: { messageId: currentAIMessage.id, answers: questionAnswers, customInput },
+        answer: { messageId: currentAIMessage.id, answers: questionAnswers },
       };
       const updatedMessages = [...messages, userMessage];
       setMessages(updatedMessages);

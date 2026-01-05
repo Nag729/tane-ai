@@ -26,15 +26,21 @@ const sampleMessages: ChatMessage[] = [
     message: {
       id: "msg-1",
       intro: "こんにちは！報告の整理をお手伝いします。まず、報告の目的を教えてください。",
-      questions: [],
+      questions: [
+        {
+          id: "q1",
+          content: "報告の目的は？",
+          options: [{ id: "opt1", label: "プロジェクトの進捗報告" }],
+          multiSelect: false,
+        },
+      ],
     },
   },
   {
     role: "user",
     answer: {
       messageId: "msg-1",
-      answers: [],
-      customInput: "プロジェクトの進捗報告です",
+      answers: [{ questionId: "q1", selectedOptionIds: ["opt1"] }],
     },
   },
   {
@@ -50,7 +56,7 @@ const sampleMessages: ChatMessage[] = [
 export const Default: Story = {
   args: {
     messages: sampleMessages,
-    getAnswerDisplay: (msg) => (msg.role === "user" ? msg.answer.customInput || "" : ""),
+    getAnswerDisplay: (msg) => (msg.role === "user" ? "プロジェクトの進捗報告" : ""),
   },
 };
 
