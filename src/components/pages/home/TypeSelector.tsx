@@ -1,5 +1,9 @@
+"use client";
+
+import { motion } from "framer-motion";
 import type { MeetingType } from "@/types";
 import { CardButton } from "@/components/ui/CardButton";
+import { staggerContainer, staggerItem, defaultTransition } from "@/lib/motion";
 
 type TypeSelectorProps = {
   onSelect: (type: MeetingType) => void;
@@ -25,13 +29,25 @@ const typeOptions = [
 
 export function TypeSelector({ onSelect }: TypeSelectorProps) {
   return (
-    <div className="flex flex-col sm:flex-row gap-4">
+    <motion.div
+      className="flex flex-col sm:flex-row gap-4"
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+    >
       {typeOptions.map(({ type, label, description }) => (
-        <CardButton key={type} onClick={() => onSelect(type)} className="flex-1">
-          <div className="text-2xl mb-2">{label}</div>
-          <div className="text-sm text-stone-500">{description}</div>
-        </CardButton>
+        <motion.div
+          key={type}
+          className="flex-1"
+          variants={staggerItem}
+          transition={defaultTransition}
+        >
+          <CardButton onClick={() => onSelect(type)} className="h-full">
+            <div className="text-2xl mb-2">{label}</div>
+            <div className="text-sm text-stone-500">{description}</div>
+          </CardButton>
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }

@@ -1,13 +1,17 @@
-import { type ButtonHTMLAttributes } from "react";
+"use client";
 
-type ChipProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
+import { type ComponentPropsWithoutRef } from "react";
+import { motion } from "framer-motion";
+import { chipAnimation } from "@/lib/motion";
+
+type ChipProps = Omit<ComponentPropsWithoutRef<typeof motion.button>, "children"> & {
   label: string;
   selected?: boolean;
 };
 
 export function Chip({ label, selected = false, disabled, className = "", ...props }: ChipProps) {
   return (
-    <button
+    <motion.button
       type="button"
       className={`
         px-4 py-2 rounded-full
@@ -22,9 +26,10 @@ export function Chip({ label, selected = false, disabled, className = "", ...pro
         ${className}
       `}
       disabled={disabled}
+      {...(disabled ? {} : chipAnimation)}
       {...props}
     >
       {label}
-    </button>
+    </motion.button>
   );
 }

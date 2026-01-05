@@ -1,9 +1,13 @@
-import { type ButtonHTMLAttributes } from "react";
+"use client";
+
+import { type ComponentPropsWithoutRef } from "react";
+import { motion } from "framer-motion";
+import { buttonAnimation } from "@/lib/motion";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
 type ButtonSize = "sm" | "md";
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = ComponentPropsWithoutRef<typeof motion.button> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
 };
@@ -28,7 +32,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   return (
-    <button
+    <motion.button
       className={`
         rounded-xl font-medium
         transition-colors duration-200
@@ -38,9 +42,10 @@ export function Button({
         ${className}
       `}
       disabled={disabled}
+      {...(disabled ? {} : buttonAnimation)}
       {...props}
     >
       {children}
-    </button>
+    </motion.button>
   );
 }

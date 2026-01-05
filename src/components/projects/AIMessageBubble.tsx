@@ -1,3 +1,8 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { slideInLeft, defaultTransition } from "@/lib/motion";
+
 type AIMessageBubbleProps = {
   content: string;
   isStreaming?: boolean;
@@ -5,7 +10,13 @@ type AIMessageBubbleProps = {
 
 export function AIMessageBubble({ content, isStreaming = false }: AIMessageBubbleProps) {
   return (
-    <div className="flex gap-3">
+    <motion.div
+      className="flex gap-3"
+      variants={slideInLeft}
+      initial="initial"
+      animate="animate"
+      transition={defaultTransition}
+    >
       <div className="shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-xl">
         🤖
       </div>
@@ -18,6 +29,6 @@ export function AIMessageBubble({ content, isStreaming = false }: AIMessageBubbl
           />
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
