@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import { InitialInputForm } from "./InitialInputForm";
 
 const meta = {
@@ -14,6 +15,10 @@ const meta = {
       </div>
     ),
   ],
+  args: {
+    sampleCases: [],
+    onSampleSelect: () => {},
+  },
 } satisfies Meta<typeof InitialInputForm>;
 
 export default meta;
@@ -104,5 +109,83 @@ export const Loading: Story = {
     },
     onSubmit: () => {},
     isLoading: true,
+  },
+};
+
+const sampleCasesData = [
+  {
+    id: "hiring",
+    label: "採用計画",
+    data: {
+      topic: "来期の採用計画",
+      participant: "人事、各チームマネージャー、経営企画",
+      detail:
+        "事業拡大で人員が不足。営業とCSで特に負荷が高い。予算は確保済みだが、何人採用するか決めたい",
+    },
+  },
+  {
+    id: "release",
+    label: "リリース時期",
+    data: {
+      topic: "新サービスのリリース時期",
+      participant: "プロダクトマネージャー、営業、CS、開発",
+      detail:
+        "機能は8割完成。年度内に出すか、品質を上げて来期にするか迷っている。競合の動きも気になる",
+    },
+  },
+  {
+    id: "tool",
+    label: "ツール選定",
+    data: {
+      topic: "プロジェクト管理ツールの選定",
+      participant: "マネージャー陣、情シス",
+      detail:
+        "現状Excelで管理限界。Notion、Asana、Backlogで迷ってる。コストと使いやすさのバランスが重要",
+    },
+  },
+];
+
+export const WithSampleCases: Story = {
+  args: {
+    fields: {
+      topic: {
+        label: "何を決める？",
+        placeholder: "例：来期の開発言語の選定",
+      },
+      participant: {
+        label: "誰と決める？",
+        placeholder: "例：テックリード、アーキテクト、PdM",
+      },
+      detail: {
+        label: "背景は？",
+        placeholder: "例：既存のフレームワークが古くなってきた",
+      },
+    },
+    onSubmit: (data) => {
+      console.log("Submitted:", data);
+      alert(`送信: ${JSON.stringify(data, null, 2)}`);
+    },
+    sampleCases: sampleCasesData.map((s) => ({ id: s.id, label: s.label })),
+    onSampleSelect: () => {},
+  },
+  render: function WithSampleCasesRender(args) {
+    const [defaultValues, setDefaultValues] = useState<
+      { topic: string; participant: string; detail: string } | undefined
+    >();
+
+    const handleSampleSelect = (id: string) => {
+      const sample = sampleCasesData.find((s) => s.id === id);
+      if (sample) {
+        setDefaultValues(sample.data);
+      }
+    };
+
+    return (
+      <InitialInputForm
+        {...args}
+        defaultValues={defaultValues}
+        onSampleSelect={handleSampleSelect}
+      />
+    );
   },
 };

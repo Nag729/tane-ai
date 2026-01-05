@@ -1,6 +1,13 @@
 /** 会議の種類 */
 export type MeetingType = "decision" | "share" | "discussion";
 
+/** 初期入力データ */
+export type InitialInputData = {
+  readonly topic: string;
+  readonly participant: string;
+  readonly detail: string;
+};
+
 /**
  * チャットのフェーズ（状態遷移）
  *

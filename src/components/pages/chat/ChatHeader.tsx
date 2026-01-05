@@ -12,7 +12,7 @@ export function ChatHeader({ label, onBack }: ChatHeaderProps) {
         <button onClick={onBack} className="text-stone-500 hover:text-stone-700">
           ← やめる
         </button>
-        <h1 className="font-bold text-stone-800">🌱 {label}会議</h1>
+        <h1 className="font-bold text-stone-800">🍏 {label}会議</h1>
         <div className="w-16" />
       </div>
     </header>

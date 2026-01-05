@@ -17,7 +17,7 @@ export default function Home() {
       <div className="w-full max-w-2xl">
         {/* ヒーローセクション */}
         <Card className="text-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 mb-3">🌱 たねAI</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 mb-3">🍏 たねAI</h1>
           <p className="text-lg sm:text-xl text-stone-700 mb-2">会議のタネ、AIがまく</p>
           <p className="text-stone-500 text-sm sm:text-base">
             準備8割、会議2割。事前資料を一緒に作ろう

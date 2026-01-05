@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useRef, useState, useMemo } from "react";
 import { InitialInputForm } from "@/components/pages/home/InitialInputForm";
 import { ThinkingPanel } from "@/components/projects/ThinkingPanel";
 import { ChatHeader } from "@/components/pages/chat/ChatHeader";
@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/Card";
 import { PageLoading } from "@/components/ui/PageLoading";
 import { useChatAnswers, useChat } from "@/hooks";
 import { typeConfig } from "@/constants";
-import { isDebugMode, getRandomTestData } from "@/debug/testData";
+import { getSampleCasesByType } from "@/constants/sampleCases";
 import type { MeetingType } from "@/types";
 
 // eslint-disable-next-line max-lines-per-function
@@ -22,10 +22,13 @@ function ChatPageContent() {
   const type = searchParams.get("type") as MeetingType | null;
   const config = type ? typeConfig[type] : null;
 
-  const debugDefaultValues = useMemo(
-    () => (isDebugMode() && type ? getRandomTestData(type) : undefined),
-    [type]
-  );
+  const [selectedSampleId, setSelectedSampleId] = useState<string | undefined>();
+  const sampleCases = useMemo(() => (type ? getSampleCasesByType(type) : []), [type]);
+  const selectedSample = sampleCases.find((s) => s.id === selectedSampleId)?.data;
+
+  const handleSampleSelect = (id: string) => {
+    setSelectedSampleId(id);
+  };
 
   const latestContentRef = useRef<HTMLDivElement>(null);
 
@@ -105,9 +108,12 @@ function ChatPageContent() {
         <div className="max-w-2xl mx-auto space-y-4">
           {showInitialForm ? (
             <InitialInputForm
+              key={selectedSampleId ?? "empty"}
               fields={config.fields}
               onSubmit={handleInitialSubmit}
-              defaultValues={debugDefaultValues}
+              defaultValues={selectedSample}
+              sampleCases={sampleCases.map((s) => ({ id: s.id, label: s.label }))}
+              onSampleSelect={handleSampleSelect}
             />
           ) : (
             <>

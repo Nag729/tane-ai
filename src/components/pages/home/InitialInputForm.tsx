@@ -2,15 +2,19 @@ import { useState, useRef, useEffect } from "react";
 import { FormField } from "@/components/ui/FormField";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 
 type FieldConfig = { label: string; placeholder: string };
 type InitialInputData = { topic: string; participant: string; detail: string };
+type SampleCaseForDisplay = { id: string; label: string };
 
 type InitialInputFormProps = {
   fields: { topic: FieldConfig; participant: FieldConfig; detail: FieldConfig };
   onSubmit: (data: InitialInputData) => void;
   isLoading?: boolean;
   defaultValues?: InitialInputData;
+  sampleCases: SampleCaseForDisplay[];
+  onSampleSelect: (id: string) => void;
 };
 
 export function InitialInputForm({
@@ -18,6 +22,8 @@ export function InitialInputForm({
   onSubmit,
   isLoading = false,
   defaultValues,
+  sampleCases,
+  onSampleSelect,
 }: InitialInputFormProps) {
   const [topic, setTopic] = useState(defaultValues?.topic ?? "");
   const [participant, setParticipant] = useState(defaultValues?.participant ?? "");
@@ -40,6 +46,25 @@ export function InitialInputForm({
     <Card>
       <form onSubmit={handleSubmit} className="space-y-4">
         <p className="text-stone-600 text-center text-sm">最初にざっくり教えてください 📝</p>
+
+        {sampleCases.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs text-stone-500 flex items-center gap-1">
+              <span>✨</span>
+              <span>サンプルで試す</span>
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {sampleCases.map((sample) => (
+                <Chip
+                  key={sample.id}
+                  label={sample.label}
+                  onClick={() => onSampleSelect(sample.id)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         <FormField
           ref={firstInputRef}
           label={fields.topic.label}
