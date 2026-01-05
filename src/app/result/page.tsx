@@ -75,11 +75,13 @@ function ResultPageContent() {
           />
         )}
 
-        <div className="text-center">
-          <Button variant="secondary" onClick={result.startOver} className="text-stone-500">
-            🔄 最初からやり直す
-          </Button>
-        </div>
+        {result.phase !== "generating" && (
+          <div className="text-center">
+            <Button variant="secondary" onClick={result.startOver} className="text-stone-500">
+              🔄 最初からやり直す
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
