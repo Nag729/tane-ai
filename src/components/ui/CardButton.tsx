@@ -19,7 +19,7 @@ export function CardButton({
     <motion.button
       type="button"
       className={`
-        p-6 rounded-2xl text-left w-full
+        p-6 rounded-2xl w-full
         transition-colors duration-200
         border-2 shadow-lg
         disabled:opacity-50 disabled:cursor-not-allowed

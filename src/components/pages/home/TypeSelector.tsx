@@ -13,27 +13,27 @@ type TypeSelectorProps = {
 
 const typeOptions: readonly {
   type: MeetingType;
+  icon: ReactNode;
   label: string;
   description: string;
-  icon: ReactNode;
 }[] = [
   {
     type: "decision",
-    label: "意思決定",
-    description: "承認・判断を得たい",
     icon: <Lightbulb size={32} />,
+    label: "決める会議",
+    description: "みんなで決断しよう",
   },
   {
     type: "share",
-    label: "情報共有",
-    description: "伝達・報告したい",
     icon: <Megaphone size={32} />,
+    label: "伝える会議",
+    description: "大切なことを届けよう",
   },
   {
     type: "discussion",
-    label: "ディスカッション",
-    description: "アイデアを出し合いたい",
     icon: <MessageCircle size={32} />,
+    label: "話し合う会議",
+    description: "アイデアを育てよう",
   },
 ];
 
@@ -45,18 +45,16 @@ export function TypeSelector({ onSelect }: TypeSelectorProps) {
       initial="initial"
       animate="animate"
     >
-      {typeOptions.map(({ type, label, description, icon }) => (
+      {typeOptions.map(({ type, icon, label, description }) => (
         <motion.div
           key={type}
           className="flex-1"
           variants={staggerItem}
           transition={defaultTransition}
         >
-          <CardButton onClick={() => onSelect(type)} className="h-full">
-            <div className="flex items-center gap-2 text-xl mb-2">
-              <span className="text-emerald-500">{icon}</span>
-              <span>{label}</span>
-            </div>
+          <CardButton onClick={() => onSelect(type)} className="h-full text-center">
+            <div className="text-emerald-500 mb-2 flex justify-center">{icon}</div>
+            <div className="text-lg font-medium mb-1">{label}</div>
             <div className="text-sm text-stone-500">{description}</div>
           </CardButton>
         </motion.div>

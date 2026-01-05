@@ -2,9 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Sprout } from "lucide-react";
 import { TypeSelector } from "@/components/pages/home/TypeSelector";
-import { Card } from "@/components/ui/Card";
 import { fadeInUp, defaultTransition } from "@/lib/motion";
 import type { MeetingType } from "@/types";
 
@@ -20,42 +18,17 @@ export default function Home() {
       <div className="w-full max-w-2xl">
         {/* ヒーローセクション */}
         <motion.div
+          className="text-center mb-10"
           variants={fadeInUp}
           initial="initial"
           animate="animate"
           transition={defaultTransition}
         >
-          <Card className="text-center mb-8 shadow-paper">
-            <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 mb-3 flex items-center justify-center gap-2">
-              <Sprout className="text-emerald-500" size={32} />
-              <span>たねAI</span>
-            </h1>
-            <p className="text-lg sm:text-xl text-stone-700 mb-2">会議のタネ、AIがまく</p>
-            <p className="text-stone-500 text-sm sm:text-base">
-              準備8割、会議2割。事前資料を一緒に作ろう
-            </p>
-          </Card>
-        </motion.div>
-
-        {/* 使い方の説明 */}
-        <motion.div
-          className="flex justify-center gap-2 sm:gap-4 mb-8 text-xs sm:text-sm text-stone-500"
-          variants={fadeInUp}
-          initial="initial"
-          animate="animate"
-          transition={{ ...defaultTransition, delay: 0.1 }}
-        >
-          <span className="flex items-center gap-1">
-            <span className="text-emerald-500 font-bold">1.</span> AIの質問に
-          </span>
-          <span className="text-stone-300">→</span>
-          <span className="flex items-center gap-1">
-            <span className="text-emerald-500 font-bold">2.</span> 答えるだけで
-          </span>
-          <span className="text-stone-300">→</span>
-          <span className="flex items-center gap-1">
-            <span className="text-emerald-500 font-bold">3.</span> 資料が完成！
-          </span>
+          <div className="text-5xl mb-4">🍏</div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 mb-3">たねAI</h1>
+          <p className="text-stone-600 text-sm sm:text-base">
+            質問に答えるだけで、会議の準備ができます
+          </p>
         </motion.div>
 
         {/* 種類選択 */}
@@ -63,9 +36,9 @@ export default function Home() {
           variants={fadeInUp}
           initial="initial"
           animate="animate"
-          transition={{ ...defaultTransition, delay: 0.2 }}
+          transition={{ ...defaultTransition, delay: 0.1 }}
         >
-          <p className="text-center text-stone-600 mb-4">どんな会議？</p>
+          <p className="text-center text-stone-500 text-sm mb-4">どんな会議？</p>
           <TypeSelector onSelect={handleSelect} />
         </motion.div>
       </div>

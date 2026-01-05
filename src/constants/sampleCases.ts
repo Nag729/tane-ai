@@ -12,7 +12,7 @@ export type SampleCase = {
  * 初見ユーザーが「こんな感じで使えばいいのか！」と分かるように
  */
 export const sampleCases: SampleCase[] = [
-  // decision（意思決定）
+  // decision（決める会議）
   {
     id: "hiring",
     label: "採用計画",
@@ -68,7 +68,7 @@ export const sampleCases: SampleCase[] = [
     },
   },
 
-  // share（情報共有）
+  // share（伝える会議）
   {
     id: "new-policy",
     label: "人事制度",
@@ -124,7 +124,7 @@ export const sampleCases: SampleCase[] = [
     },
   },
 
-  // discussion（ディスカッション）
+  // discussion（話し合う会議）
   {
     id: "productivity",
     label: "生産性改善",

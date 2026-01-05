@@ -16,7 +16,7 @@ export const typeContext: Record<
   }
 > = {
   decision: {
-    label: "意思決定",
+    label: "決める会議",
     goal: "会議で何かを決定する（承認を得る、選択肢から選ぶ）",
     storyArc:
       "なぜ今決める必要があるのか → 何を決めるのか → どんな選択肢があるか → なぜこの案を推奨するか → どう進めるか",
@@ -92,7 +92,7 @@ export const typeContext: Record<
   },
 
   share: {
-    label: "情報共有",
+    label: "伝える会議",
     goal: "情報を正確に伝え、必要なアクションを促す",
     storyArc: "何が変わるのか → なぜ変わるのか → 具体的に何が変わるのか → あなたは何をすべきか",
     outputStructure:
@@ -162,7 +162,7 @@ export const typeContext: Record<
   },
 
   discussion: {
-    label: "ディスカッション",
+    label: "話し合う会議",
     goal: "参加者の意見を引き出し、議論を深め、方向性を決める",
     storyArc:
       "何について議論するのか → なぜ議論が必要か → 現状はどうなっているか → 何を議論するか → 何が決まれば成功か",
@@ -185,7 +185,7 @@ export const typeContext: Record<
       "参加者への期待が明確か",
     ],
     outputExample: `## 会議概要
-- **タイトル**: チームの残業削減ディスカッション
+- **タイトル**: チームの残業削減について話し合う
 - **参加者**: チームメンバー全員
 - **所要時間**: 60分
 

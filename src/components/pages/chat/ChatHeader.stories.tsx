@@ -14,21 +14,21 @@ type Story = StoryObj<typeof meta>;
 
 export const Decision: Story = {
   args: {
-    label: "意思決定",
+    label: "決める会議",
     onBack: () => alert("戻る"),
   },
 };
 
 export const Share: Story = {
   args: {
-    label: "共有",
+    label: "伝える会議",
     onBack: () => alert("戻る"),
   },
 };
 
 export const Discussion: Story = {
   args: {
-    label: "ディスカッション",
+    label: "話し合う会議",
     onBack: () => alert("戻る"),
   },
 };

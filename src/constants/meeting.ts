@@ -26,15 +26,15 @@ export const supplementLabels: readonly SupplementLabel[] = [
  */
 export const typeConfig = {
   decision: {
-    label: "意思決定",
-    themePlaceholder: "例：来期の採用計画",
+    label: "決める会議",
+    themePlaceholder: "例: 来期の採用計画",
   },
   share: {
-    label: "情報共有",
-    themePlaceholder: "例：組織変更のお知らせ",
+    label: "伝える会議",
+    themePlaceholder: "例: 組織変更のお知らせ",
   },
   discussion: {
-    label: "ディスカッション",
-    themePlaceholder: "例：来期の目標設定",
+    label: "話し合う会議",
+    themePlaceholder: "例: 来期の目標設定",
   },
 } as const satisfies Record<MeetingType, TypeConfigItem>;
