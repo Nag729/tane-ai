@@ -30,8 +30,6 @@ function ChatPageContent() {
     setSelectedSampleId(id);
   };
 
-  const latestContentRef = useRef<HTMLDivElement>(null);
-
   const chat = useChat({
     type: type || "decision",
     onComplete: () => router.push(`/result?type=${type}`),
@@ -45,11 +43,6 @@ function ChatPageContent() {
     resetAnswers,
     buildQuestionAnswers,
   } = useChatAnswers();
-
-  // 自動スクロール（最新コンテンツへ）
-  useEffect(() => {
-    latestContentRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat.messages, chat.thinkingContent, chat.phase]);
 
   // 無効なパラメータの場合はトップへ
   useEffect(() => {
