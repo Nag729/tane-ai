@@ -78,7 +78,7 @@ export function InitialInputForm({
         )}
 
         {/* テーマ + 動詞 入力エリア */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <input
             ref={themeInputRef}
             type="text"
@@ -86,15 +86,17 @@ export function InitialInputForm({
             onChange={(e) => setTheme(e.target.value)}
             placeholder={themePlaceholder}
             className="
-              flex-1 min-w-48 px-4 py-3 rounded-xl
+              w-full sm:flex-1 sm:min-w-48 px-4 py-3 rounded-xl
               text-base
               bg-white border-2 border-stone-200
               focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-500
               transition-colors
             "
           />
-          <span className="text-stone-500">を</span>
-          <VerbSelector verbs={verbs} value={verb} onChange={setVerb} placeholder="選択..." />
+          <div className="flex items-center gap-2">
+            <span className="text-stone-500">を</span>
+            <VerbSelector verbs={verbs} value={verb} onChange={setVerb} placeholder="選択..." />
+          </div>
         </div>
 
         {/* 補足セクション */}

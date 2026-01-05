@@ -12,7 +12,7 @@ const meta: Meta<typeof ThinkingPanel> = {
 export default meta;
 type Story = StoryObj<typeof ThinkingPanel>;
 
-export const Default: Story = {
+export const Thinking: Story = {
   args: {
     content: `ユーザーの質問を分析しています。
 
@@ -22,13 +22,21 @@ export const Default: Story = {
 3. 次のアクションを提案
 
 この順序で整理すると伝わりやすくなります。`,
+    isThinking: true,
   },
 };
 
-export const CustomTitle: Story = {
+export const Completed: Story = {
   args: {
-    content: "出力を生成するための最適な構成を検討中...",
-    title: "出力を準備中...",
+    content: `ユーザーの質問を分析しています。
+
+報告の構造を考えると：
+1. 結論を最初に述べる
+2. 詳細な経緯を説明
+3. 次のアクションを提案
+
+この順序で整理すると伝わりやすくなります。`,
+    isThinking: false,
   },
 };
 
@@ -52,5 +60,6 @@ export const LongContent: Story = {
 
 5. 最終的な方針
    このように進めるのがベストです。`,
+    isThinking: true,
   },
 };

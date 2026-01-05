@@ -16,7 +16,7 @@ export function UserMessageBubble({ content }: UserMessageBubbleProps) {
       animate="animate"
       transition={defaultTransition}
     >
-      <div className="bg-emerald-500 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs">
+      <div className="bg-emerald-500 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-64 sm:max-w-xs">
         <p className="whitespace-pre-wrap">{content}</p>
       </div>
     </motion.div>

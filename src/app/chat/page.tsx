@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useEffect, useRef, useState, useMemo } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import { InitialInputForm } from "@/components/pages/home/InitialInputForm";
 import { ThinkingPanel } from "@/components/projects/ThinkingPanel";
 import { ChatHeader } from "@/components/pages/chat/ChatHeader";
@@ -110,11 +110,10 @@ function ChatPageContent() {
             <>
               <ChatHistory messages={chat.messages} getAnswerDisplay={chat.getAnswerDisplay} />
 
-              {/* スクロール位置: 最新の質問/Thinking の先頭 */}
-              <div ref={latestContentRef} />
-
-              {/* ThinkingPanel: thinking フェーズで表示 */}
-              {showThinking && <ThinkingPanel content={chat.thinkingContent} />}
+              {/* ThinkingPanel: contentがあれば表示、思考完了時は自動で閉じる */}
+              {chat.thinkingContent && (
+                <ThinkingPanel content={chat.thinkingContent} isThinking={showThinking} />
+              )}
 
               {chat.error && (
                 <Card className="bg-red-50 border-red-200">

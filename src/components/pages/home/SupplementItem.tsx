@@ -32,7 +32,7 @@ export function SupplementItem({
   }, []);
 
   return (
-    <div className="flex items-center gap-2 group">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 group">
       {/* ラベルセレクター */}
       <div className="relative" ref={containerRef}>
         <button
@@ -42,7 +42,7 @@ export function SupplementItem({
             px-3 py-2 rounded-lg
             text-sm font-medium
             transition-colors duration-200
-            flex items-center gap-1 min-w-20
+            flex items-center gap-1 min-w-16 sm:min-w-20
             ${selectedLabel ? "bg-amber-100 text-amber-800" : "bg-stone-100 text-stone-500"}
           `}
         >
@@ -94,7 +94,7 @@ export function SupplementItem({
         onChange={(e) => onValueChange(e.target.value)}
         placeholder={selectedLabel ? `${selectedLabel}を入力...` : "補足情報を入力..."}
         className="
-          flex-1 px-3 py-2 rounded-lg
+          w-full sm:flex-1 px-3 py-2 rounded-lg
           text-sm
           bg-white border border-stone-200
           focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-500
@@ -109,7 +109,7 @@ export function SupplementItem({
         className="
           p-2 rounded-lg
           text-stone-400 hover:text-rose-500 hover:bg-rose-50
-          opacity-0 group-hover:opacity-100
+          sm:opacity-0 sm:group-hover:opacity-100
           transition-all duration-200
         "
         aria-label="この補足を削除"

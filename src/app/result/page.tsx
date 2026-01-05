@@ -27,12 +27,9 @@ function ResultPageContent() {
       <div className="max-w-2xl mx-auto space-y-6">
         <ResultHeader />
 
-        {/* ThinkingPanel: 生成中に表示 */}
-        {result.showThinking && (
-          <ThinkingPanel
-            content={result.thinking.content}
-            title={result.phase === "regenerating" ? "修正を考え中..." : "文章を考え中..."}
-          />
+        {/* ThinkingPanel: contentがあれば表示、思考完了時は自動で閉じる */}
+        {result.thinking.content && (
+          <ThinkingPanel content={result.thinking.content} isThinking={result.showThinking} />
         )}
 
         {/* 出力カード or ストリーミング表示 */}
@@ -60,9 +57,9 @@ function ResultPageContent() {
           </div>
         )}
 
-        {/* ThinkingPanel: レビュー中に表示（AIFeedbackCardの直前） */}
-        {result.showReviewThinking && (
-          <ThinkingPanel content={result.reviewThinking.content} title="資料をレビュー中..." />
+        {/* ThinkingPanel: contentがあれば表示、レビュー完了時は自動で閉じる */}
+        {result.reviewThinking.content && (
+          <ThinkingPanel content={result.reviewThinking.content} isThinking={result.showReviewThinking} />
         )}
 
         {/* AIフィードバックカード */}

@@ -1,22 +1,29 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 type ThinkingPanelProps = {
   /** 思考内容（ストリーミング中は途中経過） */
   content: string;
-  /** パネルのタイトル */
-  title?: string;
+  /** 思考中かどうか（falseになると自動で折りたたむ） */
+  isThinking: boolean;
 };
 
 /**
  * Extended Thinking の内容を表示する折りたたみ可能なパネル
  * Claude Desktop風のUI
  */
-export function ThinkingPanel({ content, title = "思考中..." }: ThinkingPanelProps) {
+export function ThinkingPanel({ content, isThinking }: ThinkingPanelProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // 思考完了時に自動で折りたたむ
+  useEffect(() => {
+    if (!isThinking) {
+      setIsExpanded(false);
+    }
+  }, [isThinking]);
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -39,8 +46,12 @@ export function ThinkingPanel({ content, title = "思考中..." }: ThinkingPanel
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-amber-100/50 transition-colors"
       >
         <div className="flex items-center gap-2">
-          <span className="inline-block w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-          <span className="text-sm font-medium text-amber-800">{title}</span>
+          <span
+            className={`inline-block w-2 h-2 bg-amber-500 rounded-full ${isThinking ? "animate-pulse" : ""}`}
+          />
+          <span className="text-sm font-medium text-amber-800">
+            {isThinking ? "思考中..." : "思考完了"}
+          </span>
         </div>
         <svg
           className={`w-4 h-4 text-amber-600 transition-transform ${isExpanded ? "rotate-180" : ""}`}
@@ -67,7 +78,7 @@ export function ThinkingPanel({ content, title = "思考中..." }: ThinkingPanel
             >
               <p className="text-sm text-amber-900 whitespace-pre-wrap font-mono leading-relaxed">
                 {content}
-                <span className="animate-pulse">▊</span>
+                {isThinking && <span className="animate-pulse">▊</span>}
               </p>
             </div>
             {/* スクロール可能を示すグラデーション（一番下の時は非表示） */}

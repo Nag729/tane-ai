@@ -48,7 +48,7 @@ export function ChatFooter({
   }
 
   return (
-    <footer className="bg-white border-t border-stone-200 p-4 fixed bottom-0 left-0 right-0">
+    <footer className="bg-white border-t border-stone-200 px-4 pt-4 pb-6 sm:pb-4 fixed bottom-0 left-0 right-0">
       <div className="max-w-2xl mx-auto">
         {showComplete && <CompleteButton onClick={onComplete} />}
         {showSubmit && <SubmitButton onClick={onSubmit} />}

@@ -75,7 +75,7 @@ export function VerbSelector({
             bg-emerald-500 text-white
             border-2 border-emerald-500
             focus:outline-none focus:ring-2 focus:ring-emerald-300
-            w-32 text-center
+            w-28 sm:w-32 text-center
           "
         />
         <button
@@ -111,7 +111,7 @@ export function VerbSelector({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-lg border border-stone-200 py-1 z-10 min-w-36">
+        <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-lg border border-stone-200 py-1 z-10 min-w-32 sm:min-w-36">
           {verbs.map((verb) => (
             <button
               key={verb}
