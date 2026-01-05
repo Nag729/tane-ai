@@ -16,7 +16,7 @@ export function ChatHeader({ label, onBack }: ChatHeaderProps) {
         </button>
         <h1 className="font-bold text-stone-800 flex items-center gap-1.5">
           <Sprout className="text-emerald-500" size={20} />
-          <span>{label}会議</span>
+          <span>{label}</span>
         </h1>
         <div className="w-16" />
       </div>
