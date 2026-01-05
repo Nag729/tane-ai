@@ -7,6 +7,7 @@ import { useThinking } from "./useThinking";
 import type {
   MeetingType,
   AIMessage,
+  AIChatMessage,
   ChatMessage,
   QuestionAnswer,
   ChatPhase,
@@ -25,7 +26,7 @@ function buildAnswerDisplayText(chatMessage: ChatMessage, allMessages: ChatMessa
 
   // messageId に対応する AI メッセージの質問だけを検索
   const targetAIMessage = allMessages.find(
-    (m): m is ChatMessage & { role: "ai" } => m.role === "ai" && m.message.id === messageId
+    (m): m is AIChatMessage => m.role === "ai" && m.message.id === messageId
   );
 
   if (!targetAIMessage) return customInput || "";

@@ -69,10 +69,14 @@ export type UserAnswer = {
   readonly customInput?: string;
 };
 
+/** AIからのチャットメッセージ */
+export type AIChatMessage = { readonly role: "ai"; readonly message: AIMessage };
+
+/** ユーザーからのチャットメッセージ */
+export type UserChatMessage = { readonly role: "user"; readonly answer: UserAnswer };
+
 /** 対話メッセージ（Discriminated Union） */
-export type ChatMessage =
-  | { readonly role: "ai"; readonly message: AIMessage }
-  | { readonly role: "user"; readonly answer: UserAnswer };
+export type ChatMessage = AIChatMessage | UserChatMessage;
 
 /** 質問への回答状態（入力中） */
 export type AnswerState = {
