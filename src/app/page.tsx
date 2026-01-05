@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { TypeSelector } from "@/components/pages/home/TypeSelector";
+import { GitHubLink } from "@/components/ui/GitHubLink";
 import { fadeInUp, defaultTransition } from "@/lib/motion";
 import type { MeetingType } from "@/types";
 
@@ -40,6 +41,17 @@ export default function Home() {
         >
           <p className="text-center text-stone-500 text-sm mb-4">どんな会議？</p>
           <TypeSelector onSelect={handleSelect} />
+        </motion.div>
+
+        {/* GitHub リンク */}
+        <motion.div
+          className="mt-12 text-center"
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ ...defaultTransition, delay: 0.2 }}
+        >
+          <GitHubLink href="https://github.com/Nag729/tane-ai" />
         </motion.div>
       </div>
     </div>
