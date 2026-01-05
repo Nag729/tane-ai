@@ -55,7 +55,6 @@ src/
 ### ファイル命名
 
 - コンポーネント: `ComponentName.tsx`
-- テスト: `ComponentName.test.tsx`
 - Storybook: `ComponentName.stories.tsx`
 
 ## テストルール
@@ -63,7 +62,7 @@ src/
 ### 構造
 
 ```tsx
-describe("ComponentName", () => {
+describe("HooksName", () => {
   // Given: 前提条件
   // When: 操作
   // Then: 期待結果
@@ -75,9 +74,8 @@ describe("ComponentName", () => {
 
 ### ベストプラクティス
 
-- `screen.getByRole()` を優先（アクセシビリティ重視）
-- `data-testid` は最終手段
 - 振る舞いをテストする（実装詳細ではなく）
+- モックは最小限に（外部依存のみ）
 
 ## スタイリングルール
 
