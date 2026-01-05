@@ -63,3 +63,11 @@ export const LongContent: Story = {
     isThinking: true,
   },
 };
+
+/** contentが空の状態（API応答待ち） */
+export const Loading: Story = {
+  args: {
+    content: "",
+    isThinking: true,
+  },
+};

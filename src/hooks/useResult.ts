@@ -172,9 +172,26 @@ export function useResult({ type }: UseResultOptions) {
   // 派生状態
   const isGenerating = phase === "generating" || phase === "regenerating";
   const isReviewing = phase === "reviewing";
-  const showThinking = isGenerating && !!thinking.thinkingContent;
-  const showReviewThinking = isReviewing && !!reviewThinking.thinkingContent;
   const displayContent = streamingContent || output?.content || "";
+
+  // ThinkingPanel用の統一された状態
+  const thinkingPanel = useMemo(
+    () => ({
+      show: isGenerating || !!thinking.thinkingContent,
+      content: thinking.thinkingContent,
+      isActive: isGenerating,
+    }),
+    [isGenerating, thinking.thinkingContent]
+  );
+
+  const reviewThinkingPanel = useMemo(
+    () => ({
+      show: isReviewing || !!reviewThinking.thinkingContent,
+      content: reviewThinking.thinkingContent,
+      isActive: isReviewing,
+    }),
+    [isReviewing, reviewThinking.thinkingContent]
+  );
 
   return useMemo(
     () => ({
@@ -189,17 +206,11 @@ export function useResult({ type }: UseResultOptions) {
       // 派生状態
       isGenerating,
       isReviewing,
-      showThinking,
-      showReviewThinking,
       displayContent,
 
-      // Thinking 状態
-      thinking: {
-        content: thinking.thinkingContent,
-      },
-      reviewThinking: {
-        content: reviewThinking.thinkingContent,
-      },
+      // ThinkingPanel
+      thinkingPanel,
+      reviewThinkingPanel,
 
       // アクション
       requestReview,
@@ -215,11 +226,9 @@ export function useResult({ type }: UseResultOptions) {
       streamingFeedback,
       isGenerating,
       isReviewing,
-      showThinking,
-      showReviewThinking,
       displayContent,
-      thinking.thinkingContent,
-      reviewThinking.thinkingContent,
+      thinkingPanel,
+      reviewThinkingPanel,
       requestReview,
       applyFeedback,
       startOver,

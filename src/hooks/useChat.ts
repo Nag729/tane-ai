@@ -49,6 +49,7 @@ function buildAnswerDisplayText(chatMessage: ChatMessage, allMessages: ChatMessa
 
 type UseChatOptions = { type: MeetingType; onComplete: () => void };
 
+// eslint-disable-next-line max-lines-per-function
 export function useChat({ type, onComplete }: UseChatOptions) {
   // フェーズ管理（FSM）
   const [phase, setPhase] = useState<ChatPhase>("idle");
@@ -137,6 +138,17 @@ export function useChat({ type, onComplete }: UseChatOptions) {
     [messages]
   );
 
+  // ThinkingPanel用の統一された状態
+  const isThinking = phase === "thinking";
+  const thinkingPanel = useMemo(
+    () => ({
+      show: isThinking || !!thinking.thinkingContent,
+      content: thinking.thinkingContent,
+      isActive: isThinking,
+    }),
+    [isThinking, thinking.thinkingContent]
+  );
+
   return useMemo(
     () => ({
       // フェーズ
@@ -146,15 +158,15 @@ export function useChat({ type, onComplete }: UseChatOptions) {
       currentAIMessage,
       hasQuestions,
       error,
-      // Thinking 状態
-      thinkingContent: thinking.thinkingContent,
+      // ThinkingPanel
+      thinkingPanel,
       // アクション
       submitInitialInput,
       submitAnswer,
       completeChat,
       getAnswerDisplay,
       // 便利なフラグ（後方互換用）
-      isLoading: phase === "thinking",
+      isLoading: isThinking,
       isReady: phase === "ready",
     }),
     [
@@ -163,11 +175,12 @@ export function useChat({ type, onComplete }: UseChatOptions) {
       currentAIMessage,
       hasQuestions,
       error,
-      thinking.thinkingContent,
+      thinkingPanel,
       submitInitialInput,
       submitAnswer,
       completeChat,
       getAnswerDisplay,
+      isThinking,
     ]
   );
 }

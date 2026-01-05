@@ -85,7 +85,6 @@ function ChatPageContent() {
 
   // フェーズに基づいた表示制御
   const showInitialForm = chat.phase === "idle";
-  const isThinking = chat.phase === "thinking";
   const showQuestions = chat.phase === "answering" && chat.hasQuestions && chat.currentAIMessage;
   const showFooter = chat.phase !== "idle";
 
@@ -110,9 +109,12 @@ function ChatPageContent() {
             <>
               <ChatHistory messages={chat.messages} getAnswerDisplay={chat.getAnswerDisplay} />
 
-              {/* ThinkingPanel: contentがあれば表示、思考完了時は自動で閉じる */}
-              {chat.thinkingContent && (
-                <ThinkingPanel content={chat.thinkingContent} isThinking={isThinking} />
+              {/* ThinkingPanel */}
+              {chat.thinkingPanel.show && (
+                <ThinkingPanel
+                  content={chat.thinkingPanel.content}
+                  isThinking={chat.thinkingPanel.isActive}
+                />
               )}
 
               {chat.error && (
