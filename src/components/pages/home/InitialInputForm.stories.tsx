@@ -18,7 +18,6 @@ const meta = {
     ),
   ],
   args: {
-    typeLabel: "意思決定",
     themePlaceholder: "例：来期の採用計画",
     verbs: verbsByType.decision,
     supplementLabels: supplementLabels as unknown as SupplementLabel[],
@@ -33,7 +32,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Decision: Story = {
   args: {
-    typeLabel: "意思決定",
     themePlaceholder: "例：来期の採用計画、新サービスのリリース時期...",
     verbs: verbsByType.decision,
     onSubmit: (data) => {
@@ -45,7 +43,6 @@ export const Decision: Story = {
 
 export const Share: Story = {
   args: {
-    typeLabel: "情報共有",
     themePlaceholder: "例：新しい勤怠ルール、システム移行のお知らせ...",
     verbs: verbsByType.share,
     onSubmit: (data) => {
@@ -56,7 +53,6 @@ export const Share: Story = {
 
 export const Discussion: Story = {
   args: {
-    typeLabel: "ディスカッション",
     themePlaceholder: "例：チームの生産性向上、来期の開発方針...",
     verbs: verbsByType.discussion,
     onSubmit: (data) => {
@@ -67,7 +63,6 @@ export const Discussion: Story = {
 
 export const Loading: Story = {
   args: {
-    typeLabel: "意思決定",
     themePlaceholder: "例：来期の採用計画",
     verbs: verbsByType.decision,
     onSubmit: () => {},
@@ -116,7 +111,6 @@ const sampleCasesData: { id: string; label: string; data: InitialInputData }[] =
 
 export const WithSampleCases: Story = {
   args: {
-    typeLabel: "意思決定",
     themePlaceholder: "例：来期の採用計画",
     verbs: verbsByType.decision,
     onSubmit: (data) => {
@@ -147,7 +141,6 @@ export const WithSampleCases: Story = {
 
 export const WithDefaultValues: Story = {
   args: {
-    typeLabel: "意思決定",
     themePlaceholder: "例：来期の採用計画",
     verbs: verbsByType.decision,
     defaultValues: {

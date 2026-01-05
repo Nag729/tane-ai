@@ -9,7 +9,6 @@ import type { InitialInputData, Supplement, SupplementLabel } from "@/types";
 type SampleCaseForDisplay = { id: string; label: string };
 
 type InitialInputFormProps = {
-  typeLabel: string;
   themePlaceholder: string;
   verbs: readonly string[];
   supplementLabels: readonly SupplementLabel[];
@@ -21,7 +20,6 @@ type InitialInputFormProps = {
 };
 
 export function InitialInputForm({
-  typeLabel,
   themePlaceholder,
   verbs,
   supplementLabels,
@@ -59,13 +57,6 @@ export function InitialInputForm({
   return (
     <Card>
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* ヘッダー */}
-        <div className="text-center">
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">
-            💡 {typeLabel}
-          </span>
-        </div>
-
         {/* サンプル事例 */}
         {sampleCases.length > 0 && (
           <div className="space-y-2">
@@ -75,7 +66,11 @@ export function InitialInputForm({
             </p>
             <div className="flex flex-wrap gap-2">
               {sampleCases.map((sample) => (
-                <Chip key={sample.id} label={sample.label} onClick={() => onSampleSelect(sample.id)} />
+                <Chip
+                  key={sample.id}
+                  label={sample.label}
+                  onClick={() => onSampleSelect(sample.id)}
+                />
               ))}
             </div>
           </div>
@@ -102,7 +97,11 @@ export function InitialInputForm({
         </div>
 
         {/* 補足セクション */}
-        <SupplementList supplements={supplements} onChange={setSupplements} labels={supplementLabels} />
+        <SupplementList
+          supplements={supplements}
+          onChange={setSupplements}
+          labels={supplementLabels}
+        />
 
         {/* 送信ボタン */}
         <Button

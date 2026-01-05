@@ -18,199 +18,164 @@ export const sampleCases: SampleCase[] = [
     label: "採用計画",
     type: "decision",
     data: {
-      theme: "来期の採用計画",
-      verb: "決定する",
+      theme: "エンジニア3名の中途採用",
+      verb: "承認を得る",
       supplements: [
-        { id: "1", label: "参加者", value: "人事、各チームマネージャー、経営企画" },
-        { id: "2", label: "背景", value: "事業拡大で人員が不足。営業とCSで特に負荷が高い" },
-      ],
-    },
-  },
-  {
-    id: "release",
-    label: "リリース時期",
-    type: "decision",
-    data: {
-      theme: "新サービスのリリース時期",
-      verb: "決定する",
-      supplements: [
-        { id: "1", label: "参加者", value: "プロダクトマネージャー、営業、CS、開発" },
-        { id: "2", label: "背景", value: "機能は8割完成。年度内に出すか、品質を上げて来期にするか迷っている" },
-      ],
-    },
-  },
-  {
-    id: "office",
-    label: "オフィス移転",
-    type: "decision",
-    data: {
-      theme: "オフィス移転先",
-      verb: "選定する",
-      supplements: [
-        { id: "1", label: "参加者", value: "経営陣、総務、各部門長" },
-        { id: "2", label: "背景", value: "現オフィスの契約更新が半年後。3候補まで絞った" },
-        { id: "3", label: "制約", value: "コスト・アクセス・広さのバランスが重要" },
-      ],
-    },
-  },
-  {
-    id: "tool",
-    label: "ツール選定",
-    type: "decision",
-    data: {
-      theme: "プロジェクト管理ツール",
-      verb: "選定する",
-      supplements: [
-        { id: "1", label: "参加者", value: "マネージャー陣、情シス" },
-        { id: "2", label: "背景", value: "現状Excelで管理限界。Notion、Asana、Backlogで迷っている" },
+        { id: "1", label: "参加者", value: "CTO、人事部長、開発マネージャー2名" },
+        {
+          id: "2",
+          label: "背景",
+          value: "新規プロダクト開発が決定。現チームでは人手不足で来期ローンチに間に合わない",
+        },
+        { id: "3", label: "制約", value: "年間予算は2,400万円まで。4月入社が理想" },
       ],
     },
   },
   {
     id: "pricing",
-    label: "価格改定",
+    label: "料金プラン",
     type: "decision",
     data: {
-      theme: "サービスの価格改定",
+      theme: "SaaSの料金プラン改定",
       verb: "決定する",
       supplements: [
-        { id: "1", label: "参加者", value: "経営陣、営業、カスタマーサクセス" },
-        { id: "2", label: "背景", value: "原価高騰で利益率が低下。値上げしたいが、顧客離れも心配" },
+        { id: "1", label: "参加者", value: "CEO、CFO、営業責任者、カスタマーサクセス責任者" },
+        { id: "2", label: "背景", value: "競合が値下げ攻勢。現行プランでは中小企業の獲得が難しい" },
+        {
+          id: "3",
+          label: "ゴール",
+          value: "エントリープラン新設 or 既存プラン値下げ、どちらかに決める",
+        },
+      ],
+    },
+  },
+  {
+    id: "vendor",
+    label: "ベンダー選定",
+    type: "decision",
+    data: {
+      theme: "基幹システムのリプレイスベンダー",
+      verb: "選定する",
+      supplements: [
+        { id: "1", label: "参加者", value: "情シス部長、経理部長、各事業部の代表者" },
+        {
+          id: "2",
+          label: "背景",
+          value: "現システムの保守期限が1年後。3社から提案を受けて最終選考中",
+        },
+        { id: "3", label: "制約", value: "移行期間は6ヶ月以内。予算は5,000万円" },
       ],
     },
   },
 
   // share（情報共有）
   {
-    id: "org-change",
-    label: "組織変更",
+    id: "new-policy",
+    label: "人事制度",
     type: "share",
     data: {
-      theme: "4月からの組織変更",
-      verb: "共有する",
-      supplements: [
-        { id: "1", label: "参加者", value: "全社員" },
-        { id: "2", label: "背景", value: "新規事業部の設立と、それに伴う人員異動がある" },
-      ],
-    },
-  },
-  {
-    id: "remote",
-    label: "リモート制度",
-    type: "share",
-    data: {
-      theme: "リモートワーク制度の変更",
-      verb: "周知する",
-      supplements: [
-        { id: "1", label: "参加者", value: "全社員" },
-        { id: "2", label: "背景", value: "週2出社から週3出社に変更。適用は来月から" },
-      ],
-    },
-  },
-  {
-    id: "system",
-    label: "システム移行",
-    type: "share",
-    data: {
-      theme: "経費精算システムの移行",
+      theme: "評価制度の刷新",
       verb: "説明する",
       supplements: [
-        { id: "1", label: "参加者", value: "全社員" },
-        { id: "2", label: "背景", value: "来月から新システムに切り替え。操作方法の説明が必要" },
+        { id: "1", label: "参加者", value: "全マネージャー（約30名）" },
+        { id: "2", label: "背景", value: "年功序列から成果主義へ移行。来期から新制度を適用" },
+        {
+          id: "3",
+          label: "ゴール",
+          value: "制度の意図を理解してもらい、部下への説明ができる状態にする",
+        },
       ],
     },
   },
   {
-    id: "new-member",
-    label: "新メンバー",
+    id: "incident",
+    label: "障害報告",
     type: "share",
     data: {
-      theme: "新入社員の紹介",
-      verb: "共有する",
-      supplements: [
-        { id: "1", label: "参加者", value: "チームメンバー全員" },
-        { id: "2", label: "背景", value: "来週入社する中途社員2名の経歴と担当業務を共有したい" },
-      ],
-    },
-  },
-  {
-    id: "progress",
-    label: "進捗報告",
-    type: "share",
-    data: {
-      theme: "大型案件の進捗",
+      theme: "先週のシステム障害の原因と対策",
       verb: "報告する",
       supplements: [
-        { id: "1", label: "参加者", value: "関係者全員、経営陣" },
-        { id: "2", label: "背景", value: "予定通り進行中。マイルストーン達成状況を共有したい" },
+        { id: "1", label: "参加者", value: "経営陣、開発チーム、カスタマーサクセス" },
+        { id: "2", label: "背景", value: "3時間のサービス停止が発生。顧客からの問い合わせ多数" },
+        {
+          id: "3",
+          label: "ゴール",
+          value: "原因・対策・再発防止策を共有し、信頼回復に向けた方針を伝える",
+        },
+      ],
+    },
+  },
+  {
+    id: "kickoff",
+    label: "プロジェクト説明",
+    type: "share",
+    data: {
+      theme: "新プロジェクトのキックオフ",
+      verb: "共有する",
+      supplements: [
+        { id: "1", label: "参加者", value: "プロジェクトメンバー8名、関連部署のリーダー" },
+        { id: "2", label: "背景", value: "大口顧客向けのカスタム開発。納期は3ヶ月後" },
+        {
+          id: "3",
+          label: "ゴール",
+          value: "目的・スコープ・役割分担・マイルストーンを全員が理解した状態にする",
+        },
       ],
     },
   },
 
   // discussion（ディスカッション）
   {
-    id: "overtime",
-    label: "残業削減",
+    id: "productivity",
+    label: "生産性改善",
     type: "discussion",
     data: {
-      theme: "チームの残業削減",
+      theme: "開発チームの生産性を上げる方法",
       verb: "議論する",
       supplements: [
-        { id: "1", label: "参加者", value: "チームメンバー全員、マネージャー" },
-        { id: "2", label: "背景", value: "直近3ヶ月で残業が増加傾向。原因と対策を話し合いたい" },
+        { id: "1", label: "参加者", value: "開発チーム全員（8名）" },
+        {
+          id: "2",
+          label: "背景",
+          value: "ここ半年でリリース頻度が落ちている。会議・割り込み・技術的負債が原因っぽい",
+        },
+        { id: "3", label: "ゴール", value: "具体的な改善アクションを3つ決める" },
       ],
     },
   },
   {
-    id: "goal",
-    label: "来期目標",
+    id: "career",
+    label: "キャリアパス",
     type: "discussion",
     data: {
-      theme: "来期のチーム目標",
+      theme: "エンジニアのキャリアパス制度",
       verb: "検討する",
       supplements: [
-        { id: "1", label: "参加者", value: "チームメンバー全員" },
-        { id: "2", label: "背景", value: "会社の方針は出たが、チームとして何にフォーカスするか議論したい" },
+        { id: "1", label: "参加者", value: "CTO、VPoE、シニアエンジニア数名" },
+        {
+          id: "2",
+          label: "背景",
+          value: "マネジメント以外のキャリアパスがなく、優秀なエンジニアが辞めていく",
+        },
+        { id: "3", label: "ゴール", value: "スペシャリストトラックの方向性を決める" },
       ],
     },
   },
   {
-    id: "meeting-review",
-    label: "会議の見直し",
+    id: "onboarding",
+    label: "オンボーディング",
     type: "discussion",
     data: {
-      theme: "定例会議の見直し",
-      verb: "議論する",
-      supplements: [
-        { id: "1", label: "参加者", value: "チームリーダー陣" },
-        { id: "2", label: "背景", value: "会議が多すぎるという声がある。本当に必要な会議はどれか整理したい" },
-      ],
-    },
-  },
-  {
-    id: "claim",
-    label: "クレーム対応",
-    type: "discussion",
-    data: {
-      theme: "クレーム対応フローの改善",
+      theme: "新入社員のオンボーディング改善",
       verb: "相談する",
       supplements: [
-        { id: "1", label: "参加者", value: "CS、営業、開発" },
-        { id: "2", label: "背景", value: "同じようなクレームが繰り返し発生。根本原因と対策を部門横断で議論したい" },
-      ],
-    },
-  },
-  {
-    id: "new-business",
-    label: "新規事業",
-    type: "discussion",
-    data: {
-      theme: "新規事業のアイデア",
-      verb: "ブレストする",
-      supplements: [
-        { id: "1", label: "参加者", value: "有志メンバー、経営企画" },
-        { id: "2", label: "背景", value: "社長から「新しい収益源を考えて」と指示があった" },
-        { id: "3", label: "ゴール", value: "まずは自由にアイデアを出し合いたい" },
+        { id: "1", label: "参加者", value: "人事、各チームのメンター担当者" },
+        {
+          id: "2",
+          label: "背景",
+          value: "入社後3ヶ月の離職率が高い。「放置された」という声が多い",
+        },
+        { id: "3", label: "ゴール", value: "改善のアイデアを出し合い、優先度をつける" },
       ],
     },
   },

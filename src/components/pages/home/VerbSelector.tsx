@@ -7,7 +7,12 @@ type VerbSelectorProps = {
   placeholder?: string;
 };
 
-export function VerbSelector({ verbs, value, onChange, placeholder = "選択..." }: VerbSelectorProps) {
+export function VerbSelector({
+  verbs,
+  value,
+  onChange,
+  placeholder = "選択...",
+}: VerbSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isCustom, setIsCustom] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

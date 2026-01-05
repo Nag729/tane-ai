@@ -105,7 +105,6 @@ function ChatPageContent() {
           {showInitialForm ? (
             <InitialInputForm
               key={selectedSampleId ?? "empty"}
-              typeLabel={config.label}
               themePlaceholder={config.themePlaceholder}
               verbs={verbsByType[type]}
               supplementLabels={supplementLabels}

@@ -4,7 +4,14 @@ import { useState, useCallback, useMemo } from "react";
 import { fetchInitialQuestion, fetchNextQuestion, QuestionResponse } from "@/lib/chatApi";
 import { saveChatData } from "@/lib/chatStorage";
 import { useThinking } from "./useThinking";
-import type { MeetingType, AIMessage, ChatMessage, QuestionAnswer, ChatPhase, InitialInputData } from "@/types";
+import type {
+  MeetingType,
+  AIMessage,
+  ChatMessage,
+  QuestionAnswer,
+  ChatPhase,
+  InitialInputData,
+} from "@/types";
 
 export { saveChatData, loadChatData, clearChatData } from "@/lib/chatStorage";
 
