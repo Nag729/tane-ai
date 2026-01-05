@@ -1,6 +1,7 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { Suspense, useEffect, useState, useMemo } from "react";
 import { InitialInputForm } from "@/components/pages/home/InitialInputForm";
 import { ThinkingPanel } from "@/components/projects/ThinkingPanel";

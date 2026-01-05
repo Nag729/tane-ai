@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { motion } from "framer-motion";
 import { TypeSelector } from "@/components/pages/home/TypeSelector";
 import { GitHubLink } from "@/components/ui/GitHubLink";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { loadChatData, clearChatData, saveChatData } from "@/lib/chatStorage";
 import { useThinking } from "./useThinking";
 import { readTextSSEStream } from "@/lib/sse";
