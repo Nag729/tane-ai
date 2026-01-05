@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { Sprout } from "lucide-react";
 import { TypeSelector } from "@/components/pages/home/TypeSelector";
 import { Card } from "@/components/ui/Card";
 import { fadeInUp, defaultTransition } from "@/lib/motion";
@@ -25,7 +26,10 @@ export default function Home() {
           transition={defaultTransition}
         >
           <Card className="text-center mb-8 shadow-paper">
-            <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 mb-3">🍏 たねAI</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 mb-3 flex items-center justify-center gap-2">
+              <Sprout className="text-emerald-500" size={32} />
+              <span>たねAI</span>
+            </h1>
             <p className="text-lg sm:text-xl text-stone-700 mb-2">会議のタネ、AIがまく</p>
             <p className="text-stone-500 text-sm sm:text-base">
               準備8割、会議2割。事前資料を一緒に作ろう
@@ -42,15 +46,15 @@ export default function Home() {
           transition={{ ...defaultTransition, delay: 0.1 }}
         >
           <span className="flex items-center gap-1">
-            <span className="text-emerald-500">①</span> AIの質問に
+            <span className="text-emerald-500 font-bold">1.</span> AIの質問に
           </span>
           <span className="text-stone-300">→</span>
           <span className="flex items-center gap-1">
-            <span className="text-emerald-500">②</span> 答えるだけで
+            <span className="text-emerald-500 font-bold">2.</span> 答えるだけで
           </span>
           <span className="text-stone-300">→</span>
           <span className="flex items-center gap-1">
-            <span className="text-emerald-500">③</span> 資料が完成！
+            <span className="text-emerald-500 font-bold">3.</span> 資料が完成！
           </span>
         </motion.div>
 

@@ -1,3 +1,5 @@
+import { Sprout } from "lucide-react";
+
 type PageLoadingProps = {
   /** 表示するメッセージ */
   message?: string;
@@ -11,7 +13,7 @@ export function PageLoading({ message = "読み込み中" }: PageLoadingProps) {
     <div className="min-h-screen flex items-center justify-center bg-stone-50">
       <div className="flex flex-col items-center gap-4">
         {/* ロゴ */}
-        <div className="text-4xl">🍏</div>
+        <Sprout className="text-emerald-500" size={48} />
 
         {/* ローディングドット */}
         <div className="flex items-center gap-1">

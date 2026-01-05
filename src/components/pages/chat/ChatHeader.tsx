@@ -1,3 +1,5 @@
+import { Sprout } from "lucide-react";
+
 export type ChatHeaderProps = {
   /** ヘッダータイトルのラベル */
   label: string;
@@ -12,7 +14,10 @@ export function ChatHeader({ label, onBack }: ChatHeaderProps) {
         <button onClick={onBack} className="text-stone-500 hover:text-stone-700">
           ← やめる
         </button>
-        <h1 className="font-bold text-stone-800">🍏 {label}会議</h1>
+        <h1 className="font-bold text-stone-800 flex items-center gap-1.5">
+          <Sprout className="text-emerald-500" size={20} />
+          <span>{label}会議</span>
+        </h1>
         <div className="w-16" />
       </div>
     </header>

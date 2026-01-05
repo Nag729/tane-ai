@@ -1,3 +1,4 @@
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export type ChatFooterProps = {
@@ -11,7 +12,10 @@ export type ChatFooterProps = {
 function CompleteButton({ onClick }: { onClick: () => void }) {
   return (
     <Button onClick={onClick} className="w-full bg-green-600 hover:bg-green-700">
-      ✨ 資料完成！結果を見る
+      <span className="flex items-center justify-center gap-1.5">
+        <Sparkles size={18} />
+        <span>資料完成！結果を見る</span>
+      </span>
     </Button>
   );
 }

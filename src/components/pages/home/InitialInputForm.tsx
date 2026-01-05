@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
@@ -61,7 +62,7 @@ export function InitialInputForm({
         {sampleCases.length > 0 && (
           <div className="space-y-2">
             <p className="text-xs text-stone-500 flex items-center gap-1">
-              <span>✨</span>
+              <Sparkles size={14} className="text-amber-500" />
               <span>サンプルで試す</span>
             </p>
             <div className="flex flex-wrap gap-2">

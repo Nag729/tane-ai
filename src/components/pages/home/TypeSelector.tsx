@@ -1,6 +1,8 @@
 "use client";
 
+import { type ReactNode } from "react";
 import { motion } from "framer-motion";
+import { Lightbulb, Megaphone, MessageCircle } from "lucide-react";
 import type { MeetingType } from "@/types";
 import { CardButton } from "@/components/ui/CardButton";
 import { staggerContainer, staggerItem, defaultTransition } from "@/lib/motion";
@@ -9,23 +11,31 @@ type TypeSelectorProps = {
   onSelect: (type: MeetingType) => void;
 };
 
-const typeOptions = [
+const typeOptions: readonly {
+  type: MeetingType;
+  label: string;
+  description: string;
+  icon: ReactNode;
+}[] = [
   {
     type: "decision",
-    label: "💡 意思決定",
+    label: "意思決定",
     description: "承認・判断を得たい",
+    icon: <Lightbulb size={32} />,
   },
   {
     type: "share",
-    label: "📢 情報共有",
+    label: "情報共有",
     description: "伝達・報告したい",
+    icon: <Megaphone size={32} />,
   },
   {
     type: "discussion",
-    label: "💬 ディスカッション",
+    label: "ディスカッション",
     description: "アイデアを出し合いたい",
+    icon: <MessageCircle size={32} />,
   },
-] as const satisfies readonly { type: MeetingType; label: string; description: string }[];
+];
 
 export function TypeSelector({ onSelect }: TypeSelectorProps) {
   return (
@@ -35,7 +45,7 @@ export function TypeSelector({ onSelect }: TypeSelectorProps) {
       initial="initial"
       animate="animate"
     >
-      {typeOptions.map(({ type, label, description }) => (
+      {typeOptions.map(({ type, label, description, icon }) => (
         <motion.div
           key={type}
           className="flex-1"
@@ -43,7 +53,10 @@ export function TypeSelector({ onSelect }: TypeSelectorProps) {
           transition={defaultTransition}
         >
           <CardButton onClick={() => onSelect(type)} className="h-full">
-            <div className="text-2xl mb-2">{label}</div>
+            <div className="flex items-center gap-2 text-xl mb-2">
+              <span className="text-emerald-500">{icon}</span>
+              <span>{label}</span>
+            </div>
             <div className="text-sm text-stone-500">{description}</div>
           </CardButton>
         </motion.div>
